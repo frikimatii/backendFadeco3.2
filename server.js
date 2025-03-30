@@ -7,7 +7,7 @@ const Pieza = require('./models/Pieza')
 
 const app = express();
 
-MONGO_URI="mongodb+srv://matibiencomodo:QAMHDwRFlYLWg4Dw@serverfadeco.comtp.mongodb.net/DBFadeco?retryWrites=true&w=majority&appName=serverFadeco"
+MONGO_URI = "mongodb+srv://matibiencomodo:QAMHDwRFlYLWg4Dw@serverfadeco.comtp.mongodb.net/DBFadeco?retryWrites=true&w=majority&appName=serverFadeco"
 
 
 
@@ -29,7 +29,7 @@ app.use('/api/auth', authRoutes);
 const piezasRouter = require('./routes/piezas')
 app.use('/api/piezas', piezasRouter)
 
-const piezasAluminio =  require('./routes/aluminio')
+const piezasAluminio = require('./routes/aluminio')
 app.use('/api/aluminio', piezasAluminio)
 
 const piezaChapa = require("./routes/chapa")
@@ -44,6 +44,33 @@ app.use('/api/plastico', piezaPlastico)
 const piezaHierro = require('./routes/hierro')
 app.use('/api/hierro', piezaHierro)
 
+
+const piezasaugeriado = require('./routes/mecanizado/augeriado')
+app.use('/api/augeriado', piezasaugeriado)//
+
+const piezasbalancin = require('./routes/mecanizado/balancin')
+app.use('/api/balancin', piezasbalancin)//
+
+const piezascorte = require('./routes/mecanizado/corte')
+app.use('/api/corte', piezascorte)//
+
+const piezasfresa = require('./routes/mecanizado/fresa')
+app.use('/api/fresa', piezasfresa)//
+
+const piezasPlasmas = require('./routes/mecanizado/plasma')
+app.use('/api/plasma', piezasPlasmas)//
+
+const piezasPlegadora = require('./routes/mecanizado/plegadora')
+app.use('/api/plegadora', piezasPlegadora)//
+
+const piezaspulido = require('./routes/mecanizado/pulido')
+app.use('/api/pulido', piezaspulido)//
+
+const piezassoldador = require('./routes/mecanizado/soldador')
+app.use('/api/soldador', piezassoldador)//
+
+const piezastorno = require('./routes/mecanizado/torno')
+app.use('/api/torno', piezastorno)//
 
 app.get('/', (req, res) => {
   res.send('Servidor funcionando correctamente');
@@ -77,6 +104,48 @@ app.put("/api/piezas/nombre/:nombre", async (req, res) => {
 });
 
 
+app.put('/api/piezas/mecanizado/:nombre', async (req, res) => {
+  try {
+    const { cantidad } = req.body;
+    const nombre = req.params.nombre;
+
+    const cantidaNumero = Number(cantidad);
+    if (isNaN(cantidaNumero)) {
+      return res.status(400).json({ mensaje: "Cantidad no válida" });
+    }
+
+    const pieza = await Pieza.findOne({ nombre });
+    if (!pieza) {
+      return res.status(404).json({ mensaje: "Pieza no encontrada" });
+    }
+
+    const cantidadBruta = pieza.cantidad.bruto.cantidad;
+    const cantidadMecanizado = pieza.cantidad.plegadora.cantidad;
+
+    const piezaActualizada = await Pieza.findOneAndUpdate(
+      { nombre },
+      {
+        $set: {
+          "cantidad.bruto.cantidad": cantidadBruta - cantidad,
+          "cantidad.plegadora.cantidad": cantidadMecanizado + cantidad,
+        },
+      },
+      { new: true }
+    );
+
+    if (!piezaActualizada) {
+      return res.status(404).json({ mensaje: "Pieza no encontrada" });
+    }
+    res.json({
+      mensaje: "Cantidad actualizada correctamente",
+      piezaActualizada,
+    });
+
+  } catch (error) {
+    console.error("Error al actualizar la pieza:", error);
+    return res.status(500).json({ mensaje: "Error en el servidor", error: error.message });
+  }
+});
 
 
 // Iniciar el servidor

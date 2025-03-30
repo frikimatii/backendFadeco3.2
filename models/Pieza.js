@@ -1,45 +1,45 @@
-const mongoose = require('mongoose');
-
-const mecanizadoSchema = new mongoose.Schema({
-    tipo: { type: String, required: true },
-    cantidad: { type: Number, required: true, default: 0 },
-    stock_deseado: { type: Number, required: true, default: 0 },
-    detalles: { type: String, required: true }
-}, { _id: false });
-
-const cantidadSchema = new mongoose.Schema({
-    bruto: {
-        cantidad: { type: Number, required: true, default: 0 },
-        stock_deseado: { type: Number, required: true, default: 0 },
-        detalles: { type: String, required: true },
-        img: { type: String, default: "" }
-    },
-    augeriado: {
-        cantidad: { type: Number, required: true, default: 0 },
-        stock_deseado: { type: Number, required: true, default: 0 }
-    },
-    terminado: {
-        cantidad: { type: Number, required: true, default: 0 },
-        stock_deseado: { type: Number, required: true, default: 0 },
-        detalles: { type: String, required: true },
-        img: { type: String, default: "" }
-    }
-}, { _id: false });
+const mongoose = require("mongoose");
 
 const piezaSchema = new mongoose.Schema({
-    nombre: { type: String, required: true },
-    tipo_material: { type: String, required: true },
-    modelo: [{ type: String, required: true }],
-    mecanizado: [mecanizadoSchema],
-    cantidad: cantidadSchema,
-    proveedores: {
-        carmerlo: { type: Number, required: true, default: 0 },
-        maxi: { type: Number, required: true, default: 0 }
+    _id:{type: Number, required: true},
+  nombre: { type: String, required: true },
+  tipo_material: { type: String, required: true },
+  modelo: [{ type: String }], 
+  mecanizado: [{ type: String }],  
+  cantidad: {
+    bruto: {
+      cantidad: { type: Number, required: true },
+      stock_deseado: { type: Number, default: 0 },
+      detalles: { type: String },
+      img: { type: String }
     },
-    origen: { type: String, required: true },
-    detallesGeneral: {type: String, required: true},
-    destino_final: [{ type: String, required: true }]
-}, { timestamps: true });
+    plegadora: { cantidad: { type: Number, default: 0 }, stock_deseado: { type: Number, default: 0 } },
+    plasma: { cantidad: { type: Number, default: 0 }, stock_deseado: { type: Number, default: 0 } },
+    corte: { cantidad: { type: Number, default: 0 }, stock_deseado: { type: Number, default: 0 } },
+    augeriado: { cantidad: { type: Number, default: 0 }, stock_deseado: { type: Number, default: 0 } },
+    soldador: { cantidad: { type: Number, default: 0 }, stock_deseado: { type: Number, default: 0 } },
+    pulido: { cantidad: { type: Number, default: 0 }, stock_deseado: { type: Number, default: 0 } },
+    torno: { cantidad: { type: Number, default: 0 }, stock_deseado: { type: Number, default: 0 } },
+    fresa: { cantidad: { type: Number, default: 0 }, stock_deseado: { type: Number, default: 0 } },
+    balancin: { cantidad: { type: Number, default: 0 }, stock_deseado: { type: Number, default: 0 } },
+    terminado: {
+      cantidad: { type: Number, default: 0 },
+      stock_deseado: { type: Number, default: 0 },
+      detalles: { type: String },
+      img: { type: String }
+    }
+  },
+  proveedores: {
+    carmerlo: { cantidad: { type: Number, default: 0 } },
+    maxi: { cantidad: { type: Number, default: 0 } },
+    soldador: { cantidad: { type: Number, default: 0 } },
+    pintura: { cantidad: { type: Number, default: 0 } },
+    niquelado: { cantidad: { type: Number, default: 0 } }
+  },
+  origen: [{ type: String }],
+  detallesGeneral: { type: String },
+  destino_final: [{ type: String }]
+});
 
 
 const Pieza = mongoose.model('Pieza', piezaSchema, 'piezasFadeco');
