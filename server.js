@@ -78,8 +78,7 @@ app.get('/', (req, res) => {
 
 
 
-//actuializar 
-
+// AGREGA pIEZAS A BRUTO
 app.put("/api/piezas/nombre/:nombre", async (req, res) => {
   try {
     const { nombre } = req.params; // Obtener el nombre desde la URL
@@ -104,14 +103,50 @@ app.put("/api/piezas/nombre/:nombre", async (req, res) => {
 });
 
 
-app.put('/api/piezas/mecanizado/:nombre', async (req, res) => {
+// AGREGA pIEZAS A MECANIZADO
+app.put('/api/piezas/plegadora/:nombre', async (req, res) => {
   try {
     const { cantidad } = req.body;
     const nombre = req.params.nombre;
 
-    const cantidaNumero = Number(cantidad);
-    if (isNaN(cantidaNumero)) {
+    const cantidadNumero = Number(cantidad);
+    if (isNaN(cantidadNumero)) {
       return res.status(400).json({ mensaje: "Cantidad no válida" });
+    }
+    const categorias = {
+      bruto: [
+        "ChapaBase 330Inox",
+        "ChapaBase 300Inox",
+        "ChapaBase 330Pintada",
+        "ChapaBase 300Pintada",
+        "ChapaBase 250Inox",
+        "Bandeja Cabezal Inox 250",
+        "Bandeja Cabezal Pintada",
+        "Bandeja Cabezal Inox",
+      ],
+      plasma: [
+        "Lateral i330 contecla",
+        "Lateral i330 sintecla",
+        "Lateral i300 contecla",
+        "Lateral i300 sintecla",
+        "Lateral i250 contecla",
+        "Lateral i250 sintecla",
+        "Lateral p330 contecla",
+        "Lateral p330 sintecla",
+        "Lateral p300 contecla",
+        "Lateral p300 sintecla",
+        "Lateral i330 eco",
+      ],
+      balancin:[
+        "Chapa U Inox 250",
+        "Chapa U Pintada",
+        "Chapa U Inox",
+      ],
+      fresa:[
+        "Planchada 300",
+        "Planchada 330",
+        "Planchada 250",
+      ]
     }
 
     const pieza = await Pieza.findOne({ nombre });
@@ -119,28 +154,71 @@ app.put('/api/piezas/mecanizado/:nombre', async (req, res) => {
       return res.status(404).json({ mensaje: "Pieza no encontrada" });
     }
 
-    const cantidadBruta = pieza.cantidad.bruto.cantidad;
-    const cantidadMecanizado = pieza.cantidad.plegadora.cantidad;
+    let updateFields = {};
+
+    if (categorias.bruto.includes(nombre)) {
+      // Verificar si hay stock suficiente antes de mecanizar
+      if (!pieza.cantidad?.bruto?.cantidad || pieza.cantidad.bruto.cantidad < cantidadNumero) {
+        return res.status(400).json({ mensaje: `Stock insuficiente de ${nombre} en stock ` });
+      }
+
+      // Restar piezas mecanizadas del stock bruto
+      updateFields["cantidad.bruto.cantidad"] = pieza.cantidad.bruto.cantidad - cantidadNumero;
+
+      updateFields["cantidad.plegadora.cantidad"] = (pieza.cantidad?.plegadora?.cantidad || 0) + cantidadNumero
+
+
+    } 
+  
+    else if (categorias.plasma.includes(nombre)) {
+      // Agregar directamente a la cantidad de la plegadora
+      if (!pieza.cantidad?.plasma?.cantidad || pieza.cantidad?.plasma.cantidad < cantidadNumero){
+        return res.status(400).json({mensaje: `Stock Insufiente de ${nombre} em el plasma`})
+      }
+
+      updateFields["cantidad.plasma.cantidad"] = pieza.cantidad.plasma.cantidad - cantidadNumero
+
+
+      updateFields["cantidad.plegadora.cantiada"] = (pieza.cantidad?.plegadora?.cantidad || 0) + cantidadNumero
+
+    } 
+
+    else if (categorias.fresa.includes(nombre)){
+      if(!pieza.cantidad?.fresa?.cantidad || pieza.cantidad?.fresa.cantidad < cantidadNumero){
+        return res.status(400).json({mensaje: `stock Insuficiente de ${nombre} en fresado`})
+      }
+
+      updateFields["cantidad.fresado.cantidad"] = pieza.cantidad.fresa.cantidad - cantidadNumero
+
+      updateFields["cantidad.plegadora.cantidad"] = (pieza.cantidad?.plegadora?.cantidad || 0 ) + cantidadNumero
+    }
+
+    else if (categorias.balancin.includes(nombre)){
+      if(!pieza.cantidad?.balancin?.cantidad || pieza.cantidad?.balancin.cantidad < cantidadNumero){
+        return res.status(400).json({mensaje: `stock insuficinete de ${nombre} en balancin`})
+      }
+
+      updateFields["cantidad.balancin.cantidad"] = pieza.cantidad.balancin.cantidad - cantidadNumero
+
+      updateFields["cantidad.plegadora.cantidad"] = (pieza.cantidad?.plegadora?.cantidad || 0) + cantidadNumero
+
+    }
+
+    
+    else {
+      return res.status(400).json({ mensaje: "Categoría no válida" });
+    }
 
     const piezaActualizada = await Pieza.findOneAndUpdate(
       { nombre },
-      {
-        $set: {
-          "cantidad.bruto.cantidad": cantidadBruta - cantidad,
-          "cantidad.plegadora.cantidad": cantidadMecanizado + cantidad,
-        },
-      },
+      { $set: updateFields },
       { new: true }
     );
 
-    if (!piezaActualizada) {
-      return res.status(404).json({ mensaje: "Pieza no encontrada" });
-    }
     res.json({
       mensaje: "Cantidad actualizada correctamente",
       piezaActualizada,
     });
-
   } catch (error) {
     console.error("Error al actualizar la pieza:", error);
     return res.status(500).json({ mensaje: "Error en el servidor", error: error.message });
