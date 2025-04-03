@@ -178,7 +178,7 @@ app.put("/api/piezas/plegadora/:nombre", async (req, res) => {
       updateFields["cantidad.plasma.cantidad"] =
         pieza.cantidad.plasma.cantidad - cantidadNumero;
 
-      updateFields["cantidad.plegadora.cantiada"] =
+      updateFields["cantidad.plegadora.cantidad"] =
         (pieza.cantidad?.plegadora?.cantidad || 0) + cantidadNumero;
 
 
@@ -418,7 +418,6 @@ app.put("/api/piezas/augeriado/:nombre", async (req, res) => {
       ],
       corte: [
         "Cuadrado Regulador",
-        "PortaEje",
       ],
       torno: [
         "Carros",
@@ -428,6 +427,9 @@ app.put("/api/piezas/augeriado/:nombre", async (req, res) => {
       ],
       soldador: [
         "Caja Soldada Eco",
+      ],
+      balancin:[
+        "PortaEje",
       ]
     };
 
@@ -467,6 +469,7 @@ app.put("/api/piezas/augeriado/:nombre", async (req, res) => {
       updateFields["cantidad.augeriado.cantidad"] = (pieza.cantidad.augeriado.cantidad || 0) + cantidadNumero
 
     } else if (categoria.soldador.includes(nombre)) {
+
       if (!pieza.cantidad.soldador.cantidad || pieza.cantidad.soldador.cantidad < cantidadNumero) {
         return res.status(400).json({ mensaje: `Stock Insuficuente de ${nombre} en Torno` })
       }
@@ -476,7 +479,17 @@ app.put("/api/piezas/augeriado/:nombre", async (req, res) => {
       updateFields["cantidad.augeriado.cantidad"] = (pieza.cantidad.augeriado.cantidad || 0) + cantidadNumero
 
 
-    } else {
+    } else if (categoria.balancin.includes(nombre)){
+
+      if(!pieza.cantidad.balancin.cantidad || pieza.cantidad.balancin.cantidad < cantidadNumero){
+        return res.status(400).json({mensaje: `Stock Insuficiente de ${nombre} en el balancin`})
+      }
+      updateFields["cantidad.balancin.cantidad"]= pieza.cantidad.balancin.cantidad - cantidadNumero
+
+      updateFields["cantidad.augeriado.cantidad"] = (pieza.cantidad.augeriado.cantidad || 0) + cantidadNumero
+
+    }
+    else {
       return res.status(400).json({ mensaje: "Categoría no válida" });
     }
 
@@ -818,7 +831,6 @@ app.put("/api/piezas/balancin/:nombre", async (req, res) => {
         "Planchuela 250",
         "Planchuela 300",
         "Planchuela 330",
-        "PortaEje",
         "Guia U",
         "Teletubi Eco",
         "Eje Corto",
@@ -828,6 +840,9 @@ app.put("/api/piezas/balancin/:nombre", async (req, res) => {
         "Chapa U Inox",
         "Chapa U Pintada",
         "Chapa U Inox 250",
+      ],
+      balancin:[
+        "PortaEje",
       ]
     };
 
@@ -870,6 +885,12 @@ app.put("/api/piezas/balancin/:nombre", async (req, res) => {
       updateFields["cantidad.balancin.cantidad"] =
         (pieza.cantidad.balancin?.cantidad || 0) + cantidadNumero;
     }
+    else if(categoria.balancin.includes(nombre)){
+
+
+      updateFields["cantidad.balancin.cantidad"] =
+        (pieza.cantidad?.balancin?.cantidad || 0) + cantidadNumero;
+    }
     else {
       return res.status(400).json({ mensaje: "Categoría no válida" });
     }
@@ -891,6 +912,35 @@ app.put("/api/piezas/balancin/:nombre", async (req, res) => {
       .json({ mensaje: "Error en el servidor", error: error.message });
   }
 })
+
+
+
+
+
+// Soldador
+
+const basesSoldador = require('./routes/provedores/soldador')
+app.use("/api/baseSoldador", basesSoldador)
+
+
+
+
+const piesasbrutas = require('./routes/provedores/stockfabrica')
+app.use("/api/stockbruto", piesasbrutas)
+
+const piezasBrutaFabricaStock = require("./routes/provedores/carmeloStockFabrica")
+app.use("/api/carmelostockfabrica", piezasBrutaFabricaStock)
+
+const piezaBrutoPintura = require("./routes/provedores/mostrarpintura")
+app.use("/api/piezasbrutapintada", piezaBrutoPintura)
+
+
+const piezaBrutoNiquelado = require("./routes/provedores/mostrarstockNiquelado")
+app.use("/api/piezasbrutaniquelado", piezaBrutoNiquelado)
+
+const piezaBrutoAfildor = require("./routes/provedores/MostrarBrutoAfilador")
+app.use("/api/piezasbrutaAfilador", piezaBrutoAfildor)
+
 
 
 // Iniciar el servidor
