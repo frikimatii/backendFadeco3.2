@@ -2,11 +2,10 @@ const express = require('express');
 const router = express.Router();
 const Pieza = require("../../models/Pieza");
 
-const modelosListaPieza = ["basePintada330", "basePintada300", "cabezal_pintada","Caja Soldada Eco", "Teletubi Eco"]
 
 router.get('/', async (req, res) => {
     try {
-        const piezas = await Pieza.find({ nombre: { $in: modelosListaPieza } });
+        const piezas = await Pieza.find({ origen: "soldador"});
 
         if (!piezas.length) {
             return res.status(404).json({ mensaje: "No se encontraron piezas con esos nombres." });

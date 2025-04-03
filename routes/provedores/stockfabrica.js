@@ -25,7 +25,12 @@ const piezasLista = [
     "Varilla 300",
     "Varilla 330",
     "Varilla 250",
-    "PortaEje"
+    "PortaEje",
+    "Media Luna",
+    "Pieza Caja Eco",
+    "Planchuela Inferior",
+    "Planchuela Interna"
+
 ];
 
 router.get('/', async (req, res) => {
