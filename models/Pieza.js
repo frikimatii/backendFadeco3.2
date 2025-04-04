@@ -34,7 +34,9 @@ const piezaSchema = new mongoose.Schema({
     maxi: { cantidad: { type: Number, default: 0 } },
     soldador: { cantidad: { type: Number, default: 0 } },
     pintura: { cantidad: { type: Number, default: 0 } },
-    niquelado: { cantidad: { type: Number, default: 0 } }
+    niquelado: { cantidad: { type: Number, default: 0 } },
+    afiladores: { cantidad: { type: Number, default: 0 } } // ← agregado
+
   },
   origen: [{ type: String }],
   detallesGeneral: { type: String },

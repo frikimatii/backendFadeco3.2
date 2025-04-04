@@ -69,6 +69,9 @@ app.use("/api/soldador", piezassoldador); //
 const piezastorno = require("./routes/mecanizado/torno");
 app.use("/api/torno", piezastorno); //
 
+const Afiladore = require("./routes/provedores/afilador")
+app.use("/api/afilador", Afiladore)
+
 app.get("/", (req, res) => {
   res.send("Servidor funcionando correctamente");
 });
@@ -403,10 +406,15 @@ app.put("/api/piezas/augeriado/:nombre", async (req, res) => {
     }
 
     const categoria = {
-      bruto: ["Brazo 330", "Brazo 300", "Brazo 250", "Carcaza Afilador"],
+      bruto: [
+        "Brazo 330",
+        "Brazo 300",
+        "Brazo 250",
+        "Carcaza Afilador",
+        "Caja Soldada Eco",
+      ],
       corte: ["Cuadrado Regulador"],
       torno: ["Carros", "Carros 250", "Movimiento", "Tornillo Teletubi Eco"],
-      soldador: ["Caja Soldada Eco"],
       balancin: ["PortaEje"],
     };
 
@@ -459,21 +467,6 @@ app.put("/api/piezas/augeriado/:nombre", async (req, res) => {
 
       updateFields["cantidad.torno.cantidad"] =
         pieza.cantidad.torno.cantidad - cantidadNumero;
-
-      updateFields["cantidad.augeriado.cantidad"] =
-        (pieza.cantidad.augeriado.cantidad || 0) + cantidadNumero;
-    } else if (categoria.soldador.includes(nombre)) {
-      if (
-        !pieza.cantidad.soldador.cantidad ||
-        pieza.cantidad.soldador.cantidad < cantidadNumero
-      ) {
-        return res
-          .status(400)
-          .json({ mensaje: `Stock Insuficuente de ${nombre} en Torno` });
-      }
-
-      updateFields["cantidad.soldador.cantidad"] =
-        pieza.cantidad.soldador.cantidad - cantidadNumero;
 
       updateFields["cantidad.augeriado.cantidad"] =
         (pieza.cantidad.augeriado.cantidad || 0) + cantidadNumero;
@@ -924,6 +917,8 @@ app.put("/api/piezas/balancin/:nombre", async (req, res) => {
   }
 });
 
+
+
 //soldador
 //actualizar piezas soldador
 app.put("/api/enviosSoldador/:nombre", async (req, res) => {
@@ -1038,7 +1033,7 @@ app.put("/api/enviosSoldador/:nombre", async (req, res) => {
           "Lateral i250 sintecla": "plegadora",
           "Planchuela 250": "balancin",
           "Varilla 250": "corte",
-          "PortaEje": "augeriado",
+          PortaEje: "augeriado",
         };
         const piezasinox250 = await Pieza.find(
           { nombre: { $in: baseInox250 } },
@@ -1559,15 +1554,25 @@ app.put("/api/enviosSoldador/:nombre", async (req, res) => {
     res.status(500).json({ mensaje: "Error en el servidor" });
   }
 });
-
 app.put("/api/entregasSoldador/:nombre", async (req, res) => {
   try {
     const { cantidad } = req.body;
-    const nombre = req.params.nombre;
+    let nombre = req.params.nombre;
 
     const cantidadNumero = Number(cantidad);
     if (isNaN(cantidadNumero) || cantidadNumero <= 0) {
       return res.status(400).json({ mensaje: "Cantidad no es válida" });
+    }
+
+    // Mapeamos el nombre si viene mal escrito o sin espacios
+    const nombreMapeado = {
+      CajaSoldadaEco: "Caja Soldada Eco",
+      // podés agregar más nombres aquí si lo necesitás
+    };
+
+    // Si viene un nombre sin espacio, lo corregimos
+    if (nombreMapeado[nombre]) {
+      nombre = nombreMapeado[nombre];
     }
 
     const pieza = await Pieza.findOne({ nombre });
@@ -1585,20 +1590,26 @@ app.put("/api/entregasSoldador/:nombre", async (req, res) => {
       });
     }
 
-    // Actualizamos ambas cantidades
+    let campoDestino = "cantidad.bruto.cantidad";
+    if (nombre === "Caja Soldada Eco") {
+      campoDestino = "cantidad.augueriado.cantidad";
+    }
+
+    const updateObj = {
+      $inc: {
+        [campoDestino]: cantidadNumero,
+        "proveedores.soldador.cantidad": -cantidadNumero,
+      },
+    };
+
     const piezaActualizada = await Pieza.findOneAndUpdate(
       { nombre },
-      {
-        $inc: {
-          "cantidad.bruto.cantidad": cantidadNumero,
-          "proveedores.soldador.cantidad": -cantidadNumero,
-        },
-      },
+      updateObj,
       { new: true }
     );
 
     res.json({
-      mensaje: "Cantidad transferida correctamente del proveedor al bruto",
+      mensaje: "Cantidad transferida correctamente del proveedor al destino",
       piezaActualizada,
     });
   } catch (error) {
@@ -1783,7 +1794,7 @@ app.put("/api/entregasCarmelo/:nombre", async (req, res) => {
   }
 });
 
-
+// Maxi
 
 app.put("/api/enviosMaxi/:nombre", async (req, res) => {
   try {
@@ -1960,6 +1971,452 @@ app.put("/api/entregasMaxi/:nombre", async (req, res) => {
   }
 });
 
+// Pintura
+
+app.put("/api/enviosPintura/:nombre", async (req, res) => {
+  try {
+    const { cantidad } = req.body;
+    const nombre = req.params.nombre; // Corregido el error de escritura
+
+    const cantidadNumero = Number(cantidad);
+    if (isNaN(cantidadNumero) || cantidadNumero <= 0) {
+      return res.status(400).json({ mensaje: "Cantidad No es Valida" });
+    }
+
+    const piezaenLugares = {
+      balancin: ["Teletubi Eco"],
+      bruto: ["basePintada330", "basePintada300", "Cabezal Pintura"],
+      augeriado: ["Caja Soldada Eco"],
+    };
+
+    const pieza = await Pieza.findOne({ nombre });
+    if (!pieza) {
+      return res.status(404).json({ mensaje: "Pieza No Encontrada" });
+    }
+
+    let updateFields = {};
+    if (piezaenLugares.balancin.includes(nombre)) {
+      if (
+        !pieza.cantidad.balancin.cantidad ||
+        pieza.cantidad.balancin.cantidad < cantidadNumero
+      ) {
+        return res
+          .status(400)
+          .json({ mensaje: `Stock Insuficiente de ${nombre} en balancin` });
+      }
+
+      updateFields["cantidad.balancin.cantidad"] =
+        pieza.cantidad.balancin.cantidad - cantidadNumero;
+
+      updateFields["proveedores.pintura.cantidad"] =
+        (pieza.proveedores.pintura?.cantidad || 0) + cantidadNumero;
+    } else if (piezaenLugares.bruto.includes(nombre)) {
+      if (
+        !pieza.cantidad.bruto.cantidad ||
+        pieza.cantidad.bruto.cantidad < cantidadNumero
+      ) {
+        return res
+          .status(400)
+          .json({ mensaje: `Stock Insuficuente de ${nombre} en bruto` });
+      }
+
+      updateFields["cantidad.bruto.cantidad"] =
+        pieza.cantidad.bruto.cantidad - cantidadNumero;
+
+      updateFields["proveedores.pintura.cantidad"] =
+        (pieza.proveedores.pintura?.cantidad || 0) + cantidadNumero;
+    } else if (piezaenLugares.augeriado.includes(nombre)) {
+      if (
+        !pieza.cantidad.augeriado.cantidad ||
+        pieza.cantidad.augeriado.cantidad < cantidadNumero
+      ) {
+        return res
+          .status(400)
+          .json({ mensaje: `Stock Insuficuente de ${nombre} en augeriado` });
+      }
+
+      updateFields["cantidad.augeriado.cantidad"] =
+        pieza.cantidad.augeriado.cantidad - cantidadNumero;
+
+      updateFields["proveedores.pintura.cantidad"] =
+        (pieza.proveedores.pintura?.cantidad || 0) + cantidadNumero;
+    } else {
+      return res.status(400).json({ mensaje: "Categoría no válida" });
+    }
+
+    const piezaActualizada = await Pieza.findOneAndUpdate(
+      { nombre },
+      { $set: updateFields },
+      { new: true }
+    );
+
+    res.json({
+      mensaje: "Cantidad Actualizada Correctamente",
+      piezaActualizada,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ mensaje: "Error en el servidor" });
+  }
+});
+
+app.put("/api/entregasPintura/:nombre", async (req, res) => {
+  try {
+    const { cantidad } = req.body;
+    const nombre = req.params.nombre;
+
+    const cantidadNumero = Number(cantidad);
+    if (isNaN(cantidadNumero) || cantidadNumero <= 0) {
+      return res.status(400).json({ mensaje: "Cantidad NO es valida" });
+    }
+
+    const pieza = await Pieza.findOne({ nombre });
+
+    if (!pieza) {
+      return res.status(404).json({ mensaje: "Pieza no encontrada" });
+    }
+    const cantidadDispible = pieza.proveedores.maxi.cantidad;
+
+    if (cantidadDispible < cantidadNumero) {
+      return res
+        .status(400)
+        .json({ mensaje: "No hay suficientes Pieza diponible el el Pintor" });
+    }
+
+    const piezaActualizada = await Pieza.findOneAndUpdate(
+      { nombre },
+      {
+        $inc: {
+          "cantidad.terminado.cantidad": cantidadNumero,
+          "proveedores.pintura.cantidad": -cantidadNumero,
+        },
+      },
+      {
+        new: true,
+      }
+    );
+
+    res.json({
+      mensaje: "Cantidad transferiada al terminado ",
+      piezaActualizada,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+// Niquelado
+
+app.put("/api/enviosNiquelado/:nombre", async (req, res) => {
+  try {
+    const { cantidad } = req.body;
+    const nombre = req.params.nombre; // Corregido el error de escritura
+
+    const cantidadNumero = Number(cantidad);
+    if (isNaN(cantidadNumero) || cantidadNumero <= 0) {
+      return res.status(400).json({ mensaje: "Cantidad No es Valida" });
+    }
+
+    const piezaenLugares = {
+      corte: [
+        "Eje Rectificado",
+        "Varilla Brazo 330",
+        "Varilla Brazo 300",
+        "Varilla Brazo 250",
+        "Tubo Manija",
+        "Tubo Manija 250",
+        "Palanca Afilador",
+      ],
+    };
+
+    const pieza = await Pieza.findOne({ nombre });
+    if (!pieza) {
+      return res.status(404).json({ mensaje: "Pieza No Encontrada" });
+    }
+
+    let updateFields = {};
+    if (piezaenLugares.corte.includes(nombre)) {
+      if (
+        !pieza.cantidad.corte.cantidad ||
+        pieza.cantidad.corte.cantidad < cantidadNumero
+      ) {
+        return res
+          .status(400)
+          .json({ mensaje: `Stock Insuficiente de ${nombre} en corte` });
+      }
+
+      updateFields["cantidad.corte.cantidad"] =
+        pieza.cantidad.corte.cantidad - cantidadNumero;
+
+      updateFields["proveedores.niquelado.cantidad"] =
+        (pieza.proveedores.niquelado?.cantidad || 0) + cantidadNumero;
+    } else {
+      return res.status(400).json({ mensaje: "Categoría no válida" });
+    }
+
+    const piezaActualizada = await Pieza.findOneAndUpdate(
+      { nombre },
+      { $set: updateFields },
+      { new: true }
+    );
+
+    res.json({
+      mensaje: "Cantidad Actualizada Correctamente",
+      piezaActualizada,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ mensaje: "Error en el servidor" });
+  }
+});
+
+app.put("/api/entregasNiquelado/:nombre", async (req, res) => {
+  try {
+    const { cantidad } = req.body;
+    const nombre = req.params.nombre;
+
+    const cantidadNumero = Number(cantidad);
+    if (isNaN(cantidadNumero) || cantidadNumero <= 0) {
+      return res.status(400).json({ mensaje: "Cantidad NO es valida" });
+    }
+
+    const pieza = await Pieza.findOne({ nombre });
+
+    if (!pieza) {
+      return res.status(404).json({ mensaje: "Pieza no encontrada" });
+    }
+    const cantidadDispible = pieza.proveedores.niquelado.cantidad;
+
+    if (cantidadDispible < cantidadNumero) {
+      return res
+        .status(400)
+        .json({ mensaje: "No hay suficientes Pieza diponible el Niquelado" });
+    }
+
+    const piezaActualizada = await Pieza.findOneAndUpdate(
+      { nombre },
+      {
+        $inc: {
+          "cantidad.terminado.cantidad": cantidadNumero,
+          "proveedores.niquelado.cantidad": -cantidadNumero,
+        },
+      },
+      {
+        new: true,
+      }
+    );
+
+    res.json({
+      mensaje: "Cantidad transferiada al terminado ",
+      piezaActualizada,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+
+//  afiladores
+
+app.put("/api/enviosAfiladores/:nombre", async (req, res) => {
+    try {
+      const { cantidad } = req.body;
+      const nombre = req.params.nombre; // Corregido el error de escritura
+
+      const cantidadNumero = Number(cantidad);
+      if (isNaN(cantidadNumero) || cantidadNumero <= 0) {
+        return res.status(400).json({ mensaje: "Cantidad No es Valida" });
+      }
+
+      const piezaenLugares = {
+        balancin: ["Eje Corto", "Eje Largo"],
+        bruto: [
+          "Ruleman608",
+          "Capuchon Afilador",
+          "Resorte Palanca",
+          "Resorte Empuje",
+        ],
+        augeriado: ["Carcaza Afilador"],
+        terminado: ["Palanca Afilador"],
+      };
+
+      const pieza = await Pieza.findOne({ nombre });
+      if (!pieza) {
+        return res.status(404).json({ mensaje: "Pieza No Encontrada" });
+      }
+
+      let updateFields = {};
+      if (piezaenLugares.balancin.includes(nombre)) {
+        if (
+          !pieza.cantidad.balancin.cantidad ||
+          pieza.cantidad.balancin.cantidad < cantidadNumero
+        ) {
+          return res
+            .status(400)
+            .json({ mensaje: `Stock Insuficiente de ${nombre} en balancin` });
+        }
+
+        updateFields["cantidad.balancin.cantidad"] =
+          pieza.cantidad.balancin.cantidad - cantidadNumero;
+
+        updateFields["proveedores.afiladores.cantidad"] =
+          (pieza.proveedores.afiladores?.cantidad || 0) + cantidadNumero;
+      } else if (piezaenLugares.bruto.includes(nombre)) {
+        if (
+          !pieza.cantidad.bruto.cantidad ||
+          pieza.cantidad.bruto.cantidad < cantidadNumero
+        ) {
+          return res
+            .status(400)
+            .json({ mensaje: `Stock Insuficuente de ${nombre} en bruto` });
+        }
+
+        updateFields["cantidad.bruto.cantidad"] =
+          pieza.cantidad.bruto.cantidad - cantidadNumero;
+
+        updateFields["proveedores.afiladores.cantidad"] =
+          (pieza.proveedores.afiladores?.cantidad || 0) + cantidadNumero;
+      } else if (piezaenLugares.augeriado.includes(nombre)) {
+        if (
+          !pieza.cantidad.augeriado.cantidad ||
+          pieza.cantidad.augeriado.cantidad < cantidadNumero
+        ) {
+          return res
+            .status(400)
+            .json({ mensaje: `Stock Insuficuente de ${nombre} en augeriado` });
+        }
+
+        updateFields["cantidad.augeriado.cantidad"] =
+          pieza.cantidad.augeriado.cantidad - cantidadNumero;
+
+        updateFields["proveedores.afiladores.cantidad"] =
+          (pieza.proveedores.afiladores?.cantidad || 0) + cantidadNumero;
+      } else if (piezaenLugares.terminado.includes(nombre)) {
+        if (
+          !pieza.cantidad.terminado.cantidad ||
+          pieza.cantidad.terminado.cantidad < cantidadNumero
+        ) {
+          return res
+            .status(400)
+            .json({ mensaje: `Stock Insuficuente de ${nombre} en augeriado` });
+        }
+
+        updateFields["cantidad.terminado.cantidad"] =
+          pieza.cantidad.terminado.cantidad - cantidadNumero;
+
+        updateFields["proveedores.afiladores.cantidad"] =
+          (pieza.proveedores.afiladores?.cantidad || 0) + cantidadNumero;
+      } else {
+        return res.status(400).json({ mensaje: "Categoría no válida" });
+      }
+
+      const piezaActualizada = await Pieza.findOneAndUpdate(
+        { nombre },
+        { $set: updateFields },
+        { new: true }
+      );
+
+      res.json({
+        mensaje: "Cantidad Actualizada Correctamente",
+        piezaActualizada,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ mensaje: "Error en el servidor" });
+    }
+  });
+
+app.put("/api/antregaAfiladores/:nombre", async (req, res) => {
+    try {
+      const { cantidad } = req.body;
+      const nombre = req.params.nombre;
+  
+      const cantidadNumero = Number(cantidad);
+      if (isNaN(cantidadNumero) || cantidadNumero <= 0) {
+        return res.status(400).json({ mensaje: "Cantidad no es válida" });
+      }
+  
+      if (nombre === "Afilador") {
+        const piezasRequeridas = [
+          { nombre: "Capuchon Afilador", cantidad: 2 },
+          { nombre: "Eje Corto", cantidad: 1 },
+          { nombre: "Eje Largo", cantidad: 1 },
+          { nombre: "Ruleman608", cantidad: 2 },
+          { nombre: "Palanca Afilador", cantidad: 1 },
+          { nombre: "Resorte Palanca", cantidad: 1 },
+          { nombre: "Resorte Empuje", cantidad: 2 },
+        ];
+  
+        const nombresPiezas = piezasRequeridas.map((pieza) => pieza.nombre);
+  
+        const piezasEnDB = await Pieza.find(
+          { nombre: { $in: nombresPiezas } }
+        );
+  
+        let piezasFaltantes = [];
+        let piezasActualizar = [];
+  
+        for (const piezaRequerida of piezasRequeridas) {
+          const piezaEnDB = piezasEnDB.find(p => p.nombre === piezaRequerida.nombre);
+  
+          if (!piezaEnDB) {
+            piezasFaltantes.push(piezaRequerida.nombre);
+            continue;
+          }
+  
+          const disponible = piezaEnDB.proveedores?.afiladores?.cantidad;
+          const totalNecesario = piezaRequerida.cantidad * cantidadNumero;
+  
+          if (disponible < totalNecesario) {
+            piezasFaltantes.push(piezaRequerida.nombre);
+          } else {
+            piezasActualizar.push({
+              nombre: piezaRequerida.nombre,
+              cantidadNueva: disponible - totalNecesario
+            });
+          }
+        }
+  
+        if (piezasFaltantes.length > 0) {
+          return res.status(400).json({
+            mensaje: `Faltan piezas para ensamblar los afiladores: ${piezasFaltantes.join(", ")}`
+          });
+        }
+  
+        // Descontar las piezas
+        for (const pieza of piezasActualizar) {
+          await Pieza.updateOne(
+            { nombre: pieza.nombre },
+            { $set: { "proveedores.afiladores.cantidad": pieza.cantidadNueva } }
+          );
+        }
+  
+        // Sumar a afiladores terminados
+        const afilador = await Pieza.findOne({ nombre: "Afilador" });
+  
+        if (!afilador) {
+          return res.status(404).json({ mensaje: "No se encontró el documento del Afilador." });
+        }
+  
+        await Pieza.updateOne(
+          { nombre: "Afilador" },
+          { $inc: { "cantidad.terminado.cantidad": cantidadNumero } }
+        );
+  
+        return res.status(200).json({
+          mensaje: `✅ Se ensamblaron ${cantidadNumero} afiladores correctamente.`
+        });
+      } else {
+        return res.status(400).json({ mensaje: "Nombre de pieza no reconocido." });
+      }
+  
+    } catch (error) {
+      console.error("Error en entrega de afiladores:", error);
+      res.status(500).json({ mensaje: "Error del servidor." });
+    }
+  });
+  
+
 
 const basesSoldador = require("./routes/provedores/soldador");
 app.use("/api/baseSoldador", basesSoldador);
@@ -1982,8 +2439,27 @@ app.use("/api/piezasbrutaAfilador", piezaBrutoAfildor);
 const piezaSoldador = require("./routes/provedores/stockSoldador");
 app.use("/api/stocksoldador", piezaSoldador);
 
+const piezaPintura = require("./routes/provedores/piezaPintura");
+app.use("/api/stockPintura", piezaPintura);
+
 // Iniciar el servidor
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
+
+////   agregar provedodes a tolos las pieza ..
+////sync function agregarAfiladores() {
+//// try {
+////   const resultado = await Pieza.updateMany(
+////     { "proveedores.afiladores": { $exists: false } }, // solo a los que no lo tienen
+////     { $set: { "proveedores.afiladores": { cantidad: 0 } } }
+////   );
+////
+////   console.log(`Documentos actualizados: ${resultado.modifiedCount}`);
+//// } catch (error) {
+////   console.error("Error actualizando documentos:", error);
+//// }
+////
+////
+////gregarAfiladores()
