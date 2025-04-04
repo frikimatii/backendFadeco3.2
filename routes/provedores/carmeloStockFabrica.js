@@ -30,6 +30,9 @@ const piezasLista = [
     "baseInox250",
     "baseInoxECO",
     "Tapa Afilador Eco",
+    "Caja 250",
+    "Caja 300",
+    "Caja 330"
 ];
 
 router.get('/', async (req, res) => {
