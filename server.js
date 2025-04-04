@@ -924,6 +924,8 @@ app.put("/api/piezas/balancin/:nombre", async (req, res) => {
   }
 });
 
+
+
 app.put("/api/enviosSoldador/:nombre", async (req, res) => {
   try {
     const { cantidad } = req.body;
@@ -932,64 +934,7 @@ app.put("/api/enviosSoldador/:nombre", async (req, res) => {
     const cantidadNumero = Number(cantidad);
     if (isNaN(cantidadNumero) || cantidadNumero <= 0) {
       return res.status(400).json({ mensaje: "Cantidad No es Valida" });
-    }
-
-    const piezasBase = {
-      baseInox330: [
-        "ChapaBase 330Inox",
-        "Lateral i330 contecla",
-        "Lateral i330 sintecla",
-        "Planchuela 330",
-        "Varilla 330",
-        "PortaEje",
-      ],
-      baseInox300: [
-        "ChapaBase 300Inox",
-        "Lateral i300 contecla",
-        "Lateral i300 sintecla",
-        "Planchuela 300",
-        "Varilla 300",
-        "PortaEje",
-      ],
-      baseInox250: [
-        "ChapaBase 250Inox",
-        "Lateral i250 contecla",
-        "Lateral i250 sintecla",
-        "Planchuela 250",
-        "Varilla 250",
-        "PortaEje",
-      ],
-      basePintada330: [
-        "ChapaBase 330Pintada",
-        "Lateral p330 contecla",
-        "Lateral p330 sintecla",
-        "Planchuela 330",
-        "Varilla 330",
-        "PortaEje",
-      ],
-      basePintada300: [
-        "ChapaBase 300Pintada",
-        "Lateral p300 contecla",
-        "Lateral p300 sintecla",
-        "Planchuela 300",
-        "Varilla 300",
-        "PortaEje",
-      ],
-      baseInoxECO: [
-        "ChapaBase 330Inox",
-        "Lateral i330 eco",
-        "Lateral i330 sintecla",
-        "Planchuela 330",
-        "Varilla 330",
-        "PortaEje",
-      ],
-      CajaSoldadaEco: [
-        "Media Luna",
-        "Pieza Caja Eco",
-        "Planchuela Inferior",
-        "Planchuela Interna",
-      ],
-    };
+    } 
 
     switch (nombre) {
       case "CajaSoldadaEco":
@@ -1079,7 +1024,532 @@ app.put("/api/enviosSoldador/:nombre", async (req, res) => {
         break;
 
       case "baseInox250":
-        console.log(piezasBase[nombre], " inox");
+        const baseInox250 = [
+          "ChapaBase 250Inox",
+          "Lateral i250 contecla",
+          "Lateral i250 sintecla",
+          "Planchuela 250",
+          "Varilla 250",
+          "PortaEje",
+        ];
+        const categoriaPiezaInox250 = {
+          "ChapaBase 250Inox": "plasma",
+          "Lateral i250 contecla": "plegadora",
+          "Lateral i250 sintecla": "plegadora",
+          "Planchuela 250": "balancin",
+          "Varilla 250": "corte",
+          "PortaEje": "augeriado",
+        };
+        const piezasinox250 = await Pieza.find(
+          { nombre: { $in: baseInox250 } },
+          { nombre: 1, cantidad: 1, _id: 0 }
+        );
+
+        let piezasFaltantesi250 = [];
+        let piezasActualizari250 = [];
+
+        piezasinox250.forEach((pieza) => {
+          const categoria = categoriaPiezaInox250[pieza.nombre];
+          const cantidadDisponible = pieza.cantidad?.[categoria]?.cantidad;
+
+          console.log(
+            `Nombre: ${pieza.nombre}, Cantidad disponible: ${cantidadDisponible}`
+          );
+
+          if (cantidadNumero > cantidadDisponible) {
+            piezasFaltantesi250.push(pieza.nombre);
+          } else {
+            piezasActualizari250.push({
+              nombre: pieza.nombre,
+              categoria,
+              cantidadNueva: cantidadDisponible - cantidadNumero,
+            });
+          }
+        });
+
+        if (piezasFaltantesi250.length > 0) {
+          console.log(
+            `No hay suficientes piezas para ensamblar la baseinox250. Faltan: ${piezasFaltantesi250.join(
+              ", "
+            )}`
+          );
+        } else {
+          for (const pieza of piezasActualizari250) {
+            await Pieza.updateOne(
+              { nombre: pieza.nombre },
+              {
+                $set: {
+                  [`cantidad.${pieza.categoria}.cantidad`]: pieza.cantidadNueva,
+                },
+              }
+            );
+          }
+
+          const cajaSoldada = await Pieza.findOne({
+            nombre: "baseInox250",
+          });
+
+          if (!cajaSoldada) {
+            console.log(
+              "❌ No se encontró el documento 'baseInox250' en la base de datos."
+            );
+          } else {
+            console.log("✅ Documento encontrado:", cajaSoldada);
+
+            // Realizar la actualización
+            const resultado = await Pieza.updateOne(
+              { nombre: "baseInox250" },
+              { $inc: { "proveedores.soldador.cantidad": cantidadNumero } }
+            );
+
+            console.log("🔄 Resultado de la actualización:", resultado);
+          }
+
+          console.log(
+            `CajaSoldadaEco ensamblada con éxito. Se descontaron las piezas de la base de datos.`
+          );
+        }
+        break;
+
+      case "baseInox300":
+        const baseInox300 = [
+          "ChapaBase 300Inox",
+          "Lateral i300 contecla",
+          "Lateral i300 sintecla",
+          "Planchuela 300",
+          "Varilla 300",
+          "PortaEje",
+        ];
+        const categoriaPiezaInox300 = {
+          "ChapaBase 300Inox": "plasma",
+          "Lateral i300 contecla": "plegadora",
+          "Lateral i300 sintecla": "plegadora",
+          "Planchuela 300": "balancin",
+          "Varilla 300": "corte",
+          "PortaEje": "augeriado",
+        };
+        const piezasinox300 = await Pieza.find(
+          { nombre: { $in: baseInox300 } },
+          { nombre: 1, cantidad: 1, _id: 0 }
+        );
+
+        let piezasFaltantesi300 = [];
+        let piezasActualizari300 = [];
+
+        piezasinox300.forEach((pieza) => {
+          const categoria = categoriaPiezaInox300[pieza.nombre];
+          const cantidadDisponible = pieza.cantidad?.[categoria]?.cantidad;
+
+          console.log(
+            `Nombre: ${pieza.nombre}, Cantidad disponible: ${cantidadDisponible}`
+          );
+
+          if (cantidadNumero > cantidadDisponible) {
+            piezasFaltantesi300.push(pieza.nombre);
+          } else {
+            piezasActualizari300.push({
+              nombre: pieza.nombre,
+              categoria,
+              cantidadNueva: cantidadDisponible - cantidadNumero,
+            });
+          }
+        });
+
+        if (piezasFaltantesi300.length > 0) {
+          console.log(
+            `No hay suficientes piezas para ensamblar la baseinox250. Faltan: ${piezasFaltantesi300.join(
+              ", "
+            )}`
+          );
+        } else {
+          for (const pieza of piezasActualizari300) {
+            await Pieza.updateOne(
+              { nombre: pieza.nombre },
+              {
+                $set: {
+                  [`cantidad.${pieza.categoria}.cantidad`]: pieza.cantidadNueva,
+                },
+              }
+            );
+          }
+
+          const cajaSoldada = await Pieza.findOne({
+            nombre: "baseInox300",
+          });
+
+          if (!cajaSoldada) {
+            console.log(
+              "❌ No se encontró el documento 'baseInox300' en la base de datos."
+            );
+          } else {
+            console.log("✅ Documento encontrado:", cajaSoldada);
+
+            // Realizar la actualización
+            const resultado = await Pieza.updateOne(
+              { nombre: "baseInox300" },
+              { $inc: { "proveedores.soldador.cantidad": cantidadNumero } }
+            );
+
+            console.log("🔄 Resultado de la actualización:", resultado);
+          }
+
+          console.log(
+            `CajaSoldadaEco ensamblada con éxito. Se descontaron las piezas de la base de datos.`
+          );
+        }
+        break;
+
+      case "baseInox330":
+        const baseInox330 = [
+          "ChapaBase 330Inox",
+          "Lateral i330 contecla",
+          "Lateral i330 sintecla",
+          "Planchuela 330",
+          "Varilla 330",
+          "PortaEje",
+        ];
+        const categoriaPiezaInox330 = {
+          "ChapaBase 330Inox": "plasma",
+          "Lateral i330 contecla": "plegadora",
+          "Lateral i330 sintecla": "plegadora",
+          "Planchuela 330": "balancin",
+          "Varilla 330": "corte",
+          "PortaEje": "augeriado",
+        };
+        const piezasinox330 = await Pieza.find(
+          { nombre: { $in: baseInox330 } },
+          { nombre: 1, cantidad: 1, _id: 0 }
+        );
+
+        let piezasFaltantesi330 = [];
+        let piezasActualizari330 = [];
+
+        piezasinox330.forEach((pieza) => {
+          const categoria = categoriaPiezaInox330[pieza.nombre];
+          const cantidadDisponible = pieza.cantidad?.[categoria]?.cantidad;
+
+          console.log(
+            `Nombre: ${pieza.nombre}, Cantidad disponible: ${cantidadDisponible}`
+          );
+
+          if (cantidadNumero > cantidadDisponible) {
+            piezasFaltantesi330.push(pieza.nombre);
+          } else {
+            piezasActualizari330.push({
+              nombre: pieza.nombre,
+              categoria,
+              cantidadNueva: cantidadDisponible - cantidadNumero,
+            });
+          }
+        });
+
+        if (piezasFaltantesi330.length > 0) {
+          console.log(
+            `No hay suficientes piezas para ensamblar la baseinox250. Faltan: ${piezasFaltantesi330.join(
+              ", "
+            )}`
+          );
+        } else {
+          for (const pieza of piezasActualizari330) {
+            await Pieza.updateOne(
+              { nombre: pieza.nombre },
+              {
+                $set: {
+                  [`cantidad.${pieza.categoria}.cantidad`]: pieza.cantidadNueva,
+                },
+              }
+            );
+          }
+
+          const cajaSoldada = await Pieza.findOne({
+            nombre: "baseInox330",
+          });
+
+          if (!cajaSoldada) {
+            console.log(
+              "❌ No se encontró el documento 'baseInox300' en la base de datos."
+            );
+          } else {
+            console.log("✅ Documento encontrado:", cajaSoldada);
+
+            // Realizar la actualización
+            const resultado = await Pieza.updateOne(
+              { nombre: "baseInox330" },
+              { $inc: { "proveedores.soldador.cantidad": cantidadNumero } }
+            );
+
+            console.log("🔄 Resultado de la actualización:", resultado);
+          }
+
+          console.log(
+            `CajaSoldadaEco ensamblada con éxito. Se descontaron las piezas de la base de datos.`
+          );
+        }
+        break;
+
+      case "basePintada330":
+        const basePintada330 = [
+          "ChapaBase 330Pintada",
+          "Lateral p330 contecla",
+          "Lateral p330 sintecla",
+          "Planchuela 330",
+          "Varilla 330",
+          "PortaEje",
+        ];
+        const categoriaPiezaPintada330 = {
+          "ChapaBase 330Pintada": "plasma",
+          "Lateral p330 contecla": "plegadora",
+          "Lateral p330 sintecla": "plegadora",
+          "Planchuela 330": "balancin",
+          "Varilla 330": "corte",
+          "PortaEje": "augeriado",
+        };
+        const piezasPintada330 = await Pieza.find(
+          { nombre: { $in: basePintada330 } },
+          { nombre: 1, cantidad: 1, _id: 0 }
+        );
+
+        let piezasFaltantesp330 = [];
+        let piezasActualizarp330 = [];
+
+        piezasPintada330.forEach((pieza) => {
+          const categoria = categoriaPiezaPintada330[pieza.nombre];
+          const cantidadDisponible = pieza.cantidad?.[categoria]?.cantidad;
+
+          console.log(
+            `Nombre: ${pieza.nombre}, Cantidad disponible: ${cantidadDisponible}`
+          );
+
+          if (cantidadNumero > cantidadDisponible) {
+            piezasFaltantesp330.push(pieza.nombre);
+          } else {
+            piezasActualizarp330.push({
+              nombre: pieza.nombre,
+              categoria,
+              cantidadNueva: cantidadDisponible - cantidadNumero,
+            });
+          }
+        });
+
+        if (piezasFaltantesp330.length > 0) {
+          console.log(
+            `No hay suficientes piezas para ensamblar la baseinox250. Faltan: ${piezasFaltantesp330.join(
+              ", "
+            )}`
+          );
+        } else {
+          for (const pieza of piezasActualizarp330) {
+            await Pieza.updateOne(
+              { nombre: pieza.nombre },
+              {
+                $set: {
+                  [`cantidad.${pieza.categoria}.cantidad`]: pieza.cantidadNueva,
+                },
+              }
+            );
+          }
+
+          const cajaSoldada = await Pieza.findOne({
+            nombre: "basePintada330",
+          });
+
+          if (!cajaSoldada) {
+            console.log(
+              "❌ No se encontró el documento 'basePintada300' en la base de datos."
+            );
+          } else {
+            console.log("✅ Documento encontrado:", cajaSoldada);
+
+            // Realizar la actualización
+            const resultado = await Pieza.updateOne(
+              { nombre: "basePintada330" },
+              { $inc: { "proveedores.soldador.cantidad": cantidadNumero } }
+            );
+
+            console.log("🔄 Resultado de la actualización:", resultado);
+          }
+
+          console.log(
+            `CajaSoldadaEco ensamblada con éxito. Se descontaron las piezas de la base de datos.`
+          );
+        }
+        break;
+
+      case "basePintada300":
+        const basePintada300 = [
+          "ChapaBase 300Pintada",
+          "Lateral p300 contecla",
+          "Lateral p300 sintecla",
+          "Planchuela 300",
+          "Varilla 300",
+          "PortaEje",
+        ];
+        const categoriaPiezap300 = {
+          "ChapaBase 300Inox": "plasma",
+          "Lateral i300 contecla": "plegadora",
+          "Lateral i300 sintecla": "plegadora",
+          "Planchuela 300": "balancin",
+          "Varilla 300": "corte",
+          "PortaEje": "augeriado",
+        };
+        const piezasPintada300 = await Pieza.find(
+          { nombre: { $in: basePintada300 } },
+          { nombre: 1, cantidad: 1, _id: 0 }
+        );
+
+        let piezasFaltantesp300 = [];
+        let piezasActualizarp300 = [];
+
+        piezasPintada300.forEach((pieza) => {
+          const categoria = categoriaPiezap300[pieza.nombre];
+          const cantidadDisponible = pieza.cantidad?.[categoria]?.cantidad;
+
+          console.log(
+            `Nombre: ${pieza.nombre}, Cantidad disponible: ${cantidadDisponible}`
+          );
+
+          if (cantidadNumero > cantidadDisponible) {
+            piezasFaltantesp300.push(pieza.nombre);
+          } else {
+            piezasActualizarp300.push({
+              nombre: pieza.nombre,
+              categoria,
+              cantidadNueva: cantidadDisponible - cantidadNumero,
+            });
+          }
+        });
+
+        if (piezasFaltantesp300.length > 0) {
+          console.log(
+            `No hay suficientes piezas para ensamblar la baseinox250. Faltan: ${piezasFaltantesp300.join(
+              ", "
+            )}`
+          );
+        } else {
+          for (const pieza of piezasActualizarp300) {
+            await Pieza.updateOne(
+              { nombre: pieza.nombre },
+              {
+                $set: {
+                  [`cantidad.${pieza.categoria}.cantidad`]: pieza.cantidadNueva,
+                },
+              }
+            );
+          }
+
+          const cajaSoldada = await Pieza.findOne({
+            nombre: "basePintada300",
+          });
+
+          if (!cajaSoldada) {
+            console.log(
+              "❌ No se encontró el documento 'basePintada00' en la base de datos."
+            );
+          } else {
+            console.log("✅ Documento encontrado:", cajaSoldada);
+
+            // Realizar la actualización
+            const resultado = await Pieza.updateOne(
+              { nombre: "basePintada300" },
+              { $inc: { "proveedores.soldador.cantidad": cantidadNumero } }
+            );
+
+            console.log("🔄 Resultado de la actualización:", resultado);
+          }
+
+          console.log(
+            `CajaSoldadaEco ensamblada con éxito. Se descontaron las piezas de la base de datos.`
+          );
+        }
+        break;
+
+      case "baseInoxECO":
+        const baseInoxECO = [
+          "ChapaBase 330Inox",
+          "Lateral p330 contecla",
+          "Lateral p330 sintecla",
+          "Planchuela 330",
+          "Varilla 330",
+          "PortaEje",
+        ];
+        const categoriaPiezaECO = {
+          "ChapaBase 330Inox": "plasma",
+          "Lateral i330 eco": "plegadora",
+          "Lateral i330 sintecla": "plegadora",
+          "Planchuela 330": "balancin",
+          "Varilla 330": "corte",
+          "PortaEje": "augeriado",
+        };
+        const piezasECO = await Pieza.find(
+          { nombre: { $in: baseInoxECO } },
+          { nombre: 1, cantidad: 1, _id: 0 }
+        );
+
+        let piezasFaltantesECO = [];
+        let piezasActualizarECO = [];
+
+        piezasECO.forEach((pieza) => {
+          const categoria = categoriaPiezaECO[pieza.nombre];
+          const cantidadDisponible = pieza.cantidad?.[categoria]?.cantidad;
+
+          console.log(
+            `Nombre: ${pieza.nombre}, Cantidad disponible: ${cantidadDisponible}`
+          );
+
+          if (cantidadNumero > cantidadDisponible) {
+            piezasFaltantesECO.push(pieza.nombre);
+          } else {
+            piezasActualizarECO.push({
+              nombre: pieza.nombre,
+              categoria,
+              cantidadNueva: cantidadDisponible - cantidadNumero,
+            });
+          }
+        });
+
+        if (piezasFaltantesECO.length > 0) {
+          console.log(
+            `No hay suficientes piezas para ensamblar la baseinox250. Faltan: ${piezasFaltantesECO.join(
+              ", "
+            )}`
+          );
+        } else {
+          for (const pieza of piezasActualizarECO) {
+            await Pieza.updateOne(
+              { nombre: pieza.nombre },
+              {
+                $set: {
+                  [`cantidad.${pieza.categoria}.cantidad`]: pieza.cantidadNueva,
+                },
+              }
+            );
+          }
+
+          const cajaSoldada = await Pieza.findOne({
+            nombre: "baseInoxECO",
+          });
+
+          if (!cajaSoldada) {
+            console.log(
+              "❌ No se encontró el documento 'baseInoxECO' en la base de datos."
+            );
+          } else {
+            console.log("✅ Documento encontrado:", cajaSoldada);
+
+            // Realizar la actualización
+            const resultado = await Pieza.updateOne(
+              { nombre: "baseInoxECO" },
+              { $inc: { "proveedores.soldador.cantidad": cantidadNumero } }
+            );
+
+            console.log("🔄 Resultado de la actualización:", resultado);
+          }
+
+          console.log(
+            `CajaSoldadaEco ensamblada con éxito. Se descontaron las piezas de la base de datos.`
+          );
+        }
+        break;
 
       default:
         break;
@@ -1089,6 +1559,54 @@ app.put("/api/enviosSoldador/:nombre", async (req, res) => {
     res.status(500).json({ mensaje: "Error en el servidor" });
   }
 });
+
+app.put("/api/entregasSoldador/:nombre", async (req, res) => {
+  try {
+    const { cantidad } = req.body;
+    const nombre = req.params.nombre;
+
+    const cantidadNumero = Number(cantidad);
+    if (isNaN(cantidadNumero) || cantidadNumero <= 0) {
+      return res.status(400).json({ mensaje: "Cantidad no es válida" });
+    }
+
+    const pieza = await Pieza.findOne({ nombre });
+
+    if (!pieza) {
+      return res.status(404).json({ mensaje: "Pieza no encontrada" });
+    }
+
+    const cantidadDisponible = pieza.proveedores?.soldador?.cantidad || 0;
+
+    if (cantidadDisponible < cantidadNumero) {
+      return res.status(400).json({ mensaje: "No hay suficientes piezas disponibles en proveedores.soldador" });
+    }
+
+    // Actualizamos ambas cantidades
+    const piezaActualizada = await Pieza.findOneAndUpdate(
+      { nombre },
+      {
+        $inc: {
+          "cantidad.bruto.cantidad": cantidadNumero,
+          "proveedores.soldador.cantidad": -cantidadNumero
+        }
+      },
+      { new: true }
+    );
+
+    res.json({
+      mensaje: "Cantidad transferida correctamente del proveedor al bruto",
+      piezaActualizada,
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ mensaje: "Error en el servidor" });
+  }
+});
+
+
+
 
 const basesSoldador = require("./routes/provedores/soldador");
 app.use("/api/baseSoldador", basesSoldador);
