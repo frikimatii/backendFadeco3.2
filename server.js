@@ -72,6 +72,20 @@ app.use("/api/torno", piezastorno); //
 const Afiladore = require("./routes/provedores/afilador")
 app.use("/api/afilador", Afiladore)
 
+
+
+const PiezaMotores = require("./routes/armado/stockPieazaMotores")
+app.use("/api/StockMotores", PiezaMotores)
+
+const PiezaPreArmada = require("./routes/armado/stockPreArmado")
+app.use("/api/StockPrearmado", PiezaPreArmada)
+
+const BasePrearamada = require("./routes/armado/basePreArmado")
+app.use("/api/Prearmado", BasePrearamada)
+
+
+
+
 app.get("/", (req, res) => {
   res.send("Servidor funcionando correctamente");
 });
