@@ -69,22 +69,17 @@ app.use("/api/soldador", piezassoldador); //
 const piezastorno = require("./routes/mecanizado/torno");
 app.use("/api/torno", piezastorno); //
 
-const Afiladore = require("./routes/provedores/afilador")
-app.use("/api/afilador", Afiladore)
+const Afiladore = require("./routes/provedores/afilador");
+app.use("/api/afilador", Afiladore);
 
+const PiezaMotores = require("./routes/armado/stockPieazaMotores");
+app.use("/api/StockMotores", PiezaMotores);
 
+const PiezaPreArmada = require("./routes/armado/stockPreArmado");
+app.use("/api/StockPrearmado", PiezaPreArmada);
 
-const PiezaMotores = require("./routes/armado/stockPieazaMotores")
-app.use("/api/StockMotores", PiezaMotores)
-
-const PiezaPreArmada = require("./routes/armado/stockPreArmado")
-app.use("/api/StockPrearmado", PiezaPreArmada)
-
-const BasePrearamada = require("./routes/armado/basePreArmado")
-app.use("/api/Prearmado", BasePrearamada)
-
-
-
+const BasePrearamada = require("./routes/armado/basePreArmado");
+app.use("/api/Prearmado", BasePrearamada);
 
 app.get("/", (req, res) => {
   res.send("Servidor funcionando correctamente");
@@ -428,8 +423,19 @@ app.put("/api/piezas/augeriado/:nombre", async (req, res) => {
         "Caja Soldada Eco",
       ],
       corte: ["Cuadrado Regulador"],
-      torno: ["Carros", "Carros 250", "Movimiento", "Tornillo Teletubi Eco"],
+      torno: [
+        "Carros",
+        "Carros 250",
+        "Movimiento",
+        "Tornillo Teletubi Eco",
+
+      ],
       balancin: ["PortaEje"],
+      fresa:[ 
+        "CajaMotor_330",
+        "CajaMotor_300",
+        "CajaMotor_250",
+        "CajaMotor_ECO",]
     };
 
     const pieza = await Pieza.findOne({ nombre });
@@ -498,7 +504,21 @@ app.put("/api/piezas/augeriado/:nombre", async (req, res) => {
 
       updateFields["cantidad.augeriado.cantidad"] =
         (pieza.cantidad.augeriado.cantidad || 0) + cantidadNumero;
-    } else {
+    } else if (categoria.fresa.includes(nombre)) {
+      if (
+        !pieza.cantidad.fresa.cantidad ||
+        pieza.cantidad.fresa.cantidad < cantidadNumero
+      ) {
+        return res
+          .status(400)
+          .json({ mensaje: `Stock Insuficiente de ${nombre} en el balancin` });
+      }
+      updateFields["cantidad.fresa.cantidad"] =
+        pieza.cantidad.fresa.cantidad - cantidadNumero;
+
+      updateFields["cantidad.terminado.cantidad"] =
+        (pieza.cantidad.terminado.cantidad || 0) + cantidadNumero;
+    } else{
       return res.status(400).json({ mensaje: "Categoría no válida" });
     }
 
@@ -549,11 +569,11 @@ app.put("/api/piezas/torno/:nombre", async (req, res) => {
         "Tapa Afilador Eco",
       ],
       corte: ["Buje Eje Eco"],
-      torno: [
-        "Caja 330 Armada",
-        "Caja 300 Armada",
-        "Caja 250 Armada",
-        "Caja eco Armada",
+      fresa: [
+        "CajaMotor_330",
+        "CajaMotor_300",
+        "CajaMotor_250",
+        "CajaMotor_ECO",
       ],
       soldador: [],
     };
@@ -595,7 +615,22 @@ app.put("/api/piezas/torno/:nombre", async (req, res) => {
 
       updateFields["cantidad.torno.cantidad"] =
         (pieza.cantidad?.torno?.cantidad || 0) + cantidadNumero;
-    } else {
+    } else if (categoria.corte.includes(nombre)) {
+      if (
+        !pieza.cantidad.fresa.cantidad ||
+        pieza.cantidad.fresa.cantidad < cantidadNumero
+      ) {
+        return res
+          .status(400)
+          .json({ mensaje: `Stock Insuficiente de ${nombre} en Corte` });
+      }
+
+      updateFields["cantidad.fresa.cantidad"] =
+        pieza.cantidad.fresa.cantidad - cantidadNumero;
+
+      updateFields["cantidad.terminado.cantidad"] =
+        (pieza.cantidad?.terminado?.cantidad || 0) + cantidadNumero;
+    } else{
       return res.status(400).json({ mensaje: "Categoría no válida" });
     }
 
@@ -930,8 +965,6 @@ app.put("/api/piezas/balancin/:nombre", async (req, res) => {
       .json({ mensaje: "Error en el servidor", error: error.message });
   }
 });
-
-
 
 //soldador
 //actualizar piezas soldador
@@ -2229,208 +2262,210 @@ app.put("/api/entregasNiquelado/:nombre", async (req, res) => {
   }
 });
 
-
 //  afiladores
 
 app.put("/api/enviosAfiladores/:nombre", async (req, res) => {
-    try {
-      const { cantidad } = req.body;
-      const nombre = req.params.nombre; // Corregido el error de escritura
+  try {
+    const { cantidad } = req.body;
+    const nombre = req.params.nombre; // Corregido el error de escritura
 
-      const cantidadNumero = Number(cantidad);
-      if (isNaN(cantidadNumero) || cantidadNumero <= 0) {
-        return res.status(400).json({ mensaje: "Cantidad No es Valida" });
-      }
-
-      const piezaenLugares = {
-        balancin: ["Eje Corto", "Eje Largo"],
-        bruto: [
-          "Ruleman608",
-          "Capuchon Afilador",
-          "Resorte Palanca",
-          "Resorte Empuje",
-        ],
-        augeriado: ["Carcaza Afilador"],
-        terminado: ["Palanca Afilador"],
-      };
-
-      const pieza = await Pieza.findOne({ nombre });
-      if (!pieza) {
-        return res.status(404).json({ mensaje: "Pieza No Encontrada" });
-      }
-
-      let updateFields = {};
-      if (piezaenLugares.balancin.includes(nombre)) {
-        if (
-          !pieza.cantidad.balancin.cantidad ||
-          pieza.cantidad.balancin.cantidad < cantidadNumero
-        ) {
-          return res
-            .status(400)
-            .json({ mensaje: `Stock Insuficiente de ${nombre} en balancin` });
-        }
-
-        updateFields["cantidad.balancin.cantidad"] =
-          pieza.cantidad.balancin.cantidad - cantidadNumero;
-
-        updateFields["proveedores.afiladores.cantidad"] =
-          (pieza.proveedores.afiladores?.cantidad || 0) + cantidadNumero;
-      } else if (piezaenLugares.bruto.includes(nombre)) {
-        if (
-          !pieza.cantidad.bruto.cantidad ||
-          pieza.cantidad.bruto.cantidad < cantidadNumero
-        ) {
-          return res
-            .status(400)
-            .json({ mensaje: `Stock Insuficuente de ${nombre} en bruto` });
-        }
-
-        updateFields["cantidad.bruto.cantidad"] =
-          pieza.cantidad.bruto.cantidad - cantidadNumero;
-
-        updateFields["proveedores.afiladores.cantidad"] =
-          (pieza.proveedores.afiladores?.cantidad || 0) + cantidadNumero;
-      } else if (piezaenLugares.augeriado.includes(nombre)) {
-        if (
-          !pieza.cantidad.augeriado.cantidad ||
-          pieza.cantidad.augeriado.cantidad < cantidadNumero
-        ) {
-          return res
-            .status(400)
-            .json({ mensaje: `Stock Insuficuente de ${nombre} en augeriado` });
-        }
-
-        updateFields["cantidad.augeriado.cantidad"] =
-          pieza.cantidad.augeriado.cantidad - cantidadNumero;
-
-        updateFields["proveedores.afiladores.cantidad"] =
-          (pieza.proveedores.afiladores?.cantidad || 0) + cantidadNumero;
-      } else if (piezaenLugares.terminado.includes(nombre)) {
-        if (
-          !pieza.cantidad.terminado.cantidad ||
-          pieza.cantidad.terminado.cantidad < cantidadNumero
-        ) {
-          return res
-            .status(400)
-            .json({ mensaje: `Stock Insuficuente de ${nombre} en augeriado` });
-        }
-
-        updateFields["cantidad.terminado.cantidad"] =
-          pieza.cantidad.terminado.cantidad - cantidadNumero;
-
-        updateFields["proveedores.afiladores.cantidad"] =
-          (pieza.proveedores.afiladores?.cantidad || 0) + cantidadNumero;
-      } else {
-        return res.status(400).json({ mensaje: "Categoría no válida" });
-      }
-
-      const piezaActualizada = await Pieza.findOneAndUpdate(
-        { nombre },
-        { $set: updateFields },
-        { new: true }
-      );
-
-      res.json({
-        mensaje: "Cantidad Actualizada Correctamente",
-        piezaActualizada,
-      });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ mensaje: "Error en el servidor" });
+    const cantidadNumero = Number(cantidad);
+    if (isNaN(cantidadNumero) || cantidadNumero <= 0) {
+      return res.status(400).json({ mensaje: "Cantidad No es Valida" });
     }
-  });
+
+    const piezaenLugares = {
+      balancin: ["Eje Corto", "Eje Largo"],
+      bruto: [
+        "Ruleman608",
+        "Capuchon Afilador",
+        "Resorte Palanca",
+        "Resorte Empuje",
+      ],
+      augeriado: ["Carcaza Afilador"],
+      terminado: ["Palanca Afilador"],
+    };
+
+    const pieza = await Pieza.findOne({ nombre });
+    if (!pieza) {
+      return res.status(404).json({ mensaje: "Pieza No Encontrada" });
+    }
+
+    let updateFields = {};
+    if (piezaenLugares.balancin.includes(nombre)) {
+      if (
+        !pieza.cantidad.balancin.cantidad ||
+        pieza.cantidad.balancin.cantidad < cantidadNumero
+      ) {
+        return res
+          .status(400)
+          .json({ mensaje: `Stock Insuficiente de ${nombre} en balancin` });
+      }
+
+      updateFields["cantidad.balancin.cantidad"] =
+        pieza.cantidad.balancin.cantidad - cantidadNumero;
+
+      updateFields["proveedores.afiladores.cantidad"] =
+        (pieza.proveedores.afiladores?.cantidad || 0) + cantidadNumero;
+    } else if (piezaenLugares.bruto.includes(nombre)) {
+      if (
+        !pieza.cantidad.bruto.cantidad ||
+        pieza.cantidad.bruto.cantidad < cantidadNumero
+      ) {
+        return res
+          .status(400)
+          .json({ mensaje: `Stock Insuficuente de ${nombre} en bruto` });
+      }
+
+      updateFields["cantidad.bruto.cantidad"] =
+        pieza.cantidad.bruto.cantidad - cantidadNumero;
+
+      updateFields["proveedores.afiladores.cantidad"] =
+        (pieza.proveedores.afiladores?.cantidad || 0) + cantidadNumero;
+    } else if (piezaenLugares.augeriado.includes(nombre)) {
+      if (
+        !pieza.cantidad.augeriado.cantidad ||
+        pieza.cantidad.augeriado.cantidad < cantidadNumero
+      ) {
+        return res
+          .status(400)
+          .json({ mensaje: `Stock Insuficuente de ${nombre} en augeriado` });
+      }
+
+      updateFields["cantidad.augeriado.cantidad"] =
+        pieza.cantidad.augeriado.cantidad - cantidadNumero;
+
+      updateFields["proveedores.afiladores.cantidad"] =
+        (pieza.proveedores.afiladores?.cantidad || 0) + cantidadNumero;
+    } else if (piezaenLugares.terminado.includes(nombre)) {
+      if (
+        !pieza.cantidad.terminado.cantidad ||
+        pieza.cantidad.terminado.cantidad < cantidadNumero
+      ) {
+        return res
+          .status(400)
+          .json({ mensaje: `Stock Insuficuente de ${nombre} en augeriado` });
+      }
+
+      updateFields["cantidad.terminado.cantidad"] =
+        pieza.cantidad.terminado.cantidad - cantidadNumero;
+
+      updateFields["proveedores.afiladores.cantidad"] =
+        (pieza.proveedores.afiladores?.cantidad || 0) + cantidadNumero;
+    } else {
+      return res.status(400).json({ mensaje: "Categoría no válida" });
+    }
+
+    const piezaActualizada = await Pieza.findOneAndUpdate(
+      { nombre },
+      { $set: updateFields },
+      { new: true }
+    );
+
+    res.json({
+      mensaje: "Cantidad Actualizada Correctamente",
+      piezaActualizada,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ mensaje: "Error en el servidor" });
+  }
+});
 
 app.put("/api/antregaAfiladores/:nombre", async (req, res) => {
-    try {
-      const { cantidad } = req.body;
-      const nombre = req.params.nombre;
-  
-      const cantidadNumero = Number(cantidad);
-      if (isNaN(cantidadNumero) || cantidadNumero <= 0) {
-        return res.status(400).json({ mensaje: "Cantidad no es válida" });
-      }
-  
-      if (nombre === "Afilador") {
-        const piezasRequeridas = [
-          { nombre: "Capuchon Afilador", cantidad: 2 },
-          { nombre: "Eje Corto", cantidad: 1 },
-          { nombre: "Eje Largo", cantidad: 1 },
-          { nombre: "Ruleman608", cantidad: 2 },
-          { nombre: "Palanca Afilador", cantidad: 1 },
-          { nombre: "Resorte Palanca", cantidad: 1 },
-          { nombre: "Resorte Empuje", cantidad: 2 },
-        ];
-  
-        const nombresPiezas = piezasRequeridas.map((pieza) => pieza.nombre);
-  
-        const piezasEnDB = await Pieza.find(
-          { nombre: { $in: nombresPiezas } }
+  try {
+    const { cantidad } = req.body;
+    const nombre = req.params.nombre;
+
+    const cantidadNumero = Number(cantidad);
+    if (isNaN(cantidadNumero) || cantidadNumero <= 0) {
+      return res.status(400).json({ mensaje: "Cantidad no es válida" });
+    }
+
+    if (nombre === "Afilador") {
+      const piezasRequeridas = [
+        { nombre: "Capuchon Afilador", cantidad: 2 },
+        { nombre: "Eje Corto", cantidad: 1 },
+        { nombre: "Eje Largo", cantidad: 1 },
+        { nombre: "Ruleman608", cantidad: 2 },
+        { nombre: "Palanca Afilador", cantidad: 1 },
+        { nombre: "Resorte Palanca", cantidad: 1 },
+        { nombre: "Resorte Empuje", cantidad: 2 },
+      ];
+
+      const nombresPiezas = piezasRequeridas.map((pieza) => pieza.nombre);
+
+      const piezasEnDB = await Pieza.find({ nombre: { $in: nombresPiezas } });
+
+      let piezasFaltantes = [];
+      let piezasActualizar = [];
+
+      for (const piezaRequerida of piezasRequeridas) {
+        const piezaEnDB = piezasEnDB.find(
+          (p) => p.nombre === piezaRequerida.nombre
         );
-  
-        let piezasFaltantes = [];
-        let piezasActualizar = [];
-  
-        for (const piezaRequerida of piezasRequeridas) {
-          const piezaEnDB = piezasEnDB.find(p => p.nombre === piezaRequerida.nombre);
-  
-          if (!piezaEnDB) {
-            piezasFaltantes.push(piezaRequerida.nombre);
-            continue;
-          }
-  
-          const disponible = piezaEnDB.proveedores?.afiladores?.cantidad;
-          const totalNecesario = piezaRequerida.cantidad * cantidadNumero;
-  
-          if (disponible < totalNecesario) {
-            piezasFaltantes.push(piezaRequerida.nombre);
-          } else {
-            piezasActualizar.push({
-              nombre: piezaRequerida.nombre,
-              cantidadNueva: disponible - totalNecesario
-            });
-          }
+
+        if (!piezaEnDB) {
+          piezasFaltantes.push(piezaRequerida.nombre);
+          continue;
         }
-  
-        if (piezasFaltantes.length > 0) {
-          return res.status(400).json({
-            mensaje: `Faltan piezas para ensamblar los afiladores: ${piezasFaltantes.join(", ")}`
+
+        const disponible = piezaEnDB.proveedores?.afiladores?.cantidad;
+        const totalNecesario = piezaRequerida.cantidad * cantidadNumero;
+
+        if (disponible < totalNecesario) {
+          piezasFaltantes.push(piezaRequerida.nombre);
+        } else {
+          piezasActualizar.push({
+            nombre: piezaRequerida.nombre,
+            cantidadNueva: disponible - totalNecesario,
           });
         }
-  
-        // Descontar las piezas
-        for (const pieza of piezasActualizar) {
-          await Pieza.updateOne(
-            { nombre: pieza.nombre },
-            { $set: { "proveedores.afiladores.cantidad": pieza.cantidadNueva } }
-          );
-        }
-  
-        // Sumar a afiladores terminados
-        const afilador = await Pieza.findOne({ nombre: "Afilador" });
-  
-        if (!afilador) {
-          return res.status(404).json({ mensaje: "No se encontró el documento del Afilador." });
-        }
-  
-        await Pieza.updateOne(
-          { nombre: "Afilador" },
-          { $inc: { "cantidad.terminado.cantidad": cantidadNumero } }
-        );
-  
-        return res.status(200).json({
-          mensaje: `✅ Se ensamblaron ${cantidadNumero} afiladores correctamente.`
-        });
-      } else {
-        return res.status(400).json({ mensaje: "Nombre de pieza no reconocido." });
       }
-  
-    } catch (error) {
-      console.error("Error en entrega de afiladores:", error);
-      res.status(500).json({ mensaje: "Error del servidor." });
-    }
-  });
-  
 
+      if (piezasFaltantes.length > 0) {
+        return res.status(400).json({
+          mensaje: `Faltan piezas para ensamblar los afiladores: ${piezasFaltantes.join(
+            ", "
+          )}`,
+        });
+      }
+
+      // Descontar las piezas
+      for (const pieza of piezasActualizar) {
+        await Pieza.updateOne(
+          { nombre: pieza.nombre },
+          { $set: { "proveedores.afiladores.cantidad": pieza.cantidadNueva } }
+        );
+      }
+
+      // Sumar a afiladores terminados
+      const afilador = await Pieza.findOne({ nombre: "Afilador" });
+
+      if (!afilador) {
+        return res
+          .status(404)
+          .json({ mensaje: "No se encontró el documento del Afilador." });
+      }
+
+      await Pieza.updateOne(
+        { nombre: "Afilador" },
+        { $inc: { "cantidad.terminado.cantidad": cantidadNumero } }
+      );
+
+      return res.status(200).json({
+        mensaje: `✅ Se ensamblaron ${cantidadNumero} afiladores correctamente.`,
+      });
+    } else {
+      return res
+        .status(400)
+        .json({ mensaje: "Nombre de pieza no reconocido." });
+    }
+  } catch (error) {
+    console.error("Error en entrega de afiladores:", error);
+    res.status(500).json({ mensaje: "Error del servidor." });
+  }
+});
 
 const basesSoldador = require("./routes/provedores/soldador");
 app.use("/api/baseSoldador", basesSoldador);
@@ -2455,6 +2490,241 @@ app.use("/api/stocksoldador", piezaSoldador);
 
 const piezaPintura = require("./routes/provedores/piezaPintura");
 app.use("/api/stockPintura", piezaPintura);
+
+const motores = require("./routes/armado/motores");
+app.use("/api/Motores", motores);
+
+///Armado de Motores
+
+app.put("/api/armadoDeMotores/:nombre", async (req, res) => {
+  try {
+    const { cantidad } = req.body;
+    const nombre = req.params.nombre;
+
+    const cantidadNumero = Number(cantidad);
+    if (isNaN(cantidadNumero) || cantidadNumero <= 0) {
+      return res.status(400).json({ mensaje: "❌ Cantidad no es válida" });
+    }
+
+    switch (nombre) {
+      case "CajaMotor_330":
+        const Caja330 = [
+          "Corona 330",
+          "Seguer",
+          "Sinfin",
+          "Motor 220w",
+          "Ruleman6005",
+          "Ruleman6205",
+          "Oring",
+          "Ruleman6000",
+          "Manchon",
+          "Eje",
+          "Caja 330",
+        ];
+
+        const categoriaMotor330 = {
+          "Corona 330": "bruto",
+          Seguer: "bruto",
+          Sinfin: "bruto",
+          "Motor 220w": "bruto",
+          Ruleman6005: "bruto",
+          Ruleman6205: "bruto",
+          Oring: "bruto",
+          Ruleman6000: "bruto",
+          Manchon: "torno",
+          Eje: "torno",
+          "Caja 330": "terminado",
+        };
+
+        const cantidadesPorPieza = {
+          "Corona 330": 1,
+          Seguer: 1,
+          Sinfin: 1,
+          "Motor 220w": 1,
+          Ruleman6005: 1,
+          Ruleman6205: 2, // 🔁 Esta se descuenta de a 2
+          Oring: 1,
+          Ruleman6000: 1,
+          Manchon: 1,
+          Eje: 1,
+          "Caja 330": 1,
+        };
+
+        const piezaEnDB = await Pieza.find(
+          { nombre: { $in: Caja330 } },
+          { nombre: 1, cantidad: 1, _id: 0 }
+        );
+
+        let piezasFaltantes = [];
+        let piezasActualizar = [];
+
+        piezaEnDB.forEach((pieza) => {
+          const categoria = categoriaMotor330[pieza.nombre];
+          const cantidadDisponible = pieza.cantidad?.[categoria]?.cantidad || 0;
+          const cantidadNecesaria =
+            (cantidadesPorPieza[pieza.nombre] || 1) * cantidadNumero;
+
+          console.log(
+            `🔍 ${pieza.nombre} - Disponible: ${cantidadDisponible}, Necesita: ${cantidadNecesaria}`
+          );
+
+          if (cantidadNecesaria > cantidadDisponible) {
+            piezasFaltantes.push(
+              `${pieza.nombre} (necesita ${cantidadNecesaria}, hay ${cantidadDisponible})`
+            );
+          } else {
+            piezasActualizar.push({
+              nombre: pieza.nombre,
+              categoria,
+              cantidadNueva: cantidadDisponible - cantidadNecesaria,
+            });
+          }
+        });
+
+        if (piezasFaltantes.length > 0) {
+          const mensaje = `❌ No hay suficientes piezas para ensamblar el Motor 330. Faltan: ${piezasFaltantes.join(
+            ", "
+          )}`;
+          console.log(mensaje);
+          return res.status(400).json({ mensaje });
+        } else {
+          // Descontar piezas usadas
+          for (const pieza of piezasActualizar) {
+            await Pieza.updateOne(
+              { nombre: pieza.nombre },
+              {
+                $set: {
+                  [`cantidad.${pieza.categoria}.cantidad`]: pieza.cantidadNueva,
+                },
+              }
+            );
+          }
+
+          // Sumar motores terminados
+          const resultado = await Pieza.updateOne(
+            { nombre: "CajaMotor_330" },
+            { $inc: { "cantidad.fresa.cantidad": cantidadNumero } }
+          );
+
+          const mensaje = `✅ Motor 330 ensamblado con éxito. Se descontaron las piezas necesarias para ${cantidadNumero} motores.`;
+          console.log(mensaje);
+          return res.status(200).json({ mensaje });
+        } 
+        
+      case "CajaMotor_300":
+        const Caja300 = [
+          "Corona 300",
+          "Seguer",
+          "Sinfin",
+          "Motor 220w",
+          "Ruleman6005",
+          "Ruleman6205",
+          "Oring",
+          "Ruleman6000",
+          "Manchon",
+          "Eje",
+          "Caja 300",
+        ];
+
+        const categoriaMotor300 = {
+          "Corona 300": "bruto",
+          Seguer: "bruto",
+          Sinfin: "bruto",
+          "Motor 220w": "bruto",
+          Ruleman6005: "bruto",
+          Ruleman6205: "bruto",
+          Oring: "bruto",
+          Ruleman6000: "bruto",
+          Manchon: "torno",
+          Eje: "torno",
+          "Caja 300": "terminado",
+        };
+
+        const cantidadesPorPieza300 = {
+          "Corona 300": 1,
+          Seguer: 1,
+          Sinfin: 1,
+          "Motor 220w": 1,
+          Ruleman6005: 1,
+          Ruleman6205: 2, // 🔁 Esta se descuenta de a 2
+          Oring: 1,
+          Ruleman6000: 1,
+          Manchon: 1,
+          Eje: 1,
+          "Caja 300": 1,
+        };
+
+        const piezaEnDB300 = await Pieza.find(
+          { nombre: { $in: Caja300 } },
+          { nombre: 1, cantidad: 1, _id: 0 }
+        );
+
+        let piezasFaltantesi300 = [];
+        let piezasActualizari300 = [];
+
+        piezaEnDB300.forEach((pieza) => {
+          const categoria = categoriaMotor300[pieza.nombre];
+          const cantidadDisponible = pieza.cantidad?.[categoria]?.cantidad || 0;
+          const cantidadNecesaria =
+            (cantidadesPorPieza300[pieza.nombre] || 1) * cantidadNumero;
+
+          console.log(
+            `🔍 ${pieza.nombre} - Disponible: ${cantidadDisponible}, Necesita: ${cantidadNecesaria}`
+          );
+
+          if (cantidadNecesaria > cantidadDisponible) {
+            piezasFaltantesi300.push(
+              `${pieza.nombre} (necesita ${cantidadNecesaria}, hay ${cantidadDisponible})`
+            );
+          } else {
+            piezasActualizari300.push({
+              nombre: pieza.nombre,
+              categoria,
+              cantidadNueva: cantidadDisponible - cantidadNecesaria,
+            });
+          }
+        });
+
+        if (piezasFaltantesi300.length > 0) {
+          const mensaje = `❌ No hay suficientes piezas para ensamblar el Motor 300. Faltan: ${piezasFaltantesi300.join(
+            ", "
+          )}`;
+          console.log(mensaje);
+          return res.status(400).json({ mensaje });
+        } else {
+          // Descontar piezas usadas
+          for (const pieza of piezasActualizari300) {
+            await Pieza.updateOne(
+              { nombre: pieza.nombre },
+              {
+                $set: {
+                  [`cantidad.${pieza.categoria}.cantidad`]: pieza.cantidadNueva,
+                },
+              }
+            );
+          }
+
+          // Sumar motores terminados
+          const resultado = await Pieza.updateOne(
+            { nombre: "CajaMotor_300" },
+            { $inc: { "cantidad.fresa.cantidad": cantidadNumero } }
+          );
+
+          const mensaje = `✅ Motor 300 ensamblado con éxito. Se descontaron las piezas necesarias para ${cantidadNumero} motores.`;
+          console.log(mensaje);
+          return res.status(200).json({ mensaje });
+        } 
+        
+        case "CajaMotor_250":
+          
+      default:
+        return res.status(400).json({ mensaje: "❌ Tipo de motor no válido." });
+    }
+  } catch (error) {
+    console.error("🚨 Error en el armado de motores:", error);
+    return res.status(500).json({ mensaje: "❌ Error interno del servidor." });
+  }
+});
 
 // Iniciar el servidor
 const PORT = process.env.PORT || 5000;

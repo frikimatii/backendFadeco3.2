@@ -4,7 +4,7 @@ const Pieza = require("../../models/Pieza");
 
 router.get('/', async (req, res) => {
   try {
-      const piezas = await Pieza.find({ });
+      const piezas = await Pieza.find({origen : "Armado De Motor" });
       res.status(200).json(piezas);
   } catch (error) {
       console.error("Error al obtener piezas de aluminio:", error);
