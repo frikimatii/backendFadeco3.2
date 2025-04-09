@@ -1,0 +1,44 @@
+[
+  {
+    "nombre": "plegadora",
+    "acciones": []
+  },
+  {
+    "nombre": "plasma",
+    "acciones": []
+  },
+  {
+    "nombre": "corte",
+    "acciones": [
+      "🕐9/4/2025 07:10:54<br>. Mecanizado: corte|Pieza: Teletubi Eco|Cantidad: 3",
+      "🕐9/4/2025 07:11:12<br>. Mecanizado: corte|Pieza: Planchuela Interna|Cantidad: 3",
+      "🕐9/4/2025 07:11:17<br>. Mecanizado: corte|Pieza: Tubo Manija|Cantidad: 4",
+      "🕐9/4/2025 07:11:23<br>. Mecanizado: corte|Pieza: Guia U|Cantidad: 3",
+      "🕐9/4/2025 07:11:28<br>. Mecanizado: corte|Pieza: Chapa CubreCabezal inox 250|Cantidad: 4"
+    ]
+  },
+  {
+    "nombre": "augeriado",
+    "acciones": []
+  },
+  {
+    "nombre": "torno",
+    "acciones": []
+  },
+  {
+    "nombre": "fresa",
+    "acciones": []
+  },
+  {
+    "nombre": "soldador",
+    "acciones": []
+  },
+  {
+    "nombre": "pulido",
+    "acciones": []
+  },
+  {
+    "nombre": "balancin",
+    "acciones": []
+  }
+]

@@ -171,13 +171,25 @@ app.put("/api/piezas/plegadora/:nombre", async (req, res) => {
           .status(400)
           .json({ mensaje: `Stock insuficiente de ${nombre} en stock ` });
       }
-
       // Restar piezas mecanizadas del stock bruto
       updateFields["cantidad.bruto.cantidad"] =
         pieza.cantidad.bruto.cantidad - cantidadNumero;
 
-      updateFields["cantidad.plegadora.cantidad"] =
+      const piezasTerminadas = [
+        "Bandeja Cabezal Inox 250",
+        "Bandeja Cabezal Pintada",
+        "Bandeja Cabezal Inox",
+      ];
+
+      if(piezasTerminadas.includes(nombre)){
+        updateFields["cantidad.terminado.cantidad"] =
+        (pieza.cantidad?.terminado?.cantidad || 0) + cantidadNumero;
+      } else {
+        updateFields["cantidad.plegadora.cantidad"] =
         (pieza.cantidad?.plegadora?.cantidad || 0) + cantidadNumero;
+      }
+
+
     } else if (categorias.plasma.includes(nombre)) {
       // Agregar directamente a la cantidad de la plegadora
       if (
@@ -964,6 +976,15 @@ app.put("/api/piezas/balancin/:nombre", async (req, res) => {
       .json({ mensaje: "Error en el servidor", error: error.message });
   }
 });
+
+
+const guardarRuta = require("./routes/guardar")
+app.use("/guardar", guardarRuta)
+
+
+const historialRoutes = require("./routes/historial");
+app.use("/api/historial", historialRoutes);
+
 
 //soldador
 //actualizar piezas soldador
@@ -2604,7 +2625,7 @@ app.put("/api/armadoDeMotores/:nombre", async (req, res) => {
           // Sumar motores terminados
           const resultado = await Pieza.updateOne(
             { nombre: "CajaMotor_330" },
-            { $inc: { "cantidad.fresa.cantidad": cantidadNumero } }
+            { $inc: { "cantidad.terminado.cantidad": cantidadNumero } }
           );
 
           const mensaje = `✅ Motor 330 ensamblado con éxito. Se descontaron las piezas necesarias para ${cantidadNumero} motores.`;
@@ -2708,7 +2729,7 @@ app.put("/api/armadoDeMotores/:nombre", async (req, res) => {
           // Sumar motores terminados
           const resultado = await Pieza.updateOne(
             { nombre: "CajaMotor_300" },
-            { $inc: { "cantidad.fresa.cantidad": cantidadNumero } }
+            { $inc: { "cantidad.terminado.cantidad": cantidadNumero } }
           );
 
           const mensaje = `✅ Motor 300 ensamblado con éxito. Se descontaron las piezas necesarias para ${cantidadNumero} motores.`;
@@ -2735,7 +2756,7 @@ app.put("/api/armadoDeMotores/:nombre", async (req, res) => {
           "Corona 250": "bruto",
           Seguer: "bruto",
           Sinfin: "bruto",
-          "Motor 220w": "bruto",
+          "Motor250 220w": "bruto",
           Ruleman6004: "bruto",
           Ruleman6204: "bruto",
           Oring: "bruto",
@@ -2768,8 +2789,7 @@ app.put("/api/armadoDeMotores/:nombre", async (req, res) => {
 
         piezaEnDB250.forEach((pieza) => {
           const categoria = categoriaMotor250[pieza.nombre];
-          const cantidadDisponible =
-            pieza.categoria?.[categoria]?.cantidad || 0;
+          const cantidadDisponible = pieza.cantidad?.[categoria]?.cantidad || 0;
           const cantidadNecesaria =
             (cantidadesPorPieza250[pieza.nombre] || 1) * cantidadNumero;
 
@@ -2810,7 +2830,7 @@ app.put("/api/armadoDeMotores/:nombre", async (req, res) => {
           }
           const resultado = await Pieza.updateOne(
             { nombre: "CajaMotor_250" },
-            { $inc: { "cantidad.fresa.cantidad": cantidadNumero } }
+            { $inc: { "cantidad.terminado.cantidad": cantidadNumero } }
           );
 
           const mensaje = `✅ Motor 250 ensamblado con éxito. Se descontaron las piezas necesarias para ${cantidadNumero} motores.`;
@@ -2924,7 +2944,7 @@ app.put("/api/armadoDeMotores/:nombre", async (req, res) => {
           // Sumar motores terminados
           const resultado = await Pieza.updateOne(
             { nombre: "CajaMotor_ECO" },
-            { $inc: { "cantidad.fresa.cantidad": cantidadNumero } }
+            { $inc: { "cantidad.terminado.cantidad": cantidadNumero } }
           );
 
           const mensaje = `✅ Motor ECO ensamblado con éxito. Se descontaron las piezas necesarias para ${cantidadNumero} motores.`;
@@ -4602,9 +4622,8 @@ app.put("/api/ArmadoFinal/:nombre", async (req, res) => {
   }
 });
 
-
-const datosparaGraficos = require("./routes/armado/datosGraficos")
-app.use("/api/datosGraficos", datosparaGraficos)
+const datosparaGraficos = require("./routes/armado/datosGraficos");
+app.use("/api/datosGraficos", datosparaGraficos);
 
 // Iniciar el servidor
 const PORT = process.env.PORT || 5000;

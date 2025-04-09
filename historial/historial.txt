@@ -1,0 +1,23 @@
+🕐 9/4/2025 06:29:14 - Mecanizado: corte | Pieza: Planchuela 250 | Cantidad: 7
+🕐 9/4/2025 06:30:47 - Mecanizado: balancin | Pieza: Eje Corto | Cantidad: 6
+🕐 9/4/2025 07:04:39
+Mecanizado: corte| Pieza: Buje Eje Eco|Cantidad: 3
+🕐 9/4/2025 07:06:11
+Mecanizado: corte| Pieza: Tubo Manija 250|Cantidad: 4
+🕐 9/4/2025 07:06:17
+Mecanizado: corte| Pieza: Planchuela Interna|Cantidad: 2
+🕐 9/4/2025 07:06:21
+Mecanizado: corte| Pieza: Teletubi Eco|Cantidad: 3
+🕐 9/4/2025 07:06:25
+Mecanizado: corte| Pieza: Guia U|Cantidad: 6
+🕐 9/4/2025 07:06:30
+Mecanizado: corte| Pieza: Chapa CubreCabezal inox 250|Cantidad: 6
+🕐 9/4/2025 07:06:36
+Mecanizado: corte| Pieza: Chapa CubreCabezal inox 250|Cantidad: 7
+🕐 9/4/2025 07:06:40
+Mecanizado: corte| Pieza: Eje Corto|Cantidad: 6
+🕐9/4/2025 07:10:54<br>. Mecanizado: corte|Pieza: Teletubi Eco|Cantidad: 3
+🕐9/4/2025 07:11:12<br>. Mecanizado: corte|Pieza: Planchuela Interna|Cantidad: 3
+🕐9/4/2025 07:11:17<br>. Mecanizado: corte|Pieza: Tubo Manija|Cantidad: 4
+🕐9/4/2025 07:11:23<br>. Mecanizado: corte|Pieza: Guia U|Cantidad: 3
+🕐9/4/2025 07:11:28<br>. Mecanizado: corte|Pieza: Chapa CubreCabezal inox 250|Cantidad: 4
