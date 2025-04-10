@@ -986,6 +986,10 @@ const historialRoutes = require("./routes/historial");
 app.use("/api/historial", historialRoutes);
 
 
+const historialRoute = require('./routes/historial-agregado');
+app.use('/api/historiales', historialRoute);
+
+
 //soldador
 //actualizar piezas soldador
 app.put("/api/enviosSoldador/:nombre", async (req, res) => {

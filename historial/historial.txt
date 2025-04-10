@@ -21,3 +21,11 @@ Mecanizado: corte| Pieza: Eje Corto|Cantidad: 6
 🕐9/4/2025 07:11:17<br>. Mecanizado: corte|Pieza: Tubo Manija|Cantidad: 4
 🕐9/4/2025 07:11:23<br>. Mecanizado: corte|Pieza: Guia U|Cantidad: 3
 🕐9/4/2025 07:11:28<br>. Mecanizado: corte|Pieza: Chapa CubreCabezal inox 250|Cantidad: 4
+🕐10/4/2025 07:55:03<br>. Mecanizado: plegadora|Pieza: Bandeja Cabezal Inox|Cantidad: 3
+🕐10/4/2025 07:55:11<br>. Mecanizado: plegadora|Pieza: Bandeja Cabezal Inox 250|Cantidad: 2
+🕐10/4/2025 07:55:40<br>. Mecanizado: plegadora|Pieza: ChapaBase 250Inox|Cantidad: 6
+🕐10/4/2025 07:55:54<br>. Mecanizado: plegadora|Pieza: ChapaBase 250Inox|Cantidad: 2
+🕐10/4/2025 07:58:03<br>. Mecanizado: soldador|Pieza: Cuadrado Regulador|Cantidad: 1
+🕐10/4/2025 08:00:30<br>. Mecanizado: fresa|Pieza: Vela 330|Cantidad: 3
+🕐10/4/2025 08:02:26<br>. Mecanizado: plegadora|Pieza: Bandeja Cabezal Pintada|Cantidad: 1
+🕐10/4/2025 08:03:41<br>. Mecanizado: plegadora|Pieza: Bandeja Cabezal Inox|Cantidad: 6

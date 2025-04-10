@@ -1,0 +1,43 @@
+[
+  {
+    "tipo": "Aluminio",
+    "acciones": [
+      "🛠️ 10/4/2025, 20:10:10 - Se agregaron 1 unidades a la pieza \"Eje\".  aluminio .",
+      "🛠️ 10/4/2025, 20:09:54 - Se agregaron 1 unidades a la pieza \"Base Afilador 300\".  aluminio .",
+      "🛠️ 10/4/2025, 19:53:14 - Se agregaron 3 unidades a la pieza \"Caja 330\".  aluminio .",
+      "🛠️ 10/4/2025, 19:53:09 - Se agregaron 4 unidades a la pieza \"Base Afilador 250\".  aluminio ."
+    ]
+  },
+  {
+    "tipo": "Chapa",
+    "acciones": [
+      "🛠️ 10/4/2025, 19:54:28-Se agregaron 6 unidades a la pieza \"Chapa U Pintada\".  chapa .",
+      "🛠️ 10/4/2025, 19:54:22-Se agregaron 23 unidades a la pieza \"Chapa U inox\".  chapa .",
+      "🛠️ 10/4/2025, 19:54:00-Se agregaron 19 unidades a la pieza \"Chapa CubreCabezal inox 250\".  chapa .",
+      "🛠️ 10/4/2025, 19:53:41-Se agregaron 14 unidades a la pieza \"Chapa CubreCabezal inox 250\".  chapa .",
+      "🛠️ 10/4/2025, 19:53:19-Se agregaron 15 unidades a la pieza \"Bandeja Cabezal Inox 250\".  chapa ."
+    ]
+  },
+  {
+    "tipo": "Shop",
+    "acciones": [
+      "🛠️ 10/4/2025, 19:53:26 - Se agregaron 8 unidades a la pieza \"Calco Tensor Correa\".  shop ."
+    ]
+  },
+  {
+    "tipo": "Plastico",
+    "acciones": [
+      "🛠️ 10/4/2025, 19:54:35 - Se agregaron 14 unidades a la pieza \"Perilla Cubrecuchilla\".  plastico .",
+      "🛠️ 10/4/2025, 19:54:05 - Se agregaron 5 unidades a la pieza \"Perilla Brazo\".  plastico ."
+    ]
+  },
+  {
+    "tipo": "Fundicion",
+    "acciones": [
+      "🛠️ 10/4/2025, 20:05:40 - Se agregaron 57 unidades a la pieza \"Movimiento\".  fundicion .",
+      "🛠️ 10/4/2025, 20:05:35 - Se agregaron 43 unidades a la pieza \"Movimiento\".  fundicion .",
+      "🛠️ 10/4/2025, 19:54:13 - Se agregaron 55 unidades a la pieza \"Carros 250\".  fundicion .",
+      "🛠️ 10/4/2025, 19:54:09 - Se agregaron 49 unidades a la pieza \"Carros 250\".  fundicion ."
+    ]
+  }
+]
