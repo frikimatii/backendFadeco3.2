@@ -7,12 +7,25 @@
       "🕐10/4/2025 07:55:40<br>. Mecanizado: plegadora|Pieza: ChapaBase 250Inox|Cantidad: 6",
       "🕐10/4/2025 07:55:54<br>. Mecanizado: plegadora|Pieza: ChapaBase 250Inox|Cantidad: 2",
       "🕐10/4/2025 08:02:26<br>. Mecanizado: plegadora|Pieza: Bandeja Cabezal Pintada|Cantidad: 1",
-      "🕐10/4/2025 08:03:41<br>. Mecanizado: plegadora|Pieza: Bandeja Cabezal Inox|Cantidad: 6"
+      "🕐10/4/2025 08:03:41<br>. Mecanizado: plegadora|Pieza: Bandeja Cabezal Inox|Cantidad: 6",
+      "🕐11/4/2025 01:41:40<br>. Mecanizado: plegadora|Pieza: Lateral i330 contecla|Cantidad: 8",
+      "🕐11/4/2025 02:49:20<br>. Mecanizado: plegadora|Pieza: Lateral i330 sintecla|Cantidad: 9",
+      "🕐11/4/2025 03:13:13<br>. Mecanizado: plegadora|Pieza: ChapaBase 300Inox|Cantidad: 10",
+      "🕐11/4/2025 03:15:38<br>. Mecanizado: plegadora|Pieza: Lateral p330 contecla|Cantidad: 3",
+      "🕐11/4/2025 03:15:55<br>. Mecanizado: plegadora|Pieza: Lateral p330 sintecla|Cantidad: 3"
     ]
   },
   {
     "nombre": "plasma",
-    "acciones": []
+    "acciones": [
+      "🕐11/4/2025 01:41:31<br>. Mecanizado: plasma|Pieza: Lateral i330 contecla|Cantidad: 14",
+      "🕐11/4/2025 02:49:09<br>. Mecanizado: plasma|Pieza: Lateral i330 sintecla|Cantidad: 10",
+      "🕐11/4/2025 03:13:22<br>. Mecanizado: plasma|Pieza: ChapaBase 300Inox|Cantidad: 5",
+      "🕐11/4/2025 03:14:44<br>. Mecanizado: plasma|Pieza: Lateral p330 contecla|Cantidad: 3",
+      "🕐11/4/2025 03:14:49<br>. Mecanizado: plasma|Pieza: Lateral p330 sintecla|Cantidad: 3",
+      "🕐11/4/2025 03:17:29<br>. Mecanizado: plasma|Pieza: Media Luna|Cantidad: 10",
+      "🕐11/4/2025 03:26:24<br>. Mecanizado: plasma|Pieza: Pieza Caja Eco|Cantidad: 9"
+    ]
   },
   {
     "nombre": "corte",
@@ -21,16 +34,23 @@
       "🕐9/4/2025 07:11:12<br>. Mecanizado: corte|Pieza: Planchuela Interna|Cantidad: 3",
       "🕐9/4/2025 07:11:17<br>. Mecanizado: corte|Pieza: Tubo Manija|Cantidad: 4",
       "🕐9/4/2025 07:11:23<br>. Mecanizado: corte|Pieza: Guia U|Cantidad: 3",
-      "🕐9/4/2025 07:11:28<br>. Mecanizado: corte|Pieza: Chapa CubreCabezal inox 250|Cantidad: 4"
+      "🕐9/4/2025 07:11:28<br>. Mecanizado: corte|Pieza: Chapa CubreCabezal inox 250|Cantidad: 4",
+      "🕐11/4/2025 02:56:31<br>. Mecanizado: corte|Pieza: Planchuela 300|Cantidad: 13",
+      "🕐11/4/2025 02:57:42<br>. Mecanizado: corte|Pieza: Planchuela Inferior|Cantidad: 17",
+      "🕐11/4/2025 03:16:11<br>. Mecanizado: corte|Pieza: Planchuela 330|Cantidad: 11"
     ]
   },
   {
     "nombre": "augeriado",
-    "acciones": []
+    "acciones": [
+      "🕐11/4/2025 03:17:02<br>. Mecanizado: augeriado|Pieza: PortaEje|Cantidad: 10"
+    ]
   },
   {
     "nombre": "torno",
-    "acciones": []
+    "acciones": [
+      "🕐11/4/2025 03:32:57<br>. Mecanizado: torno|Pieza: Caja 250|Cantidad: 4"
+    ]
   },
   {
     "nombre": "fresa",
@@ -50,6 +70,10 @@
   },
   {
     "nombre": "balancin",
-    "acciones": []
+    "acciones": [
+      "🕐11/4/2025 02:56:48<br>. Mecanizado: balancin|Pieza: Planchuela 300|Cantidad: 13",
+      "🕐11/4/2025 03:16:29<br>. Mecanizado: balancin|Pieza: Planchuela 330|Cantidad: 5",
+      "🕐11/4/2025 03:16:49<br>. Mecanizado: balancin|Pieza: PortaEje|Cantidad: 10"
+    ]
   }
 ]

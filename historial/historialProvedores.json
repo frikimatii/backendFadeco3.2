@@ -1,0 +1,98 @@
+[
+  {
+    "provedor": "soldador",
+    "pedidos": {
+      "envios": [
+        "11/4/2025 06:53 p. m. - Enviado 1 basePintada300",
+        "11/4/2025 06:52 p. m. - Enviado 1 baseInox330",
+        "11/4/2025 05:43 p. m. - Enviado 1 baseInox250",
+        "11/4/2025 03:26 p. m. - Enviado 1 CajaSoldadaEco",
+        "11/4/2025 03:26 p. m. - Enviado 1 CajaSoldadaEco"
+      ],
+      "entregas": [
+        "11/4/2025 03:27 p. m. - Recibido 2 CajaSoldadaEco",
+        "11/4/2025 03:19 p. m. - Recibido 1 CajaSoldadaEco",
+        "11/4/2025 03:18 p. m. - Recibido 1 baseInox250"
+      ]
+    }
+  },
+  {
+    "provedor": "carmelo",
+    "pedidos": {
+      "envios": [
+        "11/4/2025 06:30 p. m. - Enviado 1 Aro Numerador",
+        "11/4/2025 06:28 p. m. - Enviado 1 Aro Numerador",
+        "11/4/2025 06:27 p. m. - Enviado 2 Aro Numerador",
+        "11/4/2025 06:24 p. m. - Enviado 6 Aro Numerador",
+        "11/4/2025 06:23 p. m. - Enviado 6 Aro Numerador",
+        "11/4/2025 06:23 p. m. - Enviado 5 Aro Numerador",
+        "11/4/2025 06:23 p. m. - Enviado 3 Aro Numerador",
+        "11/4/2025 03:33 p. m. - Enviado 1 Caja 330",
+        "11/4/2025 03:33 p.m. - Enviado 1 Caja 250",
+        "11/4/2025 03:29 p. m. - Enviado 1 Caja 250",
+        "11/4/2025 03:29 p. m. - Enviado 1 Brazo 330",
+        "11/4/2025 02:48 p. m. - Enviado 1 baseInox330",
+        "11/4/2025 01:11 p. m. - Enviado 5x Aro Numerador"
+      ],
+      "entregas": [
+        "11/4/2025 07:20 p. m. - Recibido 3 Aro Numerador",
+        "11/4/2025 07:20 p. m. - Recibido 3 Aro Numerador",
+        "11/4/2025 07:20 p. m. - Recibido 2 Aro Numerador",
+        "11/4/2025 06:33 p. m. - Recibido 1 Aro Numerador",
+        "11/4/2025 06:31 p. m. - Recibido 1 Aro Numerador",
+        "11/4/2025 06:31 p. m. - Recibido 1 Aro Numerador",
+        "11/4/2025 06:30 p. m. - Recibido 5 Aro Numerador",
+        "11/4/2025 03:37 p. m. - Recibido 1 Brazo 300",
+        "11/4/2025 01:54 p. m. - Recibido 1 Aro Numerador",
+        "11/4/2025 01:54 p. m. - Recibido 1 Aro Numerador",
+        "11/4/2025 01:11 p. m. - Recibido 5x Aro Numerador"
+      ]
+    }
+  },
+  {
+    "provedor": "maxi",
+    "pedidos": {
+      "envios": [
+        "11/4/2025 07:41 p. m. - Enviado 1 Aro Numerador",
+        "11/4/2025 07:41 p. m. - Enviado 1 Aro Numerador",
+        "11/4/2025 07:41 p. m. - Enviado 3 Aro Numerador",
+        "11/4/2025 03:42 p. m. - Enviado 1 Aro Numerador",
+        "11/4/2025 01:54 p. m. - Enviado 7 Aro Numerador"
+      ],
+      "entregas": [
+        "11/4/2025 01:54 p. m. - Recibido 2 Aro Numerador"
+      ]
+    }
+  },
+  {
+    "provedor": "pintura",
+    "pedidos": {
+      "envios": [
+        "11/4/2025 06:00 p. m. - Enviado 1 Teletubi Eco",
+        "11/4/2025 01:55 p. m. - Enviado 1 basePintada330",
+        "11/4/2025 01:55 p. m. - Enviado 2 basePintada330",
+        "11/4/2025 01:55 p. m. - Enviado 1 Teletubi Eco"
+      ],
+      "entregas": []
+    }
+  },
+  {
+    "provedor": "niquelado",
+    "pedidos": {
+      "envios": [
+        "11/4/2025 01:55 p. m. - Enviado 2 Varilla Brazo 300",
+        "11/4/2025 01:55 p. m. - Enviado 4 Eje Rectificado"
+      ],
+      "entregas": [
+        "11/4/2025 06:13 p. m. - Recibido 3 Varilla Brazo 330"
+      ]
+    }
+  },
+  {
+    "provedor": "afilador",
+    "pedidos": {
+      "envios": [],
+      "entregas": []
+    }
+  }
+]
