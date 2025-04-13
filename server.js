@@ -181,15 +181,13 @@ app.put("/api/piezas/plegadora/:nombre", async (req, res) => {
         "Bandeja Cabezal Inox",
       ];
 
-      if(piezasTerminadas.includes(nombre)){
+      if (piezasTerminadas.includes(nombre)) {
         updateFields["cantidad.terminado.cantidad"] =
-        (pieza.cantidad?.terminado?.cantidad || 0) + cantidadNumero;
+          (pieza.cantidad?.terminado?.cantidad || 0) + cantidadNumero;
       } else {
         updateFields["cantidad.plegadora.cantidad"] =
-        (pieza.cantidad?.plegadora?.cantidad || 0) + cantidadNumero;
+          (pieza.cantidad?.plegadora?.cantidad || 0) + cantidadNumero;
       }
-
-
     } else if (categorias.plasma.includes(nombre)) {
       // Agregar directamente a la cantidad de la plegadora
       if (
@@ -977,26 +975,20 @@ app.put("/api/piezas/balancin/:nombre", async (req, res) => {
   }
 });
 
-
-const guardarRuta = require("./routes/guardar")
-app.use("/guardar", guardarRuta)
-
+const guardarRuta = require("./routes/guardar");
+app.use("/guardar", guardarRuta);
 
 const historialRoutes = require("./routes/historial");
 app.use("/api/historial", historialRoutes);
 
-
-const historialRoute = require('./routes/historial-agregado');
-app.use('/api/historiales', historialRoute);
-
+const historialRoute = require("./routes/historial-agregado");
+app.use("/api/historiales", historialRoute);
 
 const enviosYentregasRouter = require("./routes/provedores/historialprovedores");
 app.use("/api", enviosYentregasRouter);
 
-
-const mostrarDatosJsonProvedores = require('./routes/provedores/mostrarDatosjson');
-app.use('/api/historialProvedores', mostrarDatosJsonProvedores);
-
+const mostrarDatosJsonProvedores = require("./routes/provedores/mostrarDatosjson");
+app.use("/api/historialProvedores", mostrarDatosJsonProvedores);
 
 //soldador
 //actualizar piezas soldador
@@ -1110,7 +1102,7 @@ app.put("/api/enviosSoldador/:nombre", async (req, res) => {
           "Lateral p300 sintecla": "plegadora",
           "Planchuela 300": "balancin",
           "Varilla 300": "corte",
-          "PortaEje": "augeriado",
+          PortaEje: "augeriado",
         },
       },
       basePintada330: {
@@ -1181,7 +1173,9 @@ app.put("/api/enviosSoldador/:nombre", async (req, res) => {
 
     if (piezasFaltantes.length > 0) {
       return res.status(400).json({
-        mensaje: `Faltan piezas para enviar al soldador ${nombreVisual}. Faltan: ${piezasFaltantes.join(", ")}`,
+        mensaje: `Faltan piezas para enviar al soldador ${nombreVisual}. Faltan: ${piezasFaltantes.join(
+          ", "
+        )}`,
         piezasFaltantes,
       });
     }
@@ -1211,7 +1205,9 @@ app.put("/api/enviosSoldador/:nombre", async (req, res) => {
     });
   } catch (error) {
     console.error("❌ Error en /api/enviosSoldador:", error);
-    return res.status(500).json({ mensaje: "Error interno del servidor", error });
+    return res
+      .status(500)
+      .json({ mensaje: "Error interno del servidor", error });
   }
 });
 app.put("/api/entregasSoldador/:nombre", async (req, res) => {
@@ -4217,6 +4213,462 @@ app.put("/api/ArmadoFinal/:nombre", async (req, res) => {
 
 const datosparaGraficos = require("./routes/armado/datosGraficos");
 app.use("/api/datosGraficos", datosparaGraficos);
+
+const piezasEmbalar = require("./routes/control/btnEmbalar");
+app.use("/api/datosEmbalar", piezasEmbalar);
+
+const piezasLimpar = require("./routes/control/btnLimpiar");
+app.use("/api/datosLimpios", piezasLimpar);
+
+const piezasParaEmbalar = require("./routes/control/stockEmbalado");
+app.use("/api/stockEmbalar", piezasParaEmbalar);
+
+const piezasParaVentas = require("./routes/control/btnVentas");
+app.use("/api/stockDeVentas", piezasParaVentas);
+
+app.put("/api/Embalar/:nombre", async (req, res) => {
+  try {
+    const { cantidad } = req.body;
+    const nombre = req.params.nombre;
+
+    const cantidadNumero = Number(cantidad);
+    if (isNaN(cantidadNumero) || cantidadNumero <= 0) {
+      return res.status(400).json({ mensaje: "Cantidad no es válida" });
+    }
+
+    const pieza = await MaquinasFinales.findOne({ nombre });
+    if (!pieza) {
+      return res.status(404).json({ mensaje: "Pieza no encontrada" });
+    }
+
+    const cantidadDisponible = pieza.cantidad.terminadas.cantidad;
+    if (cantidadDisponible < cantidadNumero) {
+      return res
+        .status(400)
+        .json({ mensaje: "No hay suficientes piezas disponibles" });
+    }
+
+    // Diccionario de calcomanías necesarias por tipo de máquina
+    const piezasEmbalar = {
+      Inox_250: [
+        { etiqueta: "Garantia", cantidad: 1 },
+        { etiqueta: "Manual Instruciones", cantidad: 1 },
+        { etiqueta: "Etiqueta Peligro", cantidad: 1 },
+        { etiqueta: "F circulo", cantidad: 1 },
+        { etiqueta: "F Cuadrado", cantidad: 1 },
+        { etiqueta: "Circulo argentina", cantidad: 1 },
+        { etiqueta: "Etiqueta Cable", cantidad: 1 },
+        { etiqueta: "Fadeco 250 2estrella", cantidad: 1 },
+        { etiqueta: "Ventilador 250", cantidad: 1 },
+      ],
+      Inox_300: [
+        { etiqueta: "Garantia", cantidad: 1 },
+        { etiqueta: "Manual Instruciones", cantidad: 1 },
+        { etiqueta: "Etiqueta Peligro", cantidad: 1 },
+        { etiqueta: "F circulo", cantidad: 1 },
+        { etiqueta: "F Cuadrado", cantidad: 1 },
+        { etiqueta: "Circulo argentina", cantidad: 1 },
+        { etiqueta: "Etiqueta Cable", cantidad: 1 },
+        { etiqueta: "Fadeco 300 4estrella", cantidad: 1 },
+        { etiqueta: "Ventilador Motor", cantidad: 1 },
+      ],
+      Inox_330: [
+        { etiqueta: "Garantia", cantidad: 1 },
+        { etiqueta: "Manual Instruciones", cantidad: 1 },
+        { etiqueta: "Etiqueta Peligro", cantidad: 1 },
+        { etiqueta: "F circulo", cantidad: 1 },
+        { etiqueta: "F Cuadrado", cantidad: 1 },
+        { etiqueta: "Circulo argentina", cantidad: 1 },
+        { etiqueta: "Etiqueta Cable", cantidad: 1 },
+        { etiqueta: "Fadeco 330 4estrella", cantidad: 1 },
+        { etiqueta: "Ventilador Motor", cantidad: 1 },
+      ],
+      Inox_ECO: [
+        { etiqueta: "Garantia", cantidad: 1 },
+        { etiqueta: "Manual Instruciones", cantidad: 1 },
+        { etiqueta: "Etiqueta Peligro", cantidad: 1 },
+        { etiqueta: "F circulo", cantidad: 1 },
+        { etiqueta: "F Cuadrado", cantidad: 1 },
+        { etiqueta: "Circulo argentina", cantidad: 1 },
+        { etiqueta: "Etiqueta Cable", cantidad: 1 },
+        { etiqueta: "Fadeco 330 4estrella", cantidad: 1 },
+      ],
+      Pintada_330: [
+        { etiqueta: "Garantia", cantidad: 1 },
+        { etiqueta: "Manual Instruciones", cantidad: 1 },
+        { etiqueta: "Etiqueta Peligro", cantidad: 1 },
+        { etiqueta: "F circulo", cantidad: 1 },
+        { etiqueta: "F Cuadrado", cantidad: 1 },
+        { etiqueta: "Circulo argentina", cantidad: 1 },
+        { etiqueta: "Etiqueta Cable", cantidad: 1 },
+        { etiqueta: "Fadeco 330 3estrella", cantidad: 1 },
+        { etiqueta: "Ventilador Motor", cantidad: 1 },
+      ],
+      Pintada_300: [
+        { etiqueta: "Garantia", cantidad: 1 },
+        { etiqueta: "Manual Instruciones", cantidad: 1 },
+        { etiqueta: "Etiqueta Peligro", cantidad: 1 },
+        { etiqueta: "F circulo", cantidad: 1 },
+        { etiqueta: "F Cuadrado", cantidad: 1 },
+        { etiqueta: "Circulo argentina", cantidad: 1 },
+        { etiqueta: "Etiqueta Cable", cantidad: 1 },
+        { etiqueta: "Fadeco 300 3estrella", cantidad: 1 },
+        { etiqueta: "Ventilador Motor", cantidad: 1 },
+      ],
+    };
+
+    const etiquetas = piezasEmbalar[nombre];
+    if (!etiquetas) {
+      return res
+        .status(400)
+        .json({ mensaje: "No se encuentran etiquetas para esta máquina" });
+    }
+
+    let errores = [];
+
+    // Validar disponibilidad de calcomanías
+    for (let etiqueta of etiquetas) {
+      const calcomania = await Pieza.findOne({ nombre: etiqueta.etiqueta });
+
+      if (!calcomania) {
+        errores.push(
+          `La calcomanía '${etiqueta.etiqueta}' no se encuentra en el inventario`
+        );
+        continue;
+      }
+
+      const disponible = calcomania.cantidad.bruto.cantidad;
+      const necesaria = etiqueta.cantidad * cantidadNumero;
+
+      if (disponible < necesaria) {
+        errores.push(
+          `Faltan calcomanías de '${etiqueta.etiqueta}': necesita ${necesaria}, disponibles ${disponible}`
+        );
+      }
+    }
+
+    if (errores.length > 0) {
+      return res.status(400).json({
+        mensaje: "Faltan piezas para embalar",
+        errores,
+      });
+    }
+
+    // Descontar calcomanías del inventario
+    for (let etiqueta of etiquetas) {
+      const cantidadDescontar = etiqueta.cantidad * cantidadNumero;
+
+      await Pieza.findOneAndUpdate(
+        { nombre: etiqueta.etiqueta },
+        { $inc: { "cantidad.bruto.cantidad": -cantidadDescontar } }
+      );
+    }
+
+    // Actualizar cantidades de la máquina
+    const piezaActualizada = await MaquinasFinales.findOneAndUpdate(
+      { nombre },
+      {
+        $inc: {
+          "cantidad.limpias.cantidad": cantidadNumero,
+          "cantidad.terminadas.cantidad": -cantidadNumero,
+        },
+      },
+      { new: true }
+    );
+
+    res.json({
+      mensaje: "Maquinas Lista para la venta.",
+      piezaActualizada,
+    });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ mensaje: "Ocurrió un error al procesar la solicitud" });
+  }
+});
+
+app.put("/api/Ventas/:nombre", async (req, res) => {
+  try {
+    const { cantidad } = req.body;
+    const nombre = req.params.nombre;
+
+    const cantidadNumero = Number(cantidad);
+    if (isNaN(cantidadNumero) || cantidadNumero <= 0) {
+      return res.status(400).json({ mensaje: "Cantidad NO es válida" });
+    }
+
+    const pieza = await MaquinasFinales.findOne({ nombre });
+
+    if (!pieza) {
+      return res.status(404).json({ mensaje: "Pieza no encontrada" });
+    }
+
+    const cantidadDisponible = pieza?.cantidad?.limpias?.cantidad ?? 0;
+
+    if (cantidadDisponible < cantidadNumero) {
+      return res.status(400).json({
+        mensaje: "No hay suficientes piezas disponibles en 'limpias'",
+      });
+    }
+
+    const piezaActualizada = await MaquinasFinales.findOneAndUpdate(
+      { nombre },
+      {
+        $inc: {
+          "cantidad.ventas.cantidad": cantidadNumero,
+          "cantidad.limpias.cantidad": -cantidadNumero,
+        },
+      },
+      { new: true }
+    );
+
+    // Obtener fecha y hora actual
+    const ahora = new Date();
+    const fechaHoraFormateada = ahora.toLocaleString("es-AR", {
+      timeZone: "America/Argentina/Buenos_Aires",
+    });
+
+    // Log con detalles de la venta
+    console.log(
+      `[VENTA REGISTRADA] - Máquina: ${nombre} | Cantidad: ${cantidadNumero} | Fecha y hora: ${fechaHoraFormateada}`
+    );
+
+    res.json({
+      mensaje: "Cantidad transferida al estado 'ventas'",
+      piezaActualizada,
+    });
+  } catch (error) {
+    console.error("Error en /api/Ventas/:nombre", error);
+    res.status(500).json({ mensaje: "Error interno del servidor" });
+  }
+});
+
+app.post("/api/verificarArmadoMotores/:nombre", async (req, res) => {
+  try {
+    const { cantidad } = req.body;
+    const nombre = req.params.nombre;
+
+    const cantidadNumero = Number(cantidad);
+    if (isNaN(cantidadNumero) || cantidadNumero <= 0) {
+      return res.status(400).json({ mensaje: "❌ Cantidad no válida" });
+    }
+
+    const configuraciones = {
+      CajaMotor_330: {
+        pieza: [
+          "Corona 330",
+          "Seguer",
+          "Sinfin",
+          "Motor 220w",
+          "Ruleman6005",
+          "Ruleman6205",
+          "Oring",
+          "Ruleman6000",
+          "Manchon",
+          "Eje",
+          "Caja 330",
+        ],
+        categoriaPorPieza: {
+          "Corona 330": "bruto",
+          Seguer: "bruto",
+          Sinfin: "bruto",
+          "Motor 220w": "bruto",
+          Ruleman6005: "bruto",
+          Ruleman6205: "bruto",
+          Oring: "bruto",
+          Ruleman6000: "bruto",
+          Manchon: "torno",
+          Eje: "torno",
+          "Caja 330": "terminado",
+        },
+        cantidadPorPieza: {
+          "Corona 330": 1,
+          Seguer: 1,
+          Sinfin: 1,
+          "Motor 220w": 1,
+          Ruleman6005: 1,
+          Ruleman6205: 2, // 🔁 Esta se descuenta de a 2
+          Oring: 1,
+          Ruleman6000: 1,
+          Manchon: 1,
+          Eje: 1,
+          "Caja 330": 1,
+        },
+      },
+      CajaMotor_300: {
+        pieza: [
+          "Corona 300",
+          "Seguer",
+          "Sinfin",
+          "Motor 220w",
+          "Ruleman6005",
+          "Ruleman6205",
+          "Oring",
+          "Ruleman6000",
+          "Manchon",
+          "Eje",
+          "Caja 300",
+        ],
+        categoriaPorPieza: {
+          "Corona 300": "bruto",
+          Seguer: "bruto",
+          Sinfin: "bruto",
+          "Motor 220w": "bruto",
+          Ruleman6005: "bruto",
+          Ruleman6205: "bruto",
+          Oring: "bruto",
+          Ruleman6000: "bruto",
+          Manchon: "torno",
+          Eje: "torno",
+          "Caja 300": "terminado",
+        },
+        cantidadPorPieza: {
+          "Corona 300": 1,
+          Seguer: 1,
+          Sinfin: 1,
+          "Motor 220w": 1,
+          Ruleman6005: 1,
+          Ruleman6205: 2, // 🔁 Esta se descuenta de a 2
+          Oring: 1,
+          Ruleman6000: 1,
+          Manchon: 1,
+          Eje: 1,
+          "Caja 300": 1,
+        },
+      },
+      CajaMotor_250: {
+        pieza: [
+          "Corona 250",
+          "Seguer",
+          "Sinfin",
+          "Motor250 220w",
+          "Ruleman6004",
+          "Ruleman6204",
+          "Oring",
+          "RulemanR6",
+          "Manchon 250",
+          "Eje 250",
+          "Caja 250",
+        ],
+        categoriaPorPieza: {
+          "Corona 250": "bruto",
+          Seguer: "bruto",
+          Sinfin: "bruto",
+          "Motor250 220w": "bruto",
+          Ruleman6004: "bruto",
+          Ruleman6204: "bruto",
+          Oring: "bruto",
+          RulemanR6: "bruto",
+          "Manchon 250": "torno",
+          "Eje 250": "torno",
+          "Caja 250": "terminado",
+        },
+        cantidadPorPieza: {
+          "Corona 250": 1,
+          Seguer: 1,
+          Sinfin: 1,
+          "Motor250 220w": 1,
+          Ruleman6004: 1,
+          Ruleman6204: 2, // 🔁 Esta se descuenta de a 2
+          Oring: 1,
+          RulemanR6: 1,
+          "Manchon 250": 1,
+          "Eje 250": 1,
+          "Caja 250": 1,
+        },
+      },
+      CajaMotor_ECO: {
+        pieza: [
+          "Polea Grande",
+          "Polea Chica",
+          "Tecla",
+          "Capacitores",
+          "Conector Hembra",
+          "Cable Corto Eco",
+          "Motor ECO 220w",
+          "Tapa Correa Eco",
+          "Correa Eco",
+          "Capuchon Motor Dodo",
+          "Rectangulo Plastico Eco",
+          "Ventilador Motor",
+          "Buje Eje Eco",
+          "Tornillo Teletubi Eco",
+          "Caja Soldada Eco",
+        ],
+        categoriaPorPieza: {
+          "Polea Grande": "bruto",
+          "Polea Chica": "bruto",
+          Tecla: "bruto",
+          Capacitores: "bruto",
+          "Conector Hembra": "bruto",
+          "Cable Corto Eco": "bruto",
+          "Motor ECO 220w": "bruto",
+          "Tapa Correa Eco": "bruto",
+          "Correa Eco": "bruto",
+          "Capuchon Motor Dodo": "bruto",
+          "Rectangulo Plastico Eco": "bruto",
+          "Ventilador Motor": "bruto",
+          "Caja Soldada Eco": "augeriado",
+          "Tornillo Teletubi Eco": "augeriado",
+          "Buje Eje Eco": "torno",
+        },
+        cantidadPorPieza: {
+          "Polea Grande": 1,
+          "Polea Chica": 1,
+          Tecla: 1,
+          Capacitores: 1,
+          "Conector Hembra": 1,
+          "Cable Corto Eco": 1,
+          "Motor ECO 220w": 1,
+          "Tapa Correa Eco": 1,
+          "Correa Eco": 1,
+          "Capuchon Motor Dodo": 1,
+          "Rectangulo Plastico Eco": 1,
+          "Ventilador Motor": 1,
+          "Buje Eje Eco": 1,
+          "Tornillo Teletubi Eco": 2,
+          "Caja Soldada Eco": 1,
+        },
+      },
+    };
+
+    const config = configuraciones[nombre]
+    if (!config){
+      return res.status(400).json({ mensaje: `⚠️ Motor "${nombre}" no reconocido.` });
+    }
+
+    const piezasEnDB = await Pieza.find(
+      {nombre: {$in: config.pieza } },
+      {nombre: 1, cantidad: 1, _id: 0}
+    )
+
+    let piezasFaltantes = []
+
+    piezasEnDB.forEach((pieza)=>{
+      const categoria = config.categoriaPorPieza[pieza.nombre]
+      const cantidadDisponible = pieza.cantidad?.[categoria]?.cantidad || 0
+      const cantidadNecesaria = (config.cantidadPorPieza[pieza.nombre] || 1 )* cantidadNumero
+
+      if (cantidadNecesaria > cantidadDisponible){
+        piezasFaltantes.push(`${pieza.nombre} (necesitas ${cantidadNecesaria}, hay ${cantidadDisponible})`)
+      }
+    })
+
+    if (piezasFaltantes.length > 0) {
+      const mensaje = `❌ No se puede armar ${cantidadNumero} ${nombre}. Faltan: ${piezasFaltantes.join(", ")} \n`;
+      console.log(mensaje);
+      return res.status(200).json({ mensaje, puedeArmar: false, piezasFaltantes });
+    } else {
+      const mensaje = `✅ Se puede armar ${cantidadNumero} ${nombre} sin problemas.`;
+      console.log(mensaje);
+      return res.status(200).json({ mensaje, puedeArmar: true });
+    }
+  } catch (error) {
+    console.error("⚠️ Error en verificación de armado:", error);
+    res.status(500).json({ mensaje: "❌ Error interno del servidor" });
+  }
+});
 
 // Iniciar el servidor
 const PORT = process.env.PORT || 5000;
