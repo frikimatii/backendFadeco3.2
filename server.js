@@ -214,7 +214,7 @@ app.put("/api/piezas/plegadora/:nombre", async (req, res) => {
           .json({ mensaje: `stock Insuficiente de ${nombre} en fresado` });
       }
 
-      updateFields["cantidad.fresado.cantidad"] =
+      updateFields["cantidad.fresa.cantidad"] =
         pieza.cantidad.fresa.cantidad - cantidadNumero;
 
       updateFields["cantidad.plegadora.cantidad"] =
@@ -1292,16 +1292,16 @@ app.put("/api/enviosCarmelo/:nombre", async (req, res) => {
         "Caja 330",
         "Cubrecuchilla 300",
         "Teletubi 300",
-        "Tapa Afilador 250",
+        "Tapa Afilador Eco",
       ],
       bruto: [
         "Cubrecuchilla 250",
         "Velero",
-        "Cubrecuchilla_330",
+        "Cubrecuchilla 330",
         "Aro Numerador",
         "Tapa Afilador",
         "Teletubi 330",
-        "Tapa Afilador Eco",
+        "Tapa Afilador 250",
         "Teletubi 250",
         "baseInox330",
         "baseInox300",
@@ -1469,16 +1469,16 @@ app.put("/api/enviosMaxi/:nombre", async (req, res) => {
         "Caja 330",
         "Cubrecuchilla 300",
         "Teletubi 300",
-        "Tapa Afilador 250",
+        "Tapa Afilador Eco",
       ],
       bruto: [
         "Cubrecuchilla 250",
         "Velero",
-        "Cubrecuchilla_330",
+        "Cubrecuchilla 330",
         "Aro Numerador",
         "Tapa Afilador",
         "Teletubi 330",
-        "Tapa Afilador Eco",
+        "Tapa Afilador 250",
         "Teletubi 250",
         "baseInox330",
         "baseInox300",
@@ -1731,7 +1731,7 @@ app.put("/api/entregasPintura/:nombre", async (req, res) => {
     if (!pieza) {
       return res.status(404).json({ mensaje: "Pieza no encontrada" });
     }
-    const cantidadDispible = pieza.proveedores.maxi.cantidad;
+    const cantidadDispible = pieza.proveedores.pintura?.cantidad;
 
     if (cantidadDispible < cantidadNumero) {
       return res
@@ -1981,7 +1981,7 @@ app.put("/api/enviosAfiladores/:nombre", async (req, res) => {
   }
 });
 
-app.put("/api/antregaAfiladores/:nombre", async (req, res) => {
+app.put("/api/entregaAfiladores/:nombre", async (req, res) => {
   try {
     const { cantidad } = req.body;
     const nombre = req.params.nombre;
@@ -2000,6 +2000,7 @@ app.put("/api/antregaAfiladores/:nombre", async (req, res) => {
         { nombre: "Palanca Afilador", cantidad: 1 },
         { nombre: "Resorte Palanca", cantidad: 1 },
         { nombre: "Resorte Empuje", cantidad: 2 },
+        { nombre: "Carcaza Afilador", cantidad: 1}
       ];
 
       const nombresPiezas = piezasRequeridas.map((pieza) => pieza.nombre);
@@ -2458,7 +2459,7 @@ app.put("/api/armadoDeMotores/:nombre", async (req, res) => {
           "Capuchon Motor Dodo": "bruto",
           "Rectangulo Plastico Eco": "bruto",
           "Ventilador Motor": "bruto",
-          "Caja Soldada Eco": "augeriado",
+          "Caja Soldada Eco": "terminado",
           "Tornillo Teletubi Eco": "augeriado",
           "Buje Eje Eco": "torno",
         };
@@ -2598,7 +2599,7 @@ app.put("/api/preArmado/:nombre", async (req, res) => {
           Carros: "augeriado",
           "Tornillo guia": "torno",
           Rueditas: "torno",
-          CajaMotor_330: "torno",
+          CajaMotor_330: "terminado",
           baseInox330: "terminado",
           "Aro Numerador": "terminado",
           "Eje Rectificado": "terminado",
@@ -2725,7 +2726,7 @@ app.put("/api/preArmado/:nombre", async (req, res) => {
           Carros: "augeriado",
           "Tornillo guia": "torno",
           Rueditas: "torno",
-          CajaMotor_300: "torno",
+          CajaMotor_300: "terminado",
           baseInox300: "terminado",
           "Aro Numerador": "terminado",
           "Eje Rectificado": "terminado",
@@ -3097,7 +3098,7 @@ app.put("/api/preArmado/:nombre", async (req, res) => {
           Carros: "augeriado",
           "Tornillo guia": "torno",
           Rueditas: "torno",
-          CajaMotor_330: "torno",
+          CajaMotor_330: "terminado",
           basePintada330: "terminado",
           "Aro Numerador": "terminado",
           "Eje Rectificado": "terminado",
@@ -3224,7 +3225,7 @@ app.put("/api/preArmado/:nombre", async (req, res) => {
           Carros: "augeriado",
           "Tornillo guia": "torno",
           Rueditas: "torno",
-          CajaMotor_300: "torno",
+          CajaMotor_300: "terminado",
           basePintada300: "terminado",
           "Aro Numerador": "terminado",
           "Eje Rectificado": "terminado",
@@ -4058,7 +4059,6 @@ app.put("/api/ArmadoFinal/:nombre", async (req, res) => {
           console.log(mensaje);
           return res.status(200).json({ mensaje });
         }
-
       case "Inox_ECO":
         const piezaParaECO = [
           "Brazo 330",
@@ -4444,6 +4444,8 @@ app.put("/api/Ventas/:nombre", async (req, res) => {
   }
 });
 
+
+
 app.post("/api/verificarArmadoMotores/:nombre", async (req, res) => {
   try {
     const { cantidad } = req.body;
@@ -4609,7 +4611,7 @@ app.post("/api/verificarArmadoMotores/:nombre", async (req, res) => {
           "Capuchon Motor Dodo": "bruto",
           "Rectangulo Plastico Eco": "bruto",
           "Ventilador Motor": "bruto",
-          "Caja Soldada Eco": "augeriado",
+          "Caja Soldada Eco": "terminado",
           "Tornillo Teletubi Eco": "augeriado",
           "Buje Eje Eco": "torno",
         },
@@ -4670,6 +4672,1375 @@ app.post("/api/verificarArmadoMotores/:nombre", async (req, res) => {
   }
 });
 
+
+
+
+app.post("/api/verificarPreArmado/:nombre", async (req, res) => {
+  try {
+    const { cantidad } = req.body;
+    const nombre = req.params.nombre;
+
+    const cantidadNumero = Number(cantidad);
+    if (isNaN(cantidadNumero) || cantidadNumero <= 0) {
+      return res.status(400).json({ mensaje: "❌ Cantidad no válida" });
+    }
+
+    const configuraciones = {
+      BasePreArmada_Inox330: {
+        pieza: [
+          "Espiral",
+          "Perilla Numerador",
+          "Tapita Perilla",
+          "Patas",
+          "Resorte Movimiento",
+          "Tecla",
+          "Cable 220w",
+          "Resorte Carro",
+          "Capacitores",
+          "Movimiento",
+          "Carros",
+          "Tornillo guia",
+          "Rueditas",
+          "CajaMotor_330",
+          "baseInox330",
+          "Aro Numerador",
+          "Eje Rectificado",
+          "Guia U",
+          "Varilla 330",
+        ],
+        categoriaPorPieza: {
+          Espiral: "bruto",
+          "Perilla Numerador": "bruto",
+          "Tapita Perilla": "bruto",
+          Patas: "bruto",
+          "Resorte Movimiento": "bruto",
+          Tecla: "bruto",
+          "Cable 220w": "bruto",
+          "Resorte Carro": "bruto",
+          Capacitores: "bruto",
+          Movimiento: "augeriado",
+          Carros: "augeriado",
+          "Tornillo guia": "torno",
+          Rueditas: "torno",
+          CajaMotor_330: "terminado",
+          baseInox330: "terminado",
+          "Aro Numerador": "terminado",
+          "Eje Rectificado": "terminado",
+          "Guia U": "balancin",
+          "Varilla 330": "soldador",
+        },
+        cantidadPorPieza: {
+          Espiral: 1,
+          "Perilla Numerador": 1,
+          "Tapita Perilla": 1,
+          Patas: 4,
+          "Resorte Movimiento": 1,
+          Tecla: 1,
+          "Cable 220w": 1,
+          "Resorte Carro": 2,
+          Capacitores: 1,
+          Movimiento: 1,
+          Carros: 1,
+          "Tornillo guia": 1,
+          Rueditas: 4,
+          CajaMotor_330: 1,
+          baseInox330: 1,
+          "Aro Numerador": 1,
+          "Eje Rectificado": 1,
+          "Guia U": 1,
+          "Varilla 330": 1,
+        },
+      },
+      BasePreArmada_Inox300: {
+        pieza: [
+          "Espiral",
+          "Perilla Numerador",
+          "Tapita Perilla",
+          "Patas",
+          "Resorte Movimiento",
+          "Tecla",
+          "Cable 220w",
+          "Resorte Carro",
+          "Capacitores",
+          "Movimiento",
+          "Carros",
+          "Tornillo guia",
+          "Rueditas",
+          "CajaMotor_300",
+          "baseInox300",
+          "Aro Numerador",
+          "Eje Rectificado",
+          "Guia U",
+          "Varilla 300",
+        ],
+        categoriaPorPieza: {
+          Espiral: "bruto",
+          "Perilla Numerador": "bruto",
+          "Tapita Perilla": "bruto",
+          Patas: "bruto",
+          "Resorte Movimiento": "bruto",
+          Tecla: "bruto",
+          "Cable 220w": "bruto",
+          "Resorte Carro": "bruto",
+          Capacitores: "bruto",
+          Movimiento: "augeriado",
+          Carros: "augeriado",
+          "Tornillo guia": "torno",
+          Rueditas: "torno",
+          CajaMotor_300: "terminado",
+          baseInox300: "terminado",
+          "Aro Numerador": "terminado",
+          "Eje Rectificado": "terminado",
+          "Guia U": "balancin",
+          "Varilla 300": "soldador",
+        },
+        cantidadPorPieza: {
+          Espiral: 1,
+          "Perilla Numerador": 1,
+          "Tapita Perilla": 1,
+          Patas: 4,
+          "Resorte Movimiento": 1,
+          Tecla: 1,
+          "Cable 220w": 1,
+          "Resorte Carro": 2,
+          Capacitores: 1,
+          Movimiento: 1,
+          Carros: 1,
+          "Tornillo guia": 1,
+          Rueditas: 4,
+          CajaMotor_300: 1,
+          baseInox300: 1,
+          "Aro Numerador": 1,
+          "Eje Rectificado": 1,
+          "Guia U": 1,
+          "Varilla 300": 1,
+        },
+      },
+      BasePreArmada_Inox250: {
+        pieza: [
+          "Espiral",
+          "Perilla Numerador",
+          "Tapita Perilla",
+          "Patas",
+          "Resorte Movimiento",
+          "Tecla",
+          "Cable 220w",
+          "Capacitores 250",
+          "Movimiento",
+          "Carros 250",
+          "Tornillo guia",
+          "Rueditas",
+          "CajaMotor_250",
+          "baseInox250",
+          "Aro Numerador",
+          "Eje Rectificado",
+          "Guia U",
+          "Varilla 250",
+        ],
+        categoriaPorPieza: {
+          Espiral: "bruto",
+          "Perilla Numerador": "bruto",
+          "Tapita Perilla": "bruto",
+          Patas: "bruto",
+          "Resorte Movimiento": "bruto",
+          Tecla: "bruto",
+          "Cable 220w": "bruto",
+          "Capacitores 250": "bruto",
+          Movimiento: "augeriado",
+          "Carros 250": "augeriado",
+          "Tornillo guia": "torno",
+          Rueditas: "torno",
+          CajaMotor_250: "terminado",
+          baseInox250: "terminado",
+          "Aro Numerador": "terminado",
+          "Eje Rectificado": "terminado",
+          "Guia U": "balancin",
+          "Varilla 250": "soldador",
+        },
+        cantidadPorPieza: {
+          Espiral: 1,
+          "Perilla Numerador": 1,
+          "Tapita Perilla": 1,
+          Patas: 4,
+          "Resorte Movimiento": 1,
+          Tecla: 1,
+          "Cable 220w": 1,
+          "Capacitores 250": 1,
+          Movimiento: 1,
+          "Carros 250": 1,
+          "Tornillo guia": 1,
+          Rueditas: 4,
+          CajaMotor_250: 1,
+          baseInox250: 1,
+          "Aro Numerador": 1,
+          "Eje Rectificado": 1,
+          "Guia U": 1,
+          "Varilla 250": 1,
+        },
+      },
+      BasePreArmada_InoxECO: {
+        pieza: [
+          "Espiral",
+          "Tapita Perilla",
+          "Cable Eco 220w",
+          "Patas",
+          "Perilla Numerador",
+          "Resorte Carro",
+          "Resorte Movimiento",
+          "baseInoxECO",
+          "Aro Numerador",
+          "Eje Rectificado",
+          "CajaMotor_ECO",
+          "Rueditas",
+          "Movimiento",
+          "Carros",
+          "Guia U",
+          "Tornillo guia",
+          "Varilla 330",
+        ],
+        categoriaPorPieza: {
+          Espiral: "bruto",
+          "Tapita Perilla": "bruto",
+          "Cable Eco 220w": "bruto",
+          Patas: "bruto",
+          "Perilla Numerador": "bruto",
+          "Resorte Carro": "bruto",
+          "Resorte Movimiento": "bruto",
+          baseInoxECO: "terminado",
+          "Aro Numerador": "terminado",
+          "Eje Rectificado": "terminado",
+          CajaMotor_ECO: "terminado",
+          Rueditas: "torno",
+          Movimiento: "augeriado",
+          Carros: "augeriado",
+          "Guia U": "balancin",
+          "Tornillo guia": "torno",
+          "Varilla 330": "soldador",
+        },
+        cantidadPorPieza: {
+          Espiral: 1,
+          "Tapita Perilla": 1,
+          "Cable Eco 220w": 1,
+          Patas: 4,
+          "Perilla Numerador": 1,
+          "Resorte Carro": 2,
+          "Resorte Movimiento": 1,
+          baseInoxECO: 1,
+          "Aro Numerador": 1,
+          "Eje Rectificado": 1,
+          CajaMotor_ECO: 1,
+          Rueditas: 4,
+          Movimiento: 1,
+          Carros: 1,
+          "Guia U": 1,
+          "Tornillo guia": 1,
+          "Varilla 330": 1,
+        },
+      },
+      BasePreArmada_Pintada330: {
+        pieza: [
+          "Espiral",
+          "Perilla Numerador",
+          "Tapita Perilla",
+          "Patas",
+          "Resorte Movimiento",
+          "Tecla",
+          "Cable 220w",
+          "Resorte Carro",
+          "Capacitores",
+          "Movimiento",
+          "Carros",
+          "Tornillo guia",
+          "Rueditas",
+          "CajaMotor_330",
+          "basePintada330",
+          "Aro Numerador",
+          "Eje Rectificado",
+          "Guia U",
+          "Varilla 330",
+        ],
+        categoriaPorPieza: {
+          Espiral: "bruto",
+          "Perilla Numerador": "bruto",
+          "Tapita Perilla": "bruto",
+          Patas: "bruto",
+          "Resorte Movimiento": "bruto",
+          Tecla: "bruto",
+          "Cable 220w": "bruto",
+          "Resorte Carro": "bruto",
+          Capacitores: "bruto",
+          Movimiento: "augeriado",
+          Carros: "augeriado",
+          "Tornillo guia": "torno",
+          Rueditas: "torno",
+          CajaMotor_330: "terminado",
+          basePintada330: "terminado",
+          "Aro Numerador": "terminado",
+          "Eje Rectificado": "terminado",
+          "Guia U": "balancin",
+          "Varilla 330": "soldador",
+        },
+        cantidadPorPieza: {
+          Espiral: 1,
+          "Perilla Numerador": 1,
+          "Tapita Perilla": 1,
+          Patas: 4,
+          "Resorte Movimiento": 1,
+          Tecla: 1,
+          "Cable 220w": 1,
+          "Resorte Carro": 2,
+          Capacitores: 1,
+          Movimiento: 1,
+          Carros: 1,
+          "Tornillo guia": 1,
+          Rueditas: 4,
+          CajaMotor_330: 1,
+          basePintada330: 1,
+          "Aro Numerador": 1,
+          "Eje Rectificado": 1,
+          "Guia U": 1,
+          "Varilla 330": 1,
+        },
+      },
+      BasePreArmada_Pintada300: {
+        pieza: [
+          "Espiral",
+          "Perilla Numerador",
+          "Tapita Perilla",
+          "Patas",
+          "Resorte Movimiento",
+          "Tecla",
+          "Cable 220w",
+          "Resorte Carro",
+          "Capacitores",
+          "Movimiento",
+          "Carros",
+          "Tornillo guia",
+          "Rueditas",
+          "CajaMotor_300",
+          "basePintada300",
+          "Aro Numerador",
+          "Eje Rectificado",
+          "Guia U",
+          "Varilla 300",
+        ],
+        categoriaPorPieza: {
+          Espiral: "bruto",
+          "Perilla Numerador": "bruto",
+          "Tapita Perilla": "bruto",
+          Patas: "bruto",
+          "Resorte Movimiento": "bruto",
+          Tecla: "bruto",
+          "Cable 220w": "bruto",
+          "Resorte Carro": "bruto",
+          Capacitores: "bruto",
+          Movimiento: "augeriado",
+          Carros: "augeriado",
+          "Tornillo guia": "torno",
+          Rueditas: "torno",
+          CajaMotor_300: "terminado",
+          basePintada300: "terminado",
+          "Aro Numerador": "terminado",
+          "Eje Rectificado": "terminado",
+          "Guia U": "balancin",
+          "Varilla 300": "soldador",
+        },
+        cantidadPorPieza: {
+          Espiral: 1,
+          "Perilla Numerador": 1,
+          "Tapita Perilla": 1,
+          Patas: 4,
+          "Resorte Movimiento": 1,
+          Tecla: 1,
+          "Cable 220w": 1,
+          "Resorte Carro": 2,
+          Capacitores: 1,
+          Movimiento: 1,
+          Carros: 1,
+          "Tornillo guia": 1,
+          Rueditas: 4,
+          CajaMotor_300: 1,
+          basePintada300: 1,
+          "Aro Numerador": 1,
+          "Eje Rectificado": 1,
+          "Guia U": 1,
+          "Varilla 300": 1,
+        },
+      },
+    };
+
+    const config = configuraciones[nombre]
+    if (!config){
+      return res.status(400).json({ mensaje: `⚠️ Base PreArmada  "${nombre}" no reconocido.` });
+    }
+
+    const piezasEnDB = await Pieza.find(
+      {nombre: {$in: config.pieza } },
+      {nombre: 1, cantidad: 1, _id: 0}
+    )
+
+    let piezasFaltantes = []
+
+    piezasEnDB.forEach((pieza)=>{
+      const categoria = config.categoriaPorPieza[pieza.nombre]
+      const cantidadDisponible = pieza.cantidad?.[categoria]?.cantidad || 0
+      const cantidadNecesaria = (config.cantidadPorPieza[pieza.nombre] || 1 )* cantidadNumero
+
+      if (cantidadNecesaria > cantidadDisponible){
+        piezasFaltantes.push(`${pieza.nombre} (necesitas ${cantidadNecesaria}, hay ${cantidadDisponible})`)
+      }
+    })
+
+    if (piezasFaltantes.length > 0) {
+      const mensaje = `❌ No se puede armar ${cantidadNumero} ${nombre}. Faltan: ${piezasFaltantes.join(", ")} \n`;
+      console.log(mensaje);
+      return res.status(200).json({ mensaje, puedeArmar: false, piezasFaltantes });
+    } else {
+      const mensaje = `✅ Se puede armar ${cantidadNumero} ${nombre} sin problemas.`;
+      console.log(mensaje);
+      return res.status(200).json({ mensaje, puedeArmar: true });
+    }
+  } catch (error) {
+    console.error("⚠️ Error en verificación de armado:", error);
+    res.status(500).json({ mensaje: "❌ Error interno del servidor" });
+  }
+});
+
+
+
+app.post("/api/verificarArmado/:nombre", async (req, res) => {
+  try {
+    const { cantidad } = req.body;
+    const nombre = req.params.nombre;
+
+    const cantidadNumero = Number(cantidad);
+    if (isNaN(cantidadNumero) || cantidadNumero <= 0) {
+      return res.status(400).json({ mensaje: "❌ Cantidad no válida" });
+    }
+
+    const configuraciones = {
+      Inox_330: {
+        pieza: [
+          "Brazo 330",
+          "Cubrecuchilla 330",
+          "Velero",
+          "Teletubi 330",
+          "Cuchilla 330",
+          "Vela 330",
+          "Planchada 330",
+          "Varilla Brazo 330",
+          "Tapa Afilador",
+          "Tubo Manija",
+          "Afilador",
+          "BasePreArmada_Inox330",
+          "Cubre Motor Rectangulo",
+          "Cubre Motor Cuadrado",
+          "Perilla Brazo",
+          "Resorte Brazo",
+          "Pipas",
+          "Perilla Cubrecuchilla",
+          "Perilla Afilador",
+          "Base Afilador 330",
+          "Piedra Afilador",
+          "Pinche Frontal",
+          "Pinche lateral",
+          "Cuadrado Regulador",
+          "cabezal_inox",
+        ],
+        categoriaPorPieza: {
+          "Brazo 330": "terminado",
+          "Cubrecuchilla 330": "terminado",
+          Velero: "terminado",
+          "Teletubi 330": "terminado",
+          "Cuchilla 330": "bruto",
+          "Vela 330": "terminado",
+          "Planchada 330": "terminado",
+          "Varilla Brazo 330": "terminado",
+          "Tapa Afilador": "terminado",
+          "Tubo Manija": "terminado",
+          Afilador: "terminado",
+          BasePreArmada_Inox330: "terminado",
+          "Cubre Motor Rectangulo": "bruto",
+          "Cubre Motor Cuadrado": "bruto",
+          "Perilla Brazo": "bruto",
+          "Resorte Brazo": "bruto",
+          Pipas: "bruto",
+          "Perilla Cubrecuchilla": "bruto",
+          "Perilla Afilador": "bruto",
+          "Base Afilador 330": "bruto",
+          "Piedra Afilador": "bruto",
+          "Pinche Frontal": "bruto",
+          "Pinche lateral": "bruto",
+          "Cuadrado Regulador": "soldador",
+          cabezal_inox: "soldador",
+        },
+        cantidadPorPieza: {
+          "Brazo 330": 1,
+          "Cubrecuchilla 330": 1,
+          Velero: 1,
+          "Teletubi 330": 1,
+          "Cuchilla 330": 1,
+          "Vela 330": 1,
+          "Planchada 330": 1,
+          "Varilla Brazo 330": 1,
+          "Tapa Afilador": 1,
+          "Tubo Manija": 1,
+          Afilador: 1,
+          BasePreArmada_Inox330: 1,
+          "Cubre Motor Rectangulo": 1,
+          "Cubre Motor Cuadrado": 1,
+          "Perilla Brazo": 1,
+          "Resorte Brazo": 1,
+          Pipas: 2,
+          "Perilla Cubrecuchilla": 2,
+          "Perilla Afilador": 1,
+          "Base Afilador 330": 1,
+          "Piedra Afilador": 1,
+          "Pinche Frontal": 1,
+          "Pinche lateral": 1,
+          "Cuadrado Regulador": 1,
+          cabezal_inox: 1,
+        },
+      },
+      Inox_300: {
+        pieza: [
+          "Brazo 300",
+          "Cubrecuchilla 300",
+          "Velero",
+          "Teletubi 300",
+          "Cuchilla 300",
+          "Vela 300",
+          "Planchada 300",
+          "Varilla Brazo 300",
+          "Tapa Afilador",
+          "Tubo Manija",
+          "Afilador",
+          "BasePreArmada_Inox300",
+          "Cubre Motor Rectangulo",
+          "Cubre Motor Cuadrado",
+          "Perilla Brazo",
+          "Resorte Brazo",
+          "Pipas",
+          "Perilla Cubrecuchilla",
+          "Perilla Afilador",
+          "Base Afilador 300",
+          "Piedra Afilador",
+          "Pinche Frontal",
+          "Pinche lateral",
+          "Cuadrado Regulador",
+          "cabezal_inox",
+        ],
+        categoriaPorPieza: {
+          "Brazo 300": "terminado",
+          "Cubrecuchilla 300": "terminado",
+          Velero: "terminado",
+          "Teletubi 300": "terminado",
+          "Cuchilla 300": "bruto",
+          "Vela 300": "terminado",
+          "Planchada 300": "terminado",
+          "Varilla Brazo 300": "terminado",
+          "Tapa Afilador": "terminado",
+          "Tubo Manija": "terminado",
+          Afilador: "terminado",
+          BasePreArmada_Inox300: "terminado",
+          "Cubre Motor Rectangulo": "bruto",
+          "Cubre Motor Cuadrado": "bruto",
+          "Perilla Brazo": "bruto",
+          "Resorte Brazo": "bruto",
+          Pipas: "bruto",
+          "Perilla Cubrecuchilla": "bruto",
+          "Perilla Afilador": "bruto",
+          "Base Afilador 300": "bruto",
+          "Piedra Afilador": "bruto",
+          "Pinche Frontal": "bruto",
+          "Pinche lateral": "bruto",
+          "Cuadrado Regulador": "soldador",
+          cabezal_inox: "soldador",
+        },
+        cantidadPorPieza: {
+          "Brazo 300": 1,
+          "Cubrecuchilla 300": 1,
+          Velero: 1,
+          "Teletubi 300": 1,
+          "Cuchilla 300": 1,
+          "Vela 300": 1,
+          "Planchada 300": 1,
+          "Varilla Brazo 300": 1,
+          "Tapa Afilador": 1,
+          "Tubo Manija": 1,
+          Afilador: 1,
+          BasePreArmada_Inox300: 1,
+          "Cubre Motor Rectangulo": 1,
+          "Cubre Motor Cuadrado": 1,
+          "Perilla Brazo": 1,
+          "Resorte Brazo": 1,
+          Pipas: 2,
+          "Perilla Cubrecuchilla": 2,
+          "Perilla Afilador": 1,
+          "Base Afilador 300": 1,
+          "Piedra Afilador": 1,
+          "Pinche Frontal": 1,
+          "Pinche lateral": 1,
+          "Cuadrado Regulador": 1,
+          cabezal_inox: 1,
+        },
+      },
+      Pintada_330: {
+        pieza: [
+          "Brazo 330",
+          "Cubrecuchilla 330",
+          "Velero",
+          "Teletubi 330",
+          "Cuchilla 330",
+          "Vela 330",
+          "Planchada 330",
+          "Varilla Brazo 330",
+          "Tapa Afilador",
+          "Tubo Manija",
+          "Afilador",
+          "BasePreArmada_Pintada330",
+          "Cubre Motor Rectangulo",
+          "Cubre Motor Cuadrado",
+          "Perilla Brazo",
+          "Resorte Brazo",
+          "Pipas",
+          "Perilla Cubrecuchilla",
+          "Perilla Afilador",
+          "Base Afilador 330",
+          "Piedra Afilador",
+          "Pinche Frontal",
+          "Pinche lateral",
+          "Cuadrado Regulador",
+          "cabezal_pintada",
+        ],
+        categoriaPorPieza: {
+          "Brazo 330": "terminado",
+          "Cubrecuchilla 330": "terminado",
+          Velero: "terminado",
+          "Teletubi 330": "terminado",
+          "Cuchilla 330": "bruto",
+          "Vela 330": "terminado",
+          "Planchada 330": "terminado",
+          "Varilla Brazo 330": "terminado",
+          "Tapa Afilador": "terminado",
+          "Tubo Manija": "terminado",
+          Afilador: "terminado",
+          BasePreArmada_Pintada330: "terminado",
+          "Cubre Motor Rectangulo": "bruto",
+          "Cubre Motor Cuadrado": "bruto",
+          "Perilla Brazo": "bruto",
+          "Resorte Brazo": "bruto",
+          Pipas: "bruto",
+          "Perilla Cubrecuchilla": "bruto",
+          "Perilla Afilador": "bruto",
+          "Base Afilador 330": "bruto",
+          "Piedra Afilador": "bruto",
+          "Pinche Frontal": "bruto",
+          "Pinche lateral": "bruto",
+          "Cuadrado Regulador": "soldador",
+          cabezal_pintada: "soldador",
+        },
+        cantidadPorPieza: {
+          "Brazo 330": 1,
+          "Cubrecuchilla 330": 1,
+          Velero: 1,
+          "Teletubi 330": 1,
+          "Cuchilla 330": 1,
+          "Vela 330": 1,
+          "Planchada 330": 1,
+          "Varilla Brazo 330": 1,
+          "Tapa Afilador": 1,
+          "Tubo Manija": 1,
+          Afilador: 1,
+          BasePreArmada_Pintada330: 1,
+          "Cubre Motor Rectangulo": 1,
+          "Cubre Motor Cuadrado": 1,
+          "Perilla Brazo": 1,
+          "Resorte Brazo": 1,
+          Pipas: 2,
+          "Perilla Cubrecuchilla": 2,
+          "Perilla Afilador": 1,
+          "Base Afilador 330": 1,
+          "Piedra Afilador": 1,
+          "Pinche Frontal": 1,
+          "Pinche lateral": 1,
+          "Cuadrado Regulador": 1,
+          cabezal_pintada: 1,
+        },
+      },
+      Pintada_300: {
+        pieza: [
+          "Brazo 300",
+          "Cubrecuchilla 300",
+          "Velero",
+          "Teletubi 300",
+          "Cuchilla 300",
+          "Vela 300",
+          "Planchada 300",
+          "Varilla Brazo 300",
+          "Tapa Afilador",
+          "Tubo Manija",
+          "Afilador",
+          "BasePreArmada_Pintada300",
+          "Cubre Motor Rectangulo",
+          "Cubre Motor Cuadrado",
+          "Perilla Brazo",
+          "Resorte Brazo",
+          "Pipas",
+          "Perilla Cubrecuchilla",
+          "Perilla Afilador",
+          "Base Afilador 300",
+          "Piedra Afilador",
+          "Pinche Frontal",
+          "Pinche lateral",
+          "Cuadrado Regulador",
+          "cabezal_inox",
+        ],
+        categoriaPorPieza: {
+          "Brazo 300": "terminado",
+          "Cubrecuchilla 300": "terminado",
+          Velero: "terminado",
+          "Teletubi 300": "terminado",
+          "Cuchilla 300": "bruto",
+          "Vela 300": "terminado",
+          "Planchada 300": "terminado",
+          "Varilla Brazo 300": "terminado",
+          "Tapa Afilador": "terminado",
+          "Tubo Manija": "terminado",
+          Afilador: "terminado",
+          BasePreArmada_Pintada300: "terminado",
+          "Cubre Motor Rectangulo": "bruto",
+          "Cubre Motor Cuadrado": "bruto",
+          "Perilla Brazo": "bruto",
+          "Resorte Brazo": "bruto",
+          Pipas: "bruto",
+          "Perilla Cubrecuchilla": "bruto",
+          "Perilla Afilador": "bruto",
+          "Base Afilador 300": "bruto",
+          "Piedra Afilador": "bruto",
+          "Pinche Frontal": "bruto",
+          "Pinche lateral": "bruto",
+          "Cuadrado Regulador": "soldador",
+          cabezal_inox: "soldador",
+        },
+        cantidadPorPieza: {
+          "Brazo 300": 1,
+          "Cubrecuchilla 300": 1,
+          Velero: 1,
+          "Teletubi 300": 1,
+          "Cuchilla 300": 1,
+          "Vela 300": 1,
+          "Planchada 300": 1,
+          "Varilla Brazo 300": 1,
+          "Tapa Afilador": 1,
+          "Tubo Manija": 1,
+          Afilador: 1,
+          BasePreArmada_Pintada300: 1,
+          "Cubre Motor Rectangulo": 1,
+          "Cubre Motor Cuadrado": 1,
+          "Perilla Brazo": 1,
+          "Resorte Brazo": 1,
+          Pipas: 2,
+          "Perilla Cubrecuchilla": 2,
+          "Perilla Afilador": 1,
+          "Base Afilador 300": 1,
+          "Piedra Afilador": 1,
+          "Pinche Frontal": 1,
+          "Pinche lateral": 1,
+          "Cuadrado Regulador": 1,
+          cabezal_inox: 1,
+        },
+      },
+      Inox_250: {
+        pieza: [
+          "Brazo 250",
+          "Cubrecuchilla 250",
+          "Velero",
+          "Teletubi 250",
+          "Cuchilla 250",
+          "Vela 250",
+          "Planchada 250",
+          "Varilla Brazo 250",
+          "Tapa Afilador 250",
+          "Tubo Manija 250",
+          "Afilador",
+          "BasePreArmada_Inox250",
+          "Cubre Motor Rectangulo",
+          "Perilla Brazo",
+          "Resorte Brazo",
+          "Pipas",
+          "Perilla Cubrecuchilla",
+          "Perilla Afilador",
+          "Base Afilador 250",
+          "Piedra Afilador",
+          "Pinche Frontal 250",
+          "Pinche lateral 250",
+          "Cuadrado Regulador",
+          "cabezal i250",
+        ],
+        categoriaPorPieza: {
+          "Brazo 250": "terminado",
+          "Cubrecuchilla 250": "terminado",
+          Velero: "terminado",
+          "Teletubi 250": "terminado",
+          "Cuchilla 250": "bruto",
+          "Vela 250": "terminado",
+          "Planchada 250": "terminado",
+          "Varilla Brazo 250": "terminado",
+          "Tapa Afilador 250": "terminado",
+          "Tubo Manija 250": "terminado",
+          Afilador: "terminado",
+          BasePreArmada_Inox250: "terminado",
+          "Cubre Motor Rectangulo": "bruto",
+          "Perilla Brazo": "bruto",
+          "Resorte Brazo": "bruto",
+          Pipas: "bruto",
+          "Perilla Cubrecuchilla": "bruto",
+          "Perilla Afilador": "bruto",
+          "Base Afilador 250": "bruto",
+          "Piedra Afilador": "bruto",
+          "Pinche Frontal 250": "bruto",
+          "Pinche lateral 250": "bruto",
+          "Cuadrado Regulador": "soldador",
+          "cabezal i250": "soldador",
+        },
+        cantidadPorPieza: {
+          "Brazo 250": 1,
+          "Cubrecuchilla 250": 1,
+          Velero: 1,
+          "Teletubi 250": 1,
+          "Cuchilla 250": 1,
+          "Vela 250": 1,
+          "Planchada 250": 1,
+          "Varilla Brazo 250": 1,
+          "Tapa Afilador 250": 1,
+          "Tubo Manija 250": 1,
+          Afilador: 1,
+          BasePreArmada_Inox250: 1,
+          "Cubre Motor Rectangulo": 1,
+          "Perilla Brazo": 1,
+          "Resorte Brazo": 1,
+          Pipas: 2,
+          "Perilla Cubrecuchilla": 2,
+          "Perilla Afilador": 1,
+          "Base Afilador 250": 1,
+          "Piedra Afilador": 1,
+          "Pinche Frontal 250": 1,
+          "Pinche lateral 250": 1,
+          "Cuadrado Regulador": 1,
+          "cabezal i250": 1,
+        },
+      },
+      Inox_ECO: {
+        pieza: [
+          "Brazo 330",
+          "Cubrecuchilla 330",
+          "Velero",
+          "Cuchilla 330",
+          "Vela 330",
+          "Planchada 330",
+          "Varilla Brazo 330",
+          "Tubo Manija",
+          "Afilador",
+          "BasePreArmada_InoxECO",
+          "Tapa Afilador Eco",
+          "Teletubi Eco",
+          "Perilla Brazo",
+          "Resorte Brazo",
+          "Pipas",
+          "Perilla Cubrecuchilla",
+          "Perilla Afilador",
+          "Base Afilador 250",
+          "Piedra Afilador",
+          "Pinche Frontal",
+          "Pinche lateral",
+          "Pitito Teletubi Eco",
+          "Cuadrado Regulador",
+          "cabezal_inox",
+        ],
+        categoriaPorPieza: {
+          "Brazo 330": "terminado",
+          "Cubrecuchilla 330": "terminado",
+          Velero: "terminado",
+          "Cuchilla 330": "bruto",
+          "Vela 330": "terminado",
+          "Planchada 330": "terminado",
+          "Varilla Brazo 330": "terminado",
+          "Tubo Manija": "terminado",
+          Afilador: "terminado",
+          BasePreArmada_InoxECO: "terminado",
+          "Tapa Afilador Eco": "terminado",
+          "Teletubi Eco": "terminado",
+          "Perilla Brazo": "bruto",
+          "Resorte Brazo": "bruto",
+          Pipas: "bruto",
+          "Perilla Cubrecuchilla": "bruto",
+          "Perilla Afilador": "bruto",
+          "Base Afilador 250": "bruto",
+          "Piedra Afilador": "bruto",
+          "Pinche Frontal": "bruto",
+          "Pinche lateral": "bruto",
+          "Pitito Teletubi Eco": "bruto",
+          "Cuadrado Regulador": "soldador",
+          cabezal_inox: "soldador",
+        },
+        cantidadPorPieza: {
+          "Brazo 330": 1,
+          "Cubrecuchilla 330": 1,
+          Velero: 1,
+          "Cuchilla 330": 1,
+          "Vela 330": 1,
+          "Planchada 330": 1,
+          "Varilla Brazo 330": 1,
+          "Tubo Manija": 1,
+          Afilador: 1,
+          BasePreArmada_InoxECO: 1,
+          "Tapa Afilador Eco": 1,
+          "Teletubi Eco": 1,
+          "Perilla Brazo": 1,
+          "Resorte Brazo": 1,
+          Pipas: 2,
+          "Perilla Cubrecuchilla": 2,
+          "Perilla Afilador": 1,
+          "Base Afilador 250": 1,
+          "Piedra Afilador": 1,
+          "Pinche Frontal": 1,
+          "Pinche lateral": 1,
+          "Pitito Teletubi Eco": 1,
+          "Cuadrado Regulador": 1,
+          cabezal_inox: 1,
+        },
+      },
+    };
+
+    const config = configuraciones[nombre]
+    if (!config){
+      return res.status(400).json({ mensaje: `⚠️ Maquinas "${nombre}" no reconocido.` });
+    }
+
+    const piezasEnDB = await Pieza.find(
+      {nombre: {$in: config.pieza } },
+      {nombre: 1, cantidad: 1, _id: 0}
+    )
+
+    let piezasFaltantes = []
+
+    piezasEnDB.forEach((pieza)=>{
+      const categoria = config.categoriaPorPieza[pieza.nombre]
+      const cantidadDisponible = pieza.cantidad?.[categoria]?.cantidad || 0
+      const cantidadNecesaria = (config.cantidadPorPieza[pieza.nombre] || 1 )* cantidadNumero
+
+      if (cantidadNecesaria > cantidadDisponible){
+        piezasFaltantes.push(`${pieza.nombre} (necesitas ${cantidadNecesaria}, hay ${cantidadDisponible})`)
+      }
+    })
+
+    if (piezasFaltantes.length > 0) {
+      const mensaje = `❌ No se puede armar ${cantidadNumero} ${nombre}. Faltan: ${piezasFaltantes.join(", ")} \n`;
+      console.log(mensaje);
+      return res.status(200).json({ mensaje, puedeArmar: false, piezasFaltantes });
+    } else {
+      const mensaje = `✅ Se puede armar ${cantidadNumero} ${nombre} sin problemas.`;
+      console.log(mensaje);
+      return res.status(200).json({ mensaje, puedeArmar: true });
+    }
+  } catch (error) {
+    console.error("⚠️ Error en verificación de armado:", error);
+    res.status(500).json({ mensaje: "❌ Error interno del servidor" });
+  }
+});
+
+
+
+
+
+const piezaspanel = require("./routes/panel/piezasPanel")
+app.use("/api/piezaPanel", piezaspanel)
+
+
+/// actualiar PiezaBrutas 
+app.put("/api/piezasBrutoActualizar/nombre/:nombre", async (req, res) => {
+  try {
+    const { nombre } = req.params; // Obtener el nombre desde la URL
+    const { cantidadBruto, stockDeseadoBruto } = req.body; // Obtener los valores desde el body
+
+    // Crear objeto con las actualizaciones, sólo si los valores no están vacíos
+    const updates = {};
+
+    if (cantidadBruto !== undefined) {
+      updates["cantidad.bruto.cantidad"] = cantidadBruto;
+    }
+
+    if (stockDeseadoBruto !== undefined) {
+      updates["cantidad.bruto.stock_deseado"] = stockDeseadoBruto;
+    }
+
+    // Verifica si la pieza existe y actualiza los valores
+    const piezaActualizada = await Pieza.findOneAndUpdate(
+      { nombre: nombre }, // Buscar por nombre
+      { $set: updates }, // Actualizar lo que haya en el objeto `updates`
+      { new: true } // Devolver la pieza actualizada
+    );
+
+    if (!piezaActualizada) {
+      return res.status(404).json({ mensaje: "Pieza no encontrada" });
+    }
+
+    res.json({
+      mensaje: "Cantidad y/o Stock deseado actualizado correctamente",
+      piezaActualizada,
+    });
+  } catch (error) {
+    console.error("Error al actualizar la pieza:", error);
+    res.status(500).json({ mensaje: "Error en el servidor" });
+  }
+});
+
+/// Actulizar Augeriado 
+app.put("/api/piezasAugeriadoActualizar/nombre/:nombre", async (req, res) => {
+  try {
+    const { nombre } = req.params; // Obtener el nombre desde la URL
+    const { cantidadBruto, stockDeseadoBruto } = req.body; // Obtener los valores desde el body
+
+    // Crear objeto con las actualizaciones, sólo si los valores no están vacíos
+    const updates = {};
+
+    if (cantidadBruto !== undefined) {
+      updates["cantidad.augeriado.cantidad"] = cantidadBruto;
+    }
+
+    if (stockDeseadoBruto !== undefined) {
+      updates["cantidad.augeriado.stock_deseado"] = stockDeseadoBruto;
+    }
+
+    // Verifica si la pieza existe y actualiza los valores
+    const piezaActualizada = await Pieza.findOneAndUpdate(
+      { nombre: nombre }, // Buscar por nombre
+      { $set: updates }, // Actualizar lo que haya en el objeto `updates`
+      { new: true } // Devolver la pieza actualizada
+    );
+
+    if (!piezaActualizada) {
+      return res.status(404).json({ mensaje: "Pieza no encontrada" });
+    }
+
+    res.json({
+      mensaje: "Cantidad y/o Stock deseado actualizado correctamente",
+      piezaActualizada,
+    });
+  } catch (error) {
+    console.error("Error al actualizar la pieza:", error);
+    res.status(500).json({ mensaje: "Error en el servidor" });
+  }
+});
+
+/// Actulizar Plegadora
+app.put("/api/piezasPlegadoraActualizar/nombre/:nombre", async (req, res) => {
+  try {
+    const { nombre } = req.params; // Obtener el nombre desde la URL
+    const { cantidadBruto, stockDeseadoBruto } = req.body; // Obtener los valores desde el body
+
+    // Crear objeto con las actualizaciones, sólo si los valores no están vacíos
+    const updates = {};
+
+    if (cantidadBruto !== undefined) {
+      updates["cantidad.plegadora.cantidad"] = cantidadBruto;
+    }
+
+    if (stockDeseadoBruto !== undefined) {
+      updates["cantidad.plegadora.stock_deseado"] = stockDeseadoBruto;
+    }
+
+    // Verifica si la pieza existe y actualiza los valores
+    const piezaActualizada = await Pieza.findOneAndUpdate(
+      { nombre: nombre }, // Buscar por nombre
+      { $set: updates }, // Actualizar lo que haya en el objeto `updates`
+      { new: true } // Devolver la pieza actualizada
+    );
+
+    if (!piezaActualizada) {
+      return res.status(404).json({ mensaje: "Pieza no encontrada" });
+    }
+
+    res.json({
+      mensaje: "Cantidad y/o Stock deseado actualizado correctamente",
+      piezaActualizada,
+    });
+  } catch (error) {
+    console.error("Error al actualizar la pieza:", error);
+    res.status(500).json({ mensaje: "Error en el servidor" });
+  }
+});
+
+/// Actulizar Plasma
+app.put("/api/piezasPlasmaActualizar/nombre/:nombre", async (req, res) => {
+  try {
+    const { nombre } = req.params; // Obtener el nombre desde la URL
+    const { cantidadBruto, stockDeseadoBruto } = req.body; // Obtener los valores desde el body
+
+    // Crear objeto con las actualizaciones, sólo si los valores no están vacíos
+    const updates = {};
+
+    if (cantidadBruto !== undefined) {
+      updates["cantidad.plasma.cantidad"] = cantidadBruto;
+    }
+
+    if (stockDeseadoBruto !== undefined) {
+      updates["cantidad.plasma.stock_deseado"] = stockDeseadoBruto;
+    }
+
+    // Verifica si la pieza existe y actualiza los valores
+    const piezaActualizada = await Pieza.findOneAndUpdate(
+      { nombre: nombre }, // Buscar por nombre
+      { $set: updates }, // Actualizar lo que haya en el objeto `updates`
+      { new: true } // Devolver la pieza actualizada
+    );
+
+    if (!piezaActualizada) {
+      return res.status(404).json({ mensaje: "Pieza no encontrada" });
+    }
+
+    res.json({
+      mensaje: "Cantidad y/o Stock deseado actualizado correctamente",
+      piezaActualizada,
+    });
+  } catch (error) {
+    console.error("Error al actualizar la pieza:", error);
+    res.status(500).json({ mensaje: "Error en el servidor" });
+  }
+});
+
+/// Actulizar Corte
+app.put("/api/piezasCorteActualizar/nombre/:nombre", async (req, res) => {
+  try {
+    const { nombre } = req.params; // Obtener el nombre desde la URL
+    const { cantidadBruto, stockDeseadoBruto } = req.body; // Obtener los valores desde el body
+
+    // Crear objeto con las actualizaciones, sólo si los valores no están vacíos
+    const updates = {};
+
+    if (cantidadBruto !== undefined) {
+      updates["cantidad.corte.cantidad"] = cantidadBruto;
+    }
+
+    if (stockDeseadoBruto !== undefined) {
+      updates["cantidad.corte.stock_deseado"] = stockDeseadoBruto;
+    }
+
+    // Verifica si la pieza existe y actualiza los valores
+    const piezaActualizada = await Pieza.findOneAndUpdate(
+      { nombre: nombre }, // Buscar por nombre
+      { $set: updates }, // Actualizar lo que haya en el objeto `updates`
+      { new: true } // Devolver la pieza actualizada
+    );
+
+    if (!piezaActualizada) {
+      return res.status(404).json({ mensaje: "Pieza no encontrada" });
+    }
+
+    res.json({
+      mensaje: "Cantidad y/o Stock deseado actualizado correctamente",
+      piezaActualizada,
+    });
+  } catch (error) {
+    console.error("Error al actualizar la pieza:", error);
+    res.status(500).json({ mensaje: "Error en el servidor" });
+  }
+});
+
+/// Actulizar Balancin
+app.put("/api/piezasBalancinActualizar/nombre/:nombre", async (req, res) => {
+  try {
+    const { nombre } = req.params; // Obtener el nombre desde la URL
+    const { cantidadBruto, stockDeseadoBruto } = req.body; // Obtener los valores desde el body
+
+    // Crear objeto con las actualizaciones, sólo si los valores no están vacíos
+    const updates = {};
+
+    if (cantidadBruto !== undefined) {
+      updates["cantidad.balancin.cantidad"] = cantidadBruto;
+    }
+
+    if (stockDeseadoBruto !== undefined) {
+      updates["cantidad.balancin.stock_deseado"] = stockDeseadoBruto;
+    }
+
+    // Verifica si la pieza existe y actualiza los valores
+    const piezaActualizada = await Pieza.findOneAndUpdate(
+      { nombre: nombre }, // Buscar por nombre
+      { $set: updates }, // Actualizar lo que haya en el objeto `updates`
+      { new: true } // Devolver la pieza actualizada
+    );
+
+    if (!piezaActualizada) {
+      return res.status(404).json({ mensaje: "Pieza no encontrada" });
+    }
+
+    res.json({
+      mensaje: "Cantidad y/o Stock deseado actualizado correctamente",
+      piezaActualizada,
+    });
+  } catch (error) {
+    console.error("Error al actualizar la pieza:", error);
+    res.status(500).json({ mensaje: "Error en el servidor" });
+  }
+});
+
+/// Actulizar Torno
+app.put("/api/piezasTornoActualizar/nombre/:nombre", async (req, res) => {
+  try {
+    const { nombre } = req.params; // Obtener el nombre desde la URL
+    const { cantidadBruto, stockDeseadoBruto } = req.body; // Obtener los valores desde el body
+
+    // Crear objeto con las actualizaciones, sólo si los valores no están vacíos
+    const updates = {};
+
+    if (cantidadBruto !== undefined) {
+      updates["cantidad.torno.cantidad"] = cantidadBruto;
+    }
+
+    if (stockDeseadoBruto !== undefined) {
+      updates["cantidad.torno.stock_deseado"] = stockDeseadoBruto;
+    }
+
+    // Verifica si la pieza existe y actualiza los valores
+    const piezaActualizada = await Pieza.findOneAndUpdate(
+      { nombre: nombre }, // Buscar por nombre
+      { $set: updates }, // Actualizar lo que haya en el objeto `updates`
+      { new: true } // Devolver la pieza actualizada
+    );
+
+    if (!piezaActualizada) {
+      return res.status(404).json({ mensaje: "Pieza no encontrada" });
+    }
+
+    res.json({
+      mensaje: "Cantidad y/o Stock deseado actualizado correctamente",
+      piezaActualizada,
+    });
+  } catch (error) {
+    console.error("Error al actualizar la pieza:", error);
+    res.status(500).json({ mensaje: "Error en el servidor" });
+  }
+});
+
+/// Actulizar Fresa
+app.put("/api/piezasFresaActualizar/nombre/:nombre", async (req, res) => {
+  try {
+    const { nombre } = req.params; // Obtener el nombre desde la URL
+    const { cantidadBruto, stockDeseadoBruto } = req.body; // Obtener los valores desde el body
+
+    // Crear objeto con las actualizaciones, sólo si los valores no están vacíos
+    const updates = {};
+
+    if (cantidadBruto !== undefined) {
+      updates["cantidad.fresa.cantidad"] = cantidadBruto;
+    }
+
+    if (stockDeseadoBruto !== undefined) {
+      updates["cantidad.fresa.stock_deseado"] = stockDeseadoBruto;
+    }
+
+    // Verifica si la pieza existe y actualiza los valores
+    const piezaActualizada = await Pieza.findOneAndUpdate(
+      { nombre: nombre }, // Buscar por nombre
+      { $set: updates }, // Actualizar lo que haya en el objeto `updates`
+      { new: true } // Devolver la pieza actualizada
+    );
+
+    if (!piezaActualizada) {
+      return res.status(404).json({ mensaje: "Pieza no encontrada" });
+    }
+
+    res.json({
+      mensaje: "Cantidad y/o Stock deseado actualizado correctamente",
+      piezaActualizada,
+    });
+  } catch (error) {
+    console.error("Error al actualizar la pieza:", error);
+    res.status(500).json({ mensaje: "Error en el servidor" });
+  }
+});
+
+/// Actulizar Soldar
+app.put("/api/piezasSoldarActualizar/nombre/:nombre", async (req, res) => {
+  try {
+    const { nombre } = req.params; // Obtener el nombre desde la URL
+    const { cantidadBruto, stockDeseadoBruto } = req.body; // Obtener los valores desde el body
+
+    // Crear objeto con las actualizaciones, sólo si los valores no están vacíos
+    const updates = {};
+
+    if (cantidadBruto !== undefined) {
+      updates["cantidad.soldador.cantidad"] = cantidadBruto;
+    }
+
+    if (stockDeseadoBruto !== undefined) {
+      updates["cantidad.soldador.stock_deseado"] = stockDeseadoBruto;
+    }
+
+    // Verifica si la pieza existe y actualiza los valores
+    const piezaActualizada = await Pieza.findOneAndUpdate(
+      { nombre: nombre }, // Buscar por nombre
+      { $set: updates }, // Actualizar lo que haya en el objeto `updates`
+      { new: true } // Devolver la pieza actualizada
+    );
+
+    if (!piezaActualizada) {
+      return res.status(404).json({ mensaje: "Pieza no encontrada" });
+    }
+
+    res.json({
+      mensaje: "Cantidad y/o Stock deseado actualizado correctamente",
+      piezaActualizada,
+    });
+  } catch (error) {
+    console.error("Error al actualizar la pieza:", error);
+    res.status(500).json({ mensaje: "Error en el servidor" });
+  }
+});
+
+
+/// Actuliazar Piezas Terminadas 
+app.put("/api/piezasTerminadoActualizar/nombre/:nombre", async (req, res) => {
+  try {
+    const { nombre } = req.params; // Obtener el nombre desde la URL
+    const { cantidadBruto, stockDeseadoBruto } = req.body; // Obtener los valores desde el body
+
+    // Crear objeto con las actualizaciones, sólo si los valores no están vacíos
+    const updates = {};
+
+    if (cantidadBruto !== undefined) {
+      updates["cantidad.terminado.cantidad"] = cantidadBruto;
+    }
+
+    if (stockDeseadoBruto !== undefined) {
+      updates["cantidad.terminado.stock_deseado"] = stockDeseadoBruto;
+    }
+
+    // Verifica si la pieza existe y actualiza los valores
+    const piezaActualizada = await Pieza.findOneAndUpdate(
+      { nombre: nombre }, // Buscar por nombre
+      { $set: updates }, // Actualizar lo que haya en el objeto `updates`
+      { new: true } // Devolver la pieza actualizada
+    );
+
+    if (!piezaActualizada) {
+      return res.status(404).json({ mensaje: "Pieza no encontrada" });
+    }
+
+    res.json({
+      mensaje: "Cantidad y/o Stock deseado actualizado correctamente",
+      piezaActualizada,
+    });
+  } catch (error) {
+    console.error("Error al actualizar la pieza:", error);
+    res.status(500).json({ mensaje: "Error en el servidor" });
+  }
+});
+
+
+
 // Iniciar el servidor
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
@@ -4691,3 +6062,7 @@ app.listen(PORT, () => {
 ////
 ////
 ////gregarAfiladores()
+
+
+
+

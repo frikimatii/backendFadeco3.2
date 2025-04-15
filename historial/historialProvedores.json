@@ -3,6 +3,13 @@
     "provedor": "soldador",
     "pedidos": {
       "envios": [
+        "14/4/2025 09:39 p. m. - Enviado 1 basePintada330",
+        "14/4/2025 09:39 p. m. - Enviado 1 basePintada300",
+        "14/4/2025 09:39 p. m. - Enviado 1 baseInoxECO",
+        "14/4/2025 09:39 p. m. - Enviado 1 baseInox330",
+        "14/4/2025 09:39 p. m. - Enviado 1 baseInox300",
+        "14/4/2025 09:39 p. m. - Enviado 1 baseInox250",
+        "14/4/2025 07:11 p. m. - Enviado 1 CajaSoldadaEco",
         "11/4/2025 06:53 p. m. - Enviado 1 basePintada300",
         "11/4/2025 06:52 p. m. - Enviado 1 baseInox330",
         "11/4/2025 05:43 p. m. - Enviado 1 baseInox250",
@@ -10,6 +17,13 @@
         "11/4/2025 03:26 p. m. - Enviado 1 CajaSoldadaEco"
       ],
       "entregas": [
+        "14/4/2025 09:40 p. m. - Recibido 1 basePintada330",
+        "14/4/2025 09:40 p. m. - Recibido 1 basePintada300",
+        "14/4/2025 09:40 p. m. - Recibido 1 baseInoxECO",
+        "14/4/2025 09:40 p. m. - Recibido 1 baseInox330",
+        "14/4/2025 09:40 p. m. - Recibido 1 baseInox300",
+        "14/4/2025 09:40 p. m. - Recibido 1 baseInox250",
+        "14/4/2025 07:12 p. m. - Recibido 1 CajaSoldadaEco",
         "11/4/2025 03:27 p. m. - Recibido 2 CajaSoldadaEco",
         "11/4/2025 03:19 p. m. - Recibido 1 CajaSoldadaEco",
         "11/4/2025 03:18 p. m. - Recibido 1 baseInox250"
@@ -20,6 +34,24 @@
     "provedor": "carmelo",
     "pedidos": {
       "envios": [
+        "15/4/2025 12:05 a. m. - Enviado 6 Vela 330",
+        "15/4/2025 12:05 a. m. - Enviado 6 Vela 300",
+        "15/4/2025 12:05 a. m. - Enviado 6 Vela 250",
+        "14/4/2025 11:49 p. m. - Enviado 7 Teletubi 330",
+        "14/4/2025 11:49 p. m. - Enviado 7 Teletubi 300",
+        "14/4/2025 11:49 p. m. - Enviado 7 Teletubi 250",
+        "14/4/2025 11:47 p. m. - Enviado 5 Tapa Afilador 250",
+        "14/4/2025 11:36 p. m. - Enviado 13 Tapa Afilador",
+        "14/4/2025 11:06 p. m. - Enviado 11 Cubrecuchilla 330",
+        "14/4/2025 11:05 p. m. - Enviado 11 Cubrecuchilla 300",
+        "14/4/2025 11:05 p. m. - Enviado 11 Cubrecuchilla 250",
+        "14/4/2025 09:41 p. m. - Enviado 1 baseInox300",
+        "14/4/2025 09:41 p. m. - Enviado 1 baseInox250",
+        "14/4/2025 07:07 p. m. - Enviado 4 Caja 250",
+        "14/4/2025 07:01 p. m. - Enviado 4 Caja 300",
+        "14/4/2025 06:53 p. m. - Enviado 1 Caja 330",
+        "14/4/2025 06:49 p. m. - Enviado 1 Caja 330",
+        "14/4/2025 06:41 p. m. - Enviado 5 Caja 330",
         "11/4/2025 06:30 p. m. - Enviado 1 Aro Numerador",
         "11/4/2025 06:28 p. m. - Enviado 1 Aro Numerador",
         "11/4/2025 06:27 p. m. - Enviado 2 Aro Numerador",
@@ -35,6 +67,24 @@
         "11/4/2025 01:11 p. m. - Enviado 5x Aro Numerador"
       ],
       "entregas": [
+        "15/4/2025 12:05 a. m. - Recibido 6 Vela 330",
+        "15/4/2025 12:05 a. m. - Recibido 6 Vela 300",
+        "15/4/2025 12:05 a. m. - Recibido 6 Vela 250",
+        "14/4/2025 11:50 p. m. - Recibido 7 Teletubi 330",
+        "14/4/2025 11:50 p. m. - Recibido 7 Teletubi 300",
+        "14/4/2025 11:50 p. m. - Recibido 7 Teletubi 250",
+        "14/4/2025 11:47 p. m. - Recibido 4 Tapa Afilador 250",
+        "14/4/2025 11:36 p. m. - Recibido 10 Tapa Afilador",
+        "14/4/2025 11:07 p. m. - Recibido 11 Cubrecuchilla 330",
+        "14/4/2025 11:07 p. m. - Recibido 11 Cubrecuchilla 300",
+        "14/4/2025 11:07 p. m. - Recibido 10 Cubrecuchilla 250",
+        "14/4/2025 09:54 p. m. - Recibido 1 baseInox300",
+        "14/4/2025 09:54 p. m. - Recibido 1 baseInox250",
+        "14/4/2025 07:08 p. m. - Recibido 3 Caja 250",
+        "14/4/2025 07:02 p. m. - Recibido 4 Caja 300",
+        "14/4/2025 06:53 p. m. - Recibido 2 Caja 330",
+        "14/4/2025 06:42 p. m. - Recibido 5 Caja 330",
+        "13/4/2025 03:10 p. m. - Recibido 1 baseInoxECO",
         "11/4/2025 07:20 p. m. - Recibido 3 Aro Numerador",
         "11/4/2025 07:20 p. m. - Recibido 3 Aro Numerador",
         "11/4/2025 07:20 p. m. - Recibido 2 Aro Numerador",
@@ -53,6 +103,18 @@
     "provedor": "maxi",
     "pedidos": {
       "envios": [
+        "15/4/2025 12:03 a. m. - Enviado 20 Velero",
+        "14/4/2025 11:55 p. m. - Enviado 7 Tapa Afilador Eco",
+        "14/4/2025 11:47 p. m. - Enviado 1 Tapa Afilador 250",
+        "14/4/2025 11:33 p. m. - Enviado 5 Planchada 330",
+        "14/4/2025 11:33 p. m. - Enviado 5 Planchada 300",
+        "14/4/2025 11:33 p. m. - Enviado 5 Planchada 250",
+        "14/4/2025 11:00 p. m. - Enviado 7 Brazo 330",
+        "14/4/2025 11:00 p. m. - Enviado 7 Brazo 300",
+        "14/4/2025 11:00 p. m. - Enviado 7 Brazo 250",
+        "14/4/2025 09:53 p. m. - Enviado 1 baseInoxECO",
+        "14/4/2025 09:53 p. m. - Enviado 1 baseInox330",
+        "14/4/2025 09:25 p. m. - Enviado 15 Aro Numerador",
         "11/4/2025 07:41 p. m. - Enviado 1 Aro Numerador",
         "11/4/2025 07:41 p. m. - Enviado 1 Aro Numerador",
         "11/4/2025 07:41 p. m. - Enviado 3 Aro Numerador",
@@ -60,6 +122,18 @@
         "11/4/2025 01:54 p. m. - Enviado 7 Aro Numerador"
       ],
       "entregas": [
+        "15/4/2025 12:03 a. m. - Recibido 15 Velero",
+        "14/4/2025 11:58 p. m. - Recibido 7 Tapa Afilador Eco",
+        "14/4/2025 11:48 p. m. - Recibido 1 Tapa Afilador 250",
+        "14/4/2025 11:33 p. m. - Recibido 5 Planchada 330",
+        "14/4/2025 11:33 p. m. - Recibido 5 Planchada 300",
+        "14/4/2025 11:33 p. m. - Recibido 5 Planchada 250",
+        "14/4/2025 11:01 p. m. - Recibido 7 Brazo 330",
+        "14/4/2025 11:01 p. m. - Recibido 7 Brazo 300",
+        "14/4/2025 11:01 p. m. - Recibido 7 Brazo 250",
+        "14/4/2025 09:54 p. m. - Recibido 1 baseInoxECO",
+        "14/4/2025 09:54 p. m. - Recibido 1 baseInox330",
+        "14/4/2025 09:25 p. m. - Recibido 12 Aro Numerador",
         "11/4/2025 01:54 p. m. - Recibido 2 Aro Numerador"
       ]
     }
@@ -68,22 +142,45 @@
     "provedor": "pintura",
     "pedidos": {
       "envios": [
+        "15/4/2025 12:18 a. m. - Enviado 5 Teletubi Eco",
+        "14/4/2025 10:01 p. m. - Enviado 1 basePintada330",
+        "14/4/2025 10:01 p. m. - Enviado 1 basePintada300",
+        "14/4/2025 07:14 p. m. - Enviado 1 Caja Soldada Eco",
         "11/4/2025 06:00 p. m. - Enviado 1 Teletubi Eco",
         "11/4/2025 01:55 p. m. - Enviado 1 basePintada330",
         "11/4/2025 01:55 p. m. - Enviado 2 basePintada330",
         "11/4/2025 01:55 p. m. - Enviado 1 Teletubi Eco"
       ],
-      "entregas": []
+      "entregas": [
+        "15/4/2025 12:18 a. m. - Recibido 5 Teletubi Eco",
+        "14/4/2025 10:01 p. m. - Recibido 1 basePintada330",
+        "14/4/2025 10:01 p. m. - Recibido 1 basePintada300",
+        "14/4/2025 07:28 p. m. - Recibido 1 Caja Soldada Eco"
+      ]
     }
   },
   {
     "provedor": "niquelado",
     "pedidos": {
       "envios": [
+        "15/4/2025 12:02 a. m. - Enviado 7 Varilla Brazo 330",
+        "15/4/2025 12:01 a. m. - Enviado 7 Varilla Brazo 300",
+        "15/4/2025 12:01 a. m. - Enviado 7 Varilla Brazo 250",
+        "14/4/2025 11:59 p. m. - Enviado 17 Tubo Manija 250",
+        "14/4/2025 11:58 p. m. - Enviado 17 Tubo Manija",
+        "14/4/2025 10:47 p. m. - Enviado 25 Palanca Afilador",
+        "14/4/2025 10:07 p. m. - Enviado 15 Eje Rectificado",
         "11/4/2025 01:55 p. m. - Enviado 2 Varilla Brazo 300",
         "11/4/2025 01:55 p. m. - Enviado 4 Eje Rectificado"
       ],
       "entregas": [
+        "15/4/2025 12:02 a. m. - Recibido 7 Varilla Brazo 330",
+        "15/4/2025 12:02 a. m. - Recibido 7 Varilla Brazo 300",
+        "15/4/2025 12:02 a. m. - Recibido 7 Varilla Brazo 250",
+        "14/4/2025 11:59 p. m. - Recibido 13 Tubo Manija 250",
+        "14/4/2025 11:59 p. m. - Recibido 13 Tubo Manija",
+        "14/4/2025 10:47 p. m. - Recibido 20 Palanca Afilador",
+        "14/4/2025 10:07 p. m. - Recibido 14 Eje Rectificado",
         "11/4/2025 06:13 p. m. - Recibido 3 Varilla Brazo 330"
       ]
     }
@@ -91,8 +188,20 @@
   {
     "provedor": "afilador",
     "pedidos": {
-      "envios": [],
-      "entregas": []
+      "envios": [
+        "14/4/2025 10:50 p. m. - Enviado 12 Ruleman608",
+        "14/4/2025 10:50 p. m. - Enviado 12 Resorte Palanca",
+        "14/4/2025 10:49 p. m. - Enviado 12 Resorte Empuje",
+        "14/4/2025 10:49 p. m. - Enviado 12 Palanca Afilador",
+        "14/4/2025 10:49 p. m. - Enviado 12 Eje Largo",
+        "14/4/2025 10:49 p. m. - Enviado 12 Eje Corto",
+        "14/4/2025 10:49 p. m. - Enviado 12 Carcaza Afilador",
+        "14/4/2025 10:49 p. m. - Enviado 12 Capuchon Afilador"
+      ],
+      "entregas": [
+        "14/4/2025 10:57 p. m. - Recibido 1 Afilador",
+        "14/4/2025 10:56 p. m. - Recibido 3 Afilador"
+      ]
     }
   }
 ]
