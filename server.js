@@ -150,7 +150,7 @@ app.put("/api/piezas/plegadora/:nombre", async (req, res) => {
         "Lateral p300 sintecla",
         "Lateral i330 eco",
       ],
-      balancin: ["Chapa U Inox 250", "Chapa U Pintada", "Chapa U Inox"],
+      balancin: ["Chapa U inox 250", "Chapa U Pintada", "Chapa U inox"],
       fresa: ["Planchada 300", "Planchada 330", "Planchada 250"],
     };
 
@@ -378,9 +378,7 @@ app.put("/api/piezas/corte/:nombre", async (req, res) => {
         "Buje Eje Eco",
         "Teletubi Eco",
         "Guia U",
-        "Chapa CubreCabezal inox",
-        "Chapa CubreCabezal pintada",
-        "Chapa CubreCabezal inox 250",
+
         "Planchuela Inferior",
         "Planchuela Interna",
       ],
@@ -729,14 +727,14 @@ app.put("/api/piezas/soldador/:nombre", async (req, res) => {
   try {
     const { cantidad } = req.body;
     const nombre = req.params.nombre;
-
     const cantidadNumero = Number(cantidad);
+
     if (isNaN(cantidadNumero)) {
       return res.status(400).json({ mensaje: "Cantidad No Válida" });
     }
 
     const categoria = {
-      xxx: ["cabezal_inox", "cabezal_pintada", "cabezal_eco"],
+      bruto: ["CabezalInox", "CabezalPintada", "Cabezal250"],
       augeriado: ["Cuadrado Regulador"],
       plegadora: ["Planchada 330", "Planchada 300", "Planchada 250"],
       fresa: ["Vela 250", "Vela 300", "Vela 330"],
@@ -748,6 +746,174 @@ app.put("/api/piezas/soldador/:nombre", async (req, res) => {
       return res.status(404).json({ mensaje: "Pieza No Encontrada" });
     }
 
+    // CASO ESPECIAL: CabezalInox
+    if (nombre === "CabezalInox") {
+      const piezasNecesarias = {
+        "Chapa U inox": { cantidad: 1, categoria: "plegadora" },
+        "Chapa CubreCabezal inox": { cantidad: 1, categoria: "balancin" },
+        "Bandeja Cabezal Inox": { cantidad: 1, categoria: "terminado" },
+      };
+
+      let piezasFaltantes = [];
+
+      for (let piezaNombre in piezasNecesarias) {
+        const { cantidad: reqCantidad, categoria } = piezasNecesarias[piezaNombre];
+
+        const subpieza = await Pieza.findOne({ nombre: piezaNombre });
+        const disponible = subpieza?.cantidad?.[categoria]?.cantidad || 0;
+
+        if (disponible < reqCantidad * cantidadNumero) {
+          piezasFaltantes.push(
+            `${piezaNombre} (Faltan ${reqCantidad * cantidadNumero - disponible})`
+          );
+        }
+      }
+
+      if (piezasFaltantes.length > 0) {
+        return res.status(400).json({
+          mensaje: `No se puede armar el CabezalInox. Faltan: ${piezasFaltantes.join(", ")}`,
+        });
+      }
+
+      // Si hay stock suficiente, descontamos piezas
+      for (let piezaNombre in piezasNecesarias) {
+        const { cantidad: reqCantidad, categoria } = piezasNecesarias[piezaNombre];
+
+        await Pieza.findOneAndUpdate(
+          { nombre: piezaNombre },
+          {
+            $inc: {
+              [`cantidad.${categoria}.cantidad`]: -reqCantidad * cantidadNumero,
+            },
+          }
+        );
+      }
+
+      // Aumentamos el stock del CabezalInox (bruto)
+      const piezaActualizada = await Pieza.findOneAndUpdate(
+        { nombre: "CabezalInox" },
+        {
+          $inc: {
+            "cantidad.soldador.cantidad": cantidadNumero,
+          },
+        },
+        { new: true }
+      );
+
+      return res.json({
+        mensaje: `CabezalInox armado correctamente (${cantidadNumero})`,
+        piezaActualizada,
+      });
+    } else if (nombre == "Cabezal250"){
+      const piezaNecesarias = {
+        "Chapa U inox 250": {cantidad: 1, categoria: "plegadora"},
+        "Chapa CubreCabezal inox 250": {cantidad: 1, categoria: "balancin"},
+        "Bandeja Cabezal Inox 250": {cantidad: 1, categoria: "terminado"}
+      }
+
+      let piezasFaltantes = []
+
+      for( let piezaNombre in piezaNecesarias){
+        const { cantidad: reqCantidad , categoria} = piezaNecesarias[piezaNombre]
+
+        const subpieza = await Pieza.findOne({ nombre: piezaNombre})
+        const disponible = subpieza?.cantidad?.[categoria]?.cantidad || 0
+
+        if (disponible < reqCantidad * cantidadNumero){
+          piezasFaltantes.push(`${piezaNombre} (Faltan ${reqCantidad * cantidadNumero - disponible})`
+          )
+        }
+      }
+
+      if (piezasFaltantes.length > 0){
+        return res.status(400).json({
+          mensaje: `No Se Puede Armar el Cabezal250, Faltan ${piezasFaltantes.join(", ")}`
+        })
+      }
+
+      for(let piezaNombre in piezaNecesarias){
+        const {cantidad: reqCantidad, categoria } = piezaNecesarias[piezaNombre] 
+
+        await Pieza.findOneAndUpdate(
+          {nombre: piezaNombre},
+          {
+            $inc:{
+              [`cantidad.${categoria}.cantidad`]: - reqCantidad * cantidadNumero
+            }
+          }
+        )
+      }
+
+      const piezaActualizada = await Pieza.findOneAndUpdate(
+        {nombre: "Cabezal250"},
+        {
+          $inc:{
+            "cantidad.soldador.cantidad": cantidadNumero
+          }
+        },
+        { new: true}
+      )
+
+      return res.json({
+        mensaje: `Cabezal250 Armado Correctamente (${cantidadNumero})`,
+        piezaActualizada
+      })
+    } else if(nombre === "CabezalPintada"){
+      const piezaNeceserias = {
+        "Chapa U Pintada" : {cantidad: 1, categoria: "plegadora"},
+        "Chapa CubreCabezal Pintada": {cantidad: 1, categoria: "balancin"},
+        "Bandeja Cabezal Pintada": {cantidad: 1, categoria: "terminado"}
+      }
+
+      let piezasFaltantes = []
+
+      for (let piezaNombre in piezaNeceserias){
+        const {cantidad: reqCantidad, categoria} = piezaNeceserias[piezaNombre]
+
+        const subpieza = await Pieza.findOne({nombre: piezaNombre})
+        const disponible = subpieza?.cantidad?.[categoria]?.cantidad || 0
+
+        if (disponible < reqCantidad * cantidadNumero){
+          piezasFaltantes.push(`${piezaNombre} (Faltan ${reqCantidad * cantidadNumero - disponible})`)
+        }
+      }
+
+      if (piezasFaltantes.length > 0){
+        return res.status(400).json({
+          mensaje: `No se Puede Armar el Cabeza Pintada, Faltan ${piezasFaltantes.join(", ")}`
+        })
+      }
+
+      for (let piezaNombre in piezaNeceserias){
+        const { cantidad: reqCantidad, categoria } = piezaNeceserias[piezaNombre]
+
+        await Pieza.findOneAndUpdate(
+          {nombre: piezaNombre},
+          {
+            $inc:{
+              [`cantidad.${categoria}.cantidad`]: - reqCantidad * cantidadNumero
+            }
+          }
+        )
+      }
+
+      const piezaActualizada = await Pieza.findOneAndUpdate(
+        {nombre: "CabezalPintada"},
+        {
+          $inc: {
+            "cantidad.soldador.cantidad": cantidadNumero
+          }
+        },
+        { new: true}
+      )
+
+      return res.json({
+        mensaje: `Cabezal Pintada Armado Correctamente (${cantidadNumero})`,
+        piezaActualizada
+      })
+    }
+
+    // Resto de categorías
     let updateFields = {};
 
     if (categoria.augeriado.includes(nombre)) {
@@ -757,12 +923,11 @@ app.put("/api/piezas/soldador/:nombre", async (req, res) => {
       ) {
         return res
           .status(404)
-          .json({ mensaje: `Stock Insuficiente De ${nombre} en stock` });
+          .json({ mensaje: `Stock Insuficiente de ${nombre} en Augeriado` });
       }
 
       updateFields["cantidad.augeriado.cantidad"] =
         pieza.cantidad.augeriado.cantidad - cantidadNumero;
-
       updateFields["cantidad.soldador.cantidad"] =
         (pieza.cantidad?.soldador?.cantidad || 0) + cantidadNumero;
     } else if (categoria.plegadora.includes(nombre)) {
@@ -772,12 +937,11 @@ app.put("/api/piezas/soldador/:nombre", async (req, res) => {
       ) {
         return res
           .status(400)
-          .json({ mensaje: `Stock Insuficiente de ${nombre} en Corte` });
+          .json({ mensaje: `Stock Insuficiente de ${nombre} en Plegadora` });
       }
 
       updateFields["cantidad.plegadora.cantidad"] =
         pieza.cantidad.plegadora.cantidad - cantidadNumero;
-
       updateFields["cantidad.soldador.cantidad"] =
         (pieza.cantidad?.soldador?.cantidad || 0) + cantidadNumero;
     } else if (categoria.fresa.includes(nombre)) {
@@ -787,12 +951,11 @@ app.put("/api/piezas/soldador/:nombre", async (req, res) => {
       ) {
         return res
           .status(400)
-          .json({ mensaje: `Stock Insuficuente de ${nombre} en Torno` });
+          .json({ mensaje: `Stock Insuficiente de ${nombre} en Fresa` });
       }
 
       updateFields["cantidad.fresa.cantidad"] =
         pieza.cantidad.fresa.cantidad - cantidadNumero;
-
       updateFields["cantidad.soldador.cantidad"] =
         (pieza.cantidad.soldador.cantidad || 0) + cantidadNumero;
     } else if (categoria.corte.includes(nombre)) {
@@ -802,12 +965,11 @@ app.put("/api/piezas/soldador/:nombre", async (req, res) => {
       ) {
         return res
           .status(400)
-          .json({ mensaje: `Stock Insuficuente de ${nombre} en Torno` });
+          .json({ mensaje: `Stock Insuficiente de ${nombre} en Corte` });
       }
 
       updateFields["cantidad.corte.cantidad"] =
         pieza.cantidad.corte.cantidad - cantidadNumero;
-
       updateFields["cantidad.soldador.cantidad"] =
         (pieza.cantidad.soldador.cantidad || 0) + cantidadNumero;
     } else {
@@ -819,6 +981,7 @@ app.put("/api/piezas/soldador/:nombre", async (req, res) => {
       { $set: updateFields },
       { new: true }
     );
+
     res.json({
       mensaje: "Cantidad Actualizada Correctamente",
       piezaActualizada,
@@ -831,6 +994,7 @@ app.put("/api/piezas/soldador/:nombre", async (req, res) => {
   }
 });
 
+
 app.put("/api/piezas/pulido/:nombre", async (req, res) => {
   try {
     const { cantidad } = req.body;
@@ -842,7 +1006,7 @@ app.put("/api/piezas/pulido/:nombre", async (req, res) => {
     }
 
     const categoria = {
-      pulido: ["cabezal Inox", "cabezal 250"],
+      soldador: ["CabezalInox", "Cabezal250"],
     };
 
     const pieza = await Pieza.findOne({ nombre });
@@ -852,18 +1016,18 @@ app.put("/api/piezas/pulido/:nombre", async (req, res) => {
 
     let updateFields = {};
 
-    if (categoria.cabezales.includes(nombre)) {
+    if (categoria.soldador.includes(nombre)) {
       if (
-        !pieza.cantidad?.cabezales?.cantidad ||
-        pieza.cantidad.cabezales.cantidad < cantidadNumero
+        !pieza.cantidad?.soldador?.cantidad ||
+        pieza.cantidad.soldador.cantidad < cantidadNumero
       ) {
         return res
           .status(400)
-          .json({ mensaje: `Stock insuficiente de ${nombre} en plegadora` });
+          .json({ mensaje: `Stock insuficiente de ${nombre} en soldador` });
       }
 
-      updateFields["cantidad.cabezales.cantidad"] =
-        pieza.cantidad.cabezales.cantidad - cantidadNumero;
+      updateFields["cantidad.soldador.cantidad"] =
+        pieza.cantidad.soldador.cantidad - cantidadNumero;
 
       updateFields["cantidad.pulido.cantidad"] =
         (pieza.cantidad.pulido?.cantidad || 0) + cantidadNumero;
@@ -909,7 +1073,13 @@ app.put("/api/piezas/balancin/:nombre", async (req, res) => {
         "Eje Corto",
         "Eje Largo",
       ],
-      bruto: ["Chapa U Inox", "Chapa U Pintada", "Chapa U Inox 250"],
+      bruto: [
+        "Chapa U inox", 
+        "Chapa U Pintada", 
+        "Chapa U inox 250",  
+        "Chapa CubreCabezal inox",
+        "Chapa CubreCabezal Pintada",
+        "Chapa CubreCabezal inox 250",],
       balancin: ["PortaEje"],
     };
 
@@ -1641,8 +1811,9 @@ app.put("/api/enviosPintura/:nombre", async (req, res) => {
 
     const piezaenLugares = {
       balancin: ["Teletubi Eco"],
-      bruto: ["basePintada330", "basePintada300", "Cabezal Pintura"],
+      bruto: ["basePintada330", "basePintada300"],
       augeriado: ["Caja Soldada Eco"],
+      soldador:["CabezalPintada"]
     };
 
     const pieza = await Pieza.findOne({ nombre });
@@ -1693,6 +1864,21 @@ app.put("/api/enviosPintura/:nombre", async (req, res) => {
 
       updateFields["cantidad.augeriado.cantidad"] =
         pieza.cantidad.augeriado.cantidad - cantidadNumero;
+
+      updateFields["proveedores.pintura.cantidad"] =
+        (pieza.proveedores.pintura?.cantidad || 0) + cantidadNumero;
+    } else if (piezaenLugares.soldador.includes(nombre)) {
+      if (
+        !pieza.cantidad.soldador.cantidad ||
+        pieza.cantidad.soldador.cantidad < cantidadNumero
+      ) {
+        return res
+          .status(400)
+          .json({ mensaje: `Stock Insuficuente de ${nombre} en augeriado` });
+      }
+
+      updateFields["cantidad.soldador.cantidad"] =
+        pieza.cantidad.soldador.cantidad - cantidadNumero;
 
       updateFields["proveedores.pintura.cantidad"] =
         (pieza.proveedores.pintura?.cantidad || 0) + cantidadNumero;
@@ -3082,9 +3268,11 @@ app.put("/api/preArmado/:nombre", async (req, res) => {
           "Eje Rectificado",
           "Guia U",
           "Varilla 330",
+          "Bandeja 330"
         ];
 
         const categoriaPrePintada330 = {
+          "Bandeja 330": "bruto",
           Espiral: "bruto",
           "Perilla Numerador": "bruto",
           "Tapita Perilla": "bruto",
@@ -3107,6 +3295,7 @@ app.put("/api/preArmado/:nombre", async (req, res) => {
         };
 
         const cantidaPiezaPrePintada330 = {
+          "Bandeja 330": 1,
           Espiral: 1,
           "Perilla Numerador": 1,
           "Tapita Perilla": 1,
@@ -3190,6 +3379,7 @@ app.put("/api/preArmado/:nombre", async (req, res) => {
         }
       case "BasePreArmada_Pintada300":
         const piezasPrePintada300 = [
+          "Bandeja 300",
           "Espiral",
           "Perilla Numerador",
           "Tapita Perilla",
@@ -3212,6 +3402,7 @@ app.put("/api/preArmado/:nombre", async (req, res) => {
         ];
 
         const categoriaPrePintada300 = {
+          "Bandeja 300": "bruto",
           Espiral: "bruto",
           "Perilla Numerador": "bruto",
           "Tapita Perilla": "bruto",
@@ -3234,6 +3425,7 @@ app.put("/api/preArmado/:nombre", async (req, res) => {
         };
 
         const cantidaPiezaPrePintada300 = {
+          "Bandeja 300": 1,
           Espiral: 1,
           "Perilla Numerador": 1,
           "Tapita Perilla": 1,
@@ -3363,7 +3555,7 @@ app.put("/api/ArmadoFinal/:nombre", async (req, res) => {
           "Pinche Frontal",
           "Pinche lateral",
           "Cuadrado Regulador",
-          "cabezal_inox",
+          "CabezalInox",
         ];
 
         const categoriaInox330 = {
@@ -3371,7 +3563,7 @@ app.put("/api/ArmadoFinal/:nombre", async (req, res) => {
           "Cubrecuchilla 330": "terminado",
           Velero: "terminado",
           "Teletubi 330": "terminado",
-          "Cuchilla 330": "terminado",
+          "Cuchilla 330": "bruto",
           "Vela 330": "terminado",
           "Planchada 330": "terminado",
           "Varilla Brazo 330": "terminado",
@@ -3391,7 +3583,7 @@ app.put("/api/ArmadoFinal/:nombre", async (req, res) => {
           "Pinche Frontal": "bruto",
           "Pinche lateral": "bruto",
           "Cuadrado Regulador": "soldador",
-          cabezal_inox: "soldador",
+          CabezalInox: "pulido",
         };
 
         const cantidadXpiezai330 = {
@@ -3419,7 +3611,7 @@ app.put("/api/ArmadoFinal/:nombre", async (req, res) => {
           "Pinche Frontal": 1,
           "Pinche lateral": 1,
           "Cuadrado Regulador": 1,
-          cabezal_inox: 1,
+          CabezalInox: 1,
         };
 
         const BDPreArmadoi330 = await Pieza.find(
@@ -3477,6 +3669,11 @@ app.put("/api/ArmadoFinal/:nombre", async (req, res) => {
             { nombre: "Inox_330" },
             { $inc: { "cantidad.terminadas.cantidad": cantidadNumero } }
           );
+          await Pieza.updateOne(
+            {nombre: "Inox_330"},
+            { $inc: { "cantidad.terminado.cantidad": cantidadNumero}}
+          )
+
 
           const mensaje = `✅ Pre Armado ensamblado con éxito. Se descontaron las piezas necesarias para ${cantidadNumero} motores.`;
           console.log(mensaje);
@@ -3508,7 +3705,7 @@ app.put("/api/ArmadoFinal/:nombre", async (req, res) => {
           "Pinche Frontal",
           "Pinche lateral",
           "Cuadrado Regulador",
-          "cabezal_inox",
+          "CabezalInox",
         ];
 
         const categoriaInox300 = {
@@ -3516,7 +3713,7 @@ app.put("/api/ArmadoFinal/:nombre", async (req, res) => {
           "Cubrecuchilla 300": "terminado",
           Velero: "terminado",
           "Teletubi 300": "terminado",
-          "Cuchilla 300": "terminado",
+          "Cuchilla 300": "bruto",
           "Vela 300": "terminado",
           "Planchada 300": "terminado",
           "Varilla Brazo 300": "terminado",
@@ -3536,7 +3733,7 @@ app.put("/api/ArmadoFinal/:nombre", async (req, res) => {
           "Pinche Frontal": "bruto",
           "Pinche lateral": "bruto",
           "Cuadrado Regulador": "soldador",
-          cabezal_inox: "soldador",
+          CabezalInox: "pulido",
         };
 
         const cantidadXpiezai300 = {
@@ -3564,7 +3761,7 @@ app.put("/api/ArmadoFinal/:nombre", async (req, res) => {
           "Pinche Frontal": 1,
           "Pinche lateral": 1,
           "Cuadrado Regulador": 1,
-          cabezal_inox: 1,
+          CabezalInox: 1,
         };
 
         const BDPreArmadoi300 = await Pieza.find(
@@ -3623,6 +3820,12 @@ app.put("/api/ArmadoFinal/:nombre", async (req, res) => {
             { $inc: { "cantidad.terminado.cantidad": cantidadNumero } }
           );
 
+          await Pieza.updateOne(
+            {nombre: "Inox_300"},
+            { $inc: { "cantidad.terminado.cantidad": cantidadNumero}}
+          )
+
+
           const mensaje = `✅ Pre Armado ensamblado con éxito. Se descontaron las piezas necesarias para ${cantidadNumero} motores.`;
           console.log(mensaje);
           return res.status(200).json({ mensaje });
@@ -3653,7 +3856,7 @@ app.put("/api/ArmadoFinal/:nombre", async (req, res) => {
           "Pinche Frontal",
           "Pinche lateral",
           "Cuadrado Regulador",
-          "cabezal_pintada",
+          "CabezalPintada",
         ];
 
         const categoriaPintura330 = {
@@ -3661,7 +3864,7 @@ app.put("/api/ArmadoFinal/:nombre", async (req, res) => {
           "Cubrecuchilla 330": "terminado",
           Velero: "terminado",
           "Teletubi 330": "terminado",
-          "Cuchilla 330": "terminado",
+          "Cuchilla 330": "bruto",
           "Vela 330": "terminado",
           "Planchada 330": "terminado",
           "Varilla Brazo 330": "terminado",
@@ -3681,7 +3884,7 @@ app.put("/api/ArmadoFinal/:nombre", async (req, res) => {
           "Pinche Frontal": "bruto",
           "Pinche lateral": "bruto",
           "Cuadrado Regulador": "soldador",
-          cabezal_pintada: "soldador",
+          CabezalPintada: "terminado",
         };
 
         const cantidadXpiezap330 = {
@@ -3709,7 +3912,7 @@ app.put("/api/ArmadoFinal/:nombre", async (req, res) => {
           "Pinche Frontal": 1,
           "Pinche lateral": 1,
           "Cuadrado Regulador": 1,
-          cabezal_pintada: 1,
+          CabezalPintada: 1,
         };
 
         const BDPreArmadoP330 = await Pieza.find(
@@ -3768,6 +3971,11 @@ app.put("/api/ArmadoFinal/:nombre", async (req, res) => {
             { $inc: { "cantidad.terminadas.cantidad": cantidadNumero } }
           );
 
+          await Pieza.updateOne(
+            {nombre: "Pintada_330"},
+            { $inc: { "cantidad.terminado.cantidad": cantidadNumero}}
+          )
+
           const mensaje = `✅ Pre Armado Pintada ensamblado con éxito. Se descontaron las piezas necesarias para ${cantidadNumero} motores.`;
           console.log(mensaje);
           return res.status(200).json({ mensaje });
@@ -3798,7 +4006,7 @@ app.put("/api/ArmadoFinal/:nombre", async (req, res) => {
           "Pinche Frontal",
           "Pinche lateral",
           "Cuadrado Regulador",
-          "cabezal_inox",
+          "CabezalPintada",
         ];
 
         const categoriaPintada300 = {
@@ -3806,7 +4014,7 @@ app.put("/api/ArmadoFinal/:nombre", async (req, res) => {
           "Cubrecuchilla 300": "terminado",
           Velero: "terminado",
           "Teletubi 300": "terminado",
-          "Cuchilla 300": "terminado",
+          "Cuchilla 300": "bruto",
           "Vela 300": "terminado",
           "Planchada 300": "terminado",
           "Varilla Brazo 300": "terminado",
@@ -3826,7 +4034,7 @@ app.put("/api/ArmadoFinal/:nombre", async (req, res) => {
           "Pinche Frontal": "bruto",
           "Pinche lateral": "bruto",
           "Cuadrado Regulador": "soldador",
-          cabezal_inox: "soldador",
+          CabezalPintada: "terminado",
         };
 
         const cantidadXpiezap300 = {
@@ -3854,7 +4062,7 @@ app.put("/api/ArmadoFinal/:nombre", async (req, res) => {
           "Pinche Frontal": 1,
           "Pinche lateral": 1,
           "Cuadrado Regulador": 1,
-          cabezal_inox: 1,
+          CabezalPintada: 1,
         };
 
         const BDPreArmadoP300 = await Pieza.find(
@@ -3913,6 +4121,11 @@ app.put("/api/ArmadoFinal/:nombre", async (req, res) => {
             { $inc: { "cantidad.terminadas.cantidad": cantidadNumero } }
           );
 
+          await Pieza.updateOne(
+            {nombre: "Pintada_300"},
+            { $inc: { "cantidad.terminado.cantidad": cantidadNumero}}
+          )
+
           const mensaje = `✅ Pre Armado Pintado 300 ensamblado con éxito. Se descontaron las piezas necesarias para ${cantidadNumero} motores.`;
           console.log(mensaje);
           return res.status(200).json({ mensaje });
@@ -3942,7 +4155,7 @@ app.put("/api/ArmadoFinal/:nombre", async (req, res) => {
           "Pinche Frontal 250",
           "Pinche lateral 250",
           "Cuadrado Regulador",
-          "cabezal i250",
+          "Cabezal250",
         ];
 
         const piezaXcategoria250 = {
@@ -3950,7 +4163,7 @@ app.put("/api/ArmadoFinal/:nombre", async (req, res) => {
           "Cubrecuchilla 250": "terminado",
           Velero: "terminado",
           "Teletubi 250": "terminado",
-          "Cuchilla 250": "terminado",
+          "Cuchilla 250": "bruto",
           "Vela 250": "terminado",
           "Planchada 250": "terminado",
           "Varilla Brazo 250": "terminado",
@@ -3969,7 +4182,7 @@ app.put("/api/ArmadoFinal/:nombre", async (req, res) => {
           "Pinche Frontal 250": "bruto",
           "Pinche lateral 250": "bruto",
           "Cuadrado Regulador": "soldador",
-          "cabezal i250": "soldador",
+          Cabezal250: "pulido",
         };
 
         const cantidadXpieza250 = {
@@ -3996,7 +4209,7 @@ app.put("/api/ArmadoFinal/:nombre", async (req, res) => {
           "Pinche Frontal 250": 1,
           "Pinche lateral 250": 1,
           "Cuadrado Regulador": 1,
-          "cabezal i250": 1,
+          Cabezal250: 1,
         };
 
         const BDPreArmadoi250 = await Pieza.find(
@@ -4055,6 +4268,11 @@ app.put("/api/ArmadoFinal/:nombre", async (req, res) => {
             { $inc: { "cantidad.terminadas.cantidad": cantidadNumero } }
           );
 
+          await Pieza.updateOne(
+            {nombre: "Inox_250"},
+            { $inc: { "cantidad.terminado.cantidad": cantidadNumero}}
+          )
+
           const mensaje = `✅ Pre Armado ensamblado con éxito. Se descontaron las piezas necesarias para ${cantidadNumero} motores.`;
           console.log(mensaje);
           return res.status(200).json({ mensaje });
@@ -4084,14 +4302,14 @@ app.put("/api/ArmadoFinal/:nombre", async (req, res) => {
           "Pinche lateral",
           "Pitito Teletubi Eco",
           "Cuadrado Regulador",
-          "cabezal_inox",
+          "CabezalInox",
         ];
 
         const piezaXcategoriaECO = {
           "Brazo 330": "terminado",
           "Cubrecuchilla 330": "terminado",
           Velero: "terminado",
-          "Cuchilla 330": "terminado",
+          "Cuchilla 330": "bruto",
           "Vela 330": "terminado",
           "Planchada 330": "terminado",
           "Varilla Brazo 330": "terminado",
@@ -4111,7 +4329,7 @@ app.put("/api/ArmadoFinal/:nombre", async (req, res) => {
           "Pinche lateral": "bruto",
           "Pitito Teletubi Eco": "bruto",
           "Cuadrado Regulador": "soldador",
-          cabezal_inox: "soldador",
+          CabezalInox: "pulido",
         };
 
         const cantidadXpiezasECO = {
@@ -4138,7 +4356,7 @@ app.put("/api/ArmadoFinal/:nombre", async (req, res) => {
           "Pinche lateral": 1,
           "Pitito Teletubi Eco": 1,
           "Cuadrado Regulador": 1,
-          cabezal_inox: 1,
+          CabezalInox: 1,
         };
 
         const BDPreArmadoECO = await Pieza.find(
@@ -4192,8 +4410,13 @@ app.put("/api/ArmadoFinal/:nombre", async (req, res) => {
 
           await MaquinasFinales.updateOne(
             { nombre: "Inox_ECO" },
-            { $inc: { "cantidad.terminado.cantidad": cantidadNumero } }
+            { $inc: { "cantidad.terminadas.cantidad": cantidadNumero } }
           );
+
+          await Pieza.updateOne(
+            {nombre: "Inox_ECO"},
+            { $inc: { "cantidad.terminado.cantidad": cantidadNumero}}
+          )
 
           const mensaje = `✅ Pre Armado ECO ensamblado con éxito. Se descontaron las piezas necesarias para ${cantidadNumero} motores.`;
           console.log(mensaje);
@@ -4672,9 +4895,6 @@ app.post("/api/verificarArmadoMotores/:nombre", async (req, res) => {
   }
 });
 
-
-
-
 app.post("/api/verificarPreArmado/:nombre", async (req, res) => {
   try {
     const { cantidad } = req.body;
@@ -4939,6 +5159,7 @@ app.post("/api/verificarPreArmado/:nombre", async (req, res) => {
       },
       BasePreArmada_Pintada330: {
         pieza: [
+          "Bandeja 330",
           "Espiral",
           "Perilla Numerador",
           "Tapita Perilla",
@@ -4960,6 +5181,7 @@ app.post("/api/verificarPreArmado/:nombre", async (req, res) => {
           "Varilla 330",
         ],
         categoriaPorPieza: {
+          "Bandeja 330": "bruto",
           Espiral: "bruto",
           "Perilla Numerador": "bruto",
           "Tapita Perilla": "bruto",
@@ -4981,6 +5203,7 @@ app.post("/api/verificarPreArmado/:nombre", async (req, res) => {
           "Varilla 330": "soldador",
         },
         cantidadPorPieza: {
+          "Bandeja 330": 1,
           Espiral: 1,
           "Perilla Numerador": 1,
           "Tapita Perilla": 1,
@@ -5005,6 +5228,7 @@ app.post("/api/verificarPreArmado/:nombre", async (req, res) => {
       BasePreArmada_Pintada300: {
         pieza: [
           "Espiral",
+          "Bandeja 300",
           "Perilla Numerador",
           "Tapita Perilla",
           "Patas",
@@ -5025,6 +5249,7 @@ app.post("/api/verificarPreArmado/:nombre", async (req, res) => {
           "Varilla 300",
         ],
         categoriaPorPieza: {
+          "Bandeja 300": "bruto",
           Espiral: "bruto",
           "Perilla Numerador": "bruto",
           "Tapita Perilla": "bruto",
@@ -5047,6 +5272,7 @@ app.post("/api/verificarPreArmado/:nombre", async (req, res) => {
         },
         cantidadPorPieza: {
           Espiral: 1,
+          "Bandeja 300": 1,
           "Perilla Numerador": 1,
           "Tapita Perilla": 1,
           Patas: 4,
@@ -5106,8 +5332,6 @@ app.post("/api/verificarPreArmado/:nombre", async (req, res) => {
   }
 });
 
-
-
 app.post("/api/verificarArmado/:nombre", async (req, res) => {
   try {
     const { cantidad } = req.body;
@@ -5145,7 +5369,7 @@ app.post("/api/verificarArmado/:nombre", async (req, res) => {
           "Pinche Frontal",
           "Pinche lateral",
           "Cuadrado Regulador",
-          "cabezal_inox",
+          "CabezalInox",
         ],
         categoriaPorPieza: {
           "Brazo 330": "terminado",
@@ -5172,7 +5396,7 @@ app.post("/api/verificarArmado/:nombre", async (req, res) => {
           "Pinche Frontal": "bruto",
           "Pinche lateral": "bruto",
           "Cuadrado Regulador": "soldador",
-          cabezal_inox: "soldador",
+          "CabezalInox": "pulido",
         },
         cantidadPorPieza: {
           "Brazo 330": 1,
@@ -5199,7 +5423,7 @@ app.post("/api/verificarArmado/:nombre", async (req, res) => {
           "Pinche Frontal": 1,
           "Pinche lateral": 1,
           "Cuadrado Regulador": 1,
-          cabezal_inox: 1,
+          CabezalInox: 1,
         },
       },
       Inox_300: {
@@ -5228,7 +5452,7 @@ app.post("/api/verificarArmado/:nombre", async (req, res) => {
           "Pinche Frontal",
           "Pinche lateral",
           "Cuadrado Regulador",
-          "cabezal_inox",
+          "CabezalInox",
         ],
         categoriaPorPieza: {
           "Brazo 300": "terminado",
@@ -5255,7 +5479,7 @@ app.post("/api/verificarArmado/:nombre", async (req, res) => {
           "Pinche Frontal": "bruto",
           "Pinche lateral": "bruto",
           "Cuadrado Regulador": "soldador",
-          cabezal_inox: "soldador",
+          "CabezalInox": "pulido",
         },
         cantidadPorPieza: {
           "Brazo 300": 1,
@@ -5282,7 +5506,7 @@ app.post("/api/verificarArmado/:nombre", async (req, res) => {
           "Pinche Frontal": 1,
           "Pinche lateral": 1,
           "Cuadrado Regulador": 1,
-          cabezal_inox: 1,
+          CabezalInox: 1,
         },
       },
       Pintada_330: {
@@ -5311,7 +5535,7 @@ app.post("/api/verificarArmado/:nombre", async (req, res) => {
           "Pinche Frontal",
           "Pinche lateral",
           "Cuadrado Regulador",
-          "cabezal_pintada",
+          "CabezalPintada",
         ],
         categoriaPorPieza: {
           "Brazo 330": "terminado",
@@ -5338,7 +5562,7 @@ app.post("/api/verificarArmado/:nombre", async (req, res) => {
           "Pinche Frontal": "bruto",
           "Pinche lateral": "bruto",
           "Cuadrado Regulador": "soldador",
-          cabezal_pintada: "soldador",
+          "CabezalPintada": "terminado",
         },
         cantidadPorPieza: {
           "Brazo 330": 1,
@@ -5365,7 +5589,7 @@ app.post("/api/verificarArmado/:nombre", async (req, res) => {
           "Pinche Frontal": 1,
           "Pinche lateral": 1,
           "Cuadrado Regulador": 1,
-          cabezal_pintada: 1,
+          "CabezalPintada": 1,
         },
       },
       Pintada_300: {
@@ -5394,7 +5618,7 @@ app.post("/api/verificarArmado/:nombre", async (req, res) => {
           "Pinche Frontal",
           "Pinche lateral",
           "Cuadrado Regulador",
-          "cabezal_inox",
+          "CabezalPintada",
         ],
         categoriaPorPieza: {
           "Brazo 300": "terminado",
@@ -5421,7 +5645,7 @@ app.post("/api/verificarArmado/:nombre", async (req, res) => {
           "Pinche Frontal": "bruto",
           "Pinche lateral": "bruto",
           "Cuadrado Regulador": "soldador",
-          cabezal_inox: "soldador",
+          "CabezalPintada": "terminado",
         },
         cantidadPorPieza: {
           "Brazo 300": 1,
@@ -5448,7 +5672,7 @@ app.post("/api/verificarArmado/:nombre", async (req, res) => {
           "Pinche Frontal": 1,
           "Pinche lateral": 1,
           "Cuadrado Regulador": 1,
-          cabezal_inox: 1,
+          "CabezalPintada": 1,
         },
       },
       Inox_250: {
@@ -5476,7 +5700,7 @@ app.post("/api/verificarArmado/:nombre", async (req, res) => {
           "Pinche Frontal 250",
           "Pinche lateral 250",
           "Cuadrado Regulador",
-          "cabezal i250",
+          "Cabezal250",
         ],
         categoriaPorPieza: {
           "Brazo 250": "terminado",
@@ -5502,7 +5726,7 @@ app.post("/api/verificarArmado/:nombre", async (req, res) => {
           "Pinche Frontal 250": "bruto",
           "Pinche lateral 250": "bruto",
           "Cuadrado Regulador": "soldador",
-          "cabezal i250": "soldador",
+          "Cabezal250": "pulido"
         },
         cantidadPorPieza: {
           "Brazo 250": 1,
@@ -5528,7 +5752,7 @@ app.post("/api/verificarArmado/:nombre", async (req, res) => {
           "Pinche Frontal 250": 1,
           "Pinche lateral 250": 1,
           "Cuadrado Regulador": 1,
-          "cabezal i250": 1,
+          "Cabezal250": 1
         },
       },
       Inox_ECO: {
@@ -5556,7 +5780,7 @@ app.post("/api/verificarArmado/:nombre", async (req, res) => {
           "Pinche lateral",
           "Pitito Teletubi Eco",
           "Cuadrado Regulador",
-          "cabezal_inox",
+          "CabezalInox",
         ],
         categoriaPorPieza: {
           "Brazo 330": "terminado",
@@ -5582,7 +5806,7 @@ app.post("/api/verificarArmado/:nombre", async (req, res) => {
           "Pinche lateral": "bruto",
           "Pitito Teletubi Eco": "bruto",
           "Cuadrado Regulador": "soldador",
-          cabezal_inox: "soldador",
+          "CabezalInox": "pulido",
         },
         cantidadPorPieza: {
           "Brazo 330": 1,
@@ -5608,7 +5832,7 @@ app.post("/api/verificarArmado/:nombre", async (req, res) => {
           "Pinche lateral": 1,
           "Pitito Teletubi Eco": 1,
           "Cuadrado Regulador": 1,
-          cabezal_inox: 1,
+          CabezalInox: 1,
         },
       },
     };
@@ -6001,6 +6225,45 @@ app.put("/api/piezasSoldarActualizar/nombre/:nombre", async (req, res) => {
 });
 
 
+
+app.put("/api/piezasPulidoActualizar/nombre/:nombre", async (req, res) => {
+  try {
+    const { nombre } = req.params; // Obtener el nombre desde la URL
+    const { cantidadBruto, stockDeseadoBruto } = req.body; // Obtener los valores desde el body
+
+    // Crear objeto con las actualizaciones, sólo si los valores no están vacíos
+    const updates = {};
+
+    if (cantidadBruto !== undefined) {
+      updates["cantidad.pulido.cantidad"] = cantidadBruto;
+    }
+
+    if (stockDeseadoBruto !== undefined) {
+      updates["cantidad.pulido.stock_deseado"] = stockDeseadoBruto;
+    }
+
+    // Verifica si la pieza existe y actualiza los valores
+    const piezaActualizada = await Pieza.findOneAndUpdate(
+      { nombre: nombre }, // Buscar por nombre
+      { $set: updates }, // Actualizar lo que haya en el objeto `updates`
+      { new: true } // Devolver la pieza actualizada
+    );
+
+    if (!piezaActualizada) {
+      return res.status(404).json({ mensaje: "Pieza no encontrada" });
+    }
+
+    res.json({
+      mensaje: "Cantidad y/o Stock deseado actualizado correctamente",
+      piezaActualizada,
+    });
+  } catch (error) {
+    console.error("Error al actualizar la pieza:", error);
+    res.status(500).json({ mensaje: "Error en el servidor" });
+  }
+});
+
+
 /// Actuliazar Piezas Terminadas 
 app.put("/api/piezasTerminadoActualizar/nombre/:nombre", async (req, res) => {
   try {
@@ -6038,6 +6301,56 @@ app.put("/api/piezasTerminadoActualizar/nombre/:nombre", async (req, res) => {
     res.status(500).json({ mensaje: "Error en el servidor" });
   }
 });
+
+
+
+
+const cierreMesRoutes = require('./routes/armado/cierreMes');
+app.use('/api/cierreMes', cierreMesRoutes);
+
+
+
+
+
+app.put("/api/mesReset", async (req, res) => {
+  try {
+    // Buscamos todas las piezas con tipo_material = "ArmadoFinal"
+    const piezas = await Pieza.find({ tipo_material: "ArmadoFinal" });
+    console.log("Piezas encontradas:", piezas.length); // Verificamos cuántas piezas se encontraron
+
+    // Si no se encuentran piezas, devolver un error
+    if (piezas.length === 0) {
+      return res.status(404).json({ mensaje: "No se encontraron piezas con tipo_material 'ArmadoFinal'." });
+    }
+
+    // Reseteamos la cantidad.terminado.cantidad a cero en cada pieza
+    const updates = piezas.map(async (piezaw) => {
+      // Verificamos si la pieza existe en la base de datos antes de actualizarla
+      const existingPieza = await Pieza.findById(piezaw._id);
+      
+      if (existingPieza && existingPieza.cantidad?.terminado) {
+        existingPieza.cantidad.terminado.cantidad = 0;
+        
+        // Marcamos el campo como modificado para que Mongoose lo registre correctamente
+        existingPieza.markModified("cantidad");
+        
+        // Guardamos la pieza con el valor actualizado
+        await existingPieza.save();
+      }
+    });
+
+    // Esperamos que todas las actualizaciones terminen
+    await Promise.all(updates);
+
+    // Respondemos con éxito
+    res.status(200).json({ mensaje: "Todas las piezas fueron reseteadas a cero correctamente." });
+  } catch (error) {
+    console.error("Error al resetear piezas:", error);
+    res.status(500).json({ mensaje: "Error al resetear las piezas." });
+  }
+});
+
+
 
 
 

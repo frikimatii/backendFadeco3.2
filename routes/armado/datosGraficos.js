@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const MaquinasTotales = require("../../models/MaquinaFinal");
+const Pieza = require("../../models/Pieza");
 
 const maquinas = [    
     "Inox_330",
@@ -13,12 +13,12 @@ const maquinas = [
 
 router.get('/', async (req, res) => {
   try {
-    const piezas = await MaquinasTotales.find({ nombre: { $in: maquinas } });
+    const piezas = await Pieza.find({ nombre: { $in: maquinas } });
 
     // Mapear solo los campos necesarios
     const resultado = piezas.map(pieza => ({
       nombre: pieza.nombre,
-      cantidad: pieza.cantidad?.terminadas?.cantidad || 0
+      cantidad: pieza.cantidad?.terminado?.cantidad || 0
     }));
 
     res.status(200).json(resultado);

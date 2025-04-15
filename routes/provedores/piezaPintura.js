@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Pieza = require("../../models/Pieza");
 
-const modelosListaPieza = ["basePintada330", "basePintada300", "cabezal_pintada","Caja Soldada Eco", "Teletubi Eco"]
+const modelosListaPieza = ["basePintada330", "basePintada300", "CabezalPintada","Caja Soldada Eco", "Teletubi Eco"]
 
 router.get('/', async (req, res) => {
     try {

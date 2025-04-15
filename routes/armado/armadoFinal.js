@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const MaquinasTotales = require("../../models/MaquinaFinal");
+const Pieza = require("../../models/Pieza");
 
 const maquinas = [    
     "Inox_330",
@@ -14,7 +14,7 @@ const maquinas = [
 
 router.get('/', async (req, res) => {
   try {
-      const piezas = await MaquinasTotales.find({nombre: {$in: maquinas} });
+      const piezas = await Pieza.find({nombre: {$in: maquinas} });
       res.status(200).json(piezas);
   } catch (error) {
       console.error("Error al obtener piezas de aluminio:", error);

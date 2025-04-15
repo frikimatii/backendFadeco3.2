@@ -142,6 +142,7 @@
     "provedor": "pintura",
     "pedidos": {
       "envios": [
+        "15/4/2025 05:35 p. m. - Enviado 1 CabezalPintada",
         "15/4/2025 12:18 a. m. - Enviado 5 Teletubi Eco",
         "14/4/2025 10:01 p. m. - Enviado 1 basePintada330",
         "14/4/2025 10:01 p. m. - Enviado 1 basePintada300",
@@ -152,6 +153,7 @@
         "11/4/2025 01:55 p. m. - Enviado 1 Teletubi Eco"
       ],
       "entregas": [
+        "15/4/2025 05:35 p. m. - Recibido 1 CabezalPintada",
         "15/4/2025 12:18 a. m. - Recibido 5 Teletubi Eco",
         "14/4/2025 10:01 p. m. - Recibido 1 basePintada330",
         "14/4/2025 10:01 p. m. - Recibido 1 basePintada300",

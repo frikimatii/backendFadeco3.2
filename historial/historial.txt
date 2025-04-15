@@ -185,3 +185,32 @@ Mecanizado: corte| Pieza: Eje Corto|Cantidad: 6
 🕐15/4/2025 12:04:45<br>. Mecanizado: soldador|Pieza: Vela 330|Cantidad: 7
 🕐15/4/2025 12:18:18<br>. Mecanizado: corte|Pieza: Teletubi Eco|Cantidad: 10
 🕐15/4/2025 12:18:33<br>. Mecanizado: balancin|Pieza: Teletubi Eco|Cantidad: 8
+🕐15/4/2025 02:54:36<br>. Mecanizado: plegadora|Pieza: Bandeja Cabezal Inox|Cantidad: 7
+🕐15/4/2025 02:55:45<br>. Mecanizado: corte|Pieza: Chapa CubreCabezal inox|Cantidad: 3
+🕐15/4/2025 03:13:20<br>. Mecanizado: balancin|Pieza: Chapa CubreCabezal inox|Cantidad: 1
+🕐15/4/2025 03:20:10<br>. Mecanizado: balancin|Pieza: Chapa CubreCabezal inox|Cantidad: 1
+🕐15/4/2025 03:23:07<br>. Mecanizado: balancin|Pieza: Chapa U Inox|Cantidad: 1
+🕐15/4/2025 03:28:54<br>. Mecanizado: balancin|Pieza: Chapa U inox|Cantidad: 3
+🕐15/4/2025 03:29:07<br>. Mecanizado: plegadora|Pieza: Chapa U inox|Cantidad: 3
+🕐15/4/2025 03:32:52<br>. Mecanizado: plegadora|Pieza: Bandeja Cabezal Inox|Cantidad: 1
+🕐15/4/2025 03:38:30<br>. Mecanizado: plegadora|Pieza: Bandeja Cabezal Inox|Cantidad: 1
+🕐15/4/2025 03:48:34<br>. Mecanizado: soldador|Pieza: CabezalInox|Cantidad: 1
+🕐15/4/2025 03:50:57<br>. Mecanizado: soldador|Pieza: CabezalInox|Cantidad: 1
+🕐15/4/2025 04:20:54<br>. Mecanizado: pulido|Pieza: CabezalInox|Cantidad: 1
+🕐15/4/2025 05:13:50<br>. Mecanizado: soldador|Pieza: CabezalInox|Cantidad: 1
+🕐15/4/2025 05:17:06<br>. Mecanizado: plegadora|Pieza: Bandeja Cabezal Inox|Cantidad: 2
+🕐15/4/2025 05:17:31<br>. Mecanizado: plegadora|Pieza: Bandeja Cabezal Inox 250|Cantidad: 8
+🕐15/4/2025 05:17:41<br>. Mecanizado: plegadora|Pieza: Bandeja Cabezal Pintada|Cantidad: 8
+🕐15/4/2025 05:18:02<br>. Mecanizado: balancin|Pieza: Chapa U inox|Cantidad: 5
+🕐15/4/2025 05:18:08<br>. Mecanizado: balancin|Pieza: Chapa U inox 250|Cantidad: 5
+🕐15/4/2025 05:18:12<br>. Mecanizado: balancin|Pieza: Chapa U Pintada|Cantidad: 5
+🕐15/4/2025 05:18:29<br>. Mecanizado: plegadora|Pieza: Chapa U inox|Cantidad: 4
+🕐15/4/2025 05:18:34<br>. Mecanizado: plegadora|Pieza: Chapa U inox 250|Cantidad: 3
+🕐15/4/2025 05:18:45<br>. Mecanizado: plegadora|Pieza: Chapa U Pintada|Cantidad: 3
+🕐15/4/2025 05:19:18<br>. Mecanizado: balancin|Pieza: Chapa CubreCabezal inox|Cantidad: 4
+🕐15/4/2025 05:19:23<br>. Mecanizado: balancin|Pieza: Chapa CubreCabezal inox 250|Cantidad: 4
+🕐15/4/2025 05:23:13<br>. Mecanizado: balancin|Pieza: Chapa CubreCabezal Pintada|Cantidad: 5
+🕐15/4/2025 05:23:26<br>. Mecanizado: soldador|Pieza: Cabezal250|Cantidad: 1
+🕐15/4/2025 05:23:30<br>. Mecanizado: soldador|Pieza: CabezalPintada|Cantidad: 1
+🕐15/4/2025 05:23:41<br>. Mecanizado: pulido|Pieza: Cabezal250|Cantidad: 1
+🕐15/4/2025 05:23:45<br>. Mecanizado: pulido|Pieza: CabezalInox|Cantidad: 1
