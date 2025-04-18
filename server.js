@@ -6308,49 +6308,15 @@ app.put("/api/piezasTerminadoActualizar/nombre/:nombre", async (req, res) => {
 const cierreMesRoutes = require('./routes/armado/cierreMes');
 app.use('/api/cierreMes', cierreMesRoutes);
 
+const totalFinal = require("./routes/armado/totalMaquinas")
+app.use("/api/totall", totalFinal)
 
 
+const gradicoAnual = require("./routes/armado/graficoAnual")
+app.use("/api/graficoAnual", gradicoAnual)
 
-
-app.put("/api/mesReset", async (req, res) => {
-  try {
-    // Buscamos todas las piezas con tipo_material = "ArmadoFinal"
-    const piezas = await Pieza.find({ tipo_material: "ArmadoFinal" });
-    console.log("Piezas encontradas:", piezas.length); // Verificamos cuántas piezas se encontraron
-
-    // Si no se encuentran piezas, devolver un error
-    if (piezas.length === 0) {
-      return res.status(404).json({ mensaje: "No se encontraron piezas con tipo_material 'ArmadoFinal'." });
-    }
-
-    // Reseteamos la cantidad.terminado.cantidad a cero en cada pieza
-    const updates = piezas.map(async (piezaw) => {
-      // Verificamos si la pieza existe en la base de datos antes de actualizarla
-      const existingPieza = await Pieza.findById(piezaw._id);
-      
-      if (existingPieza && existingPieza.cantidad?.terminado) {
-        existingPieza.cantidad.terminado.cantidad = 0;
-        
-        // Marcamos el campo como modificado para que Mongoose lo registre correctamente
-        existingPieza.markModified("cantidad");
-        
-        // Guardamos la pieza con el valor actualizado
-        await existingPieza.save();
-      }
-    });
-
-    // Esperamos que todas las actualizaciones terminen
-    await Promise.all(updates);
-
-    // Respondemos con éxito
-    res.status(200).json({ mensaje: "Todas las piezas fueron reseteadas a cero correctamente." });
-  } catch (error) {
-    console.error("Error al resetear piezas:", error);
-    res.status(500).json({ mensaje: "Error al resetear las piezas." });
-  }
-});
-
-
+const cierreAnual = require("./routes/armado/resetAnual")
+app.use("/api/resetAnual", cierreAnual)
 
 
 
