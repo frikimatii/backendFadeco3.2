@@ -2,67 +2,47 @@
   {
     "provedor": "soldador",
     "pedidos": {
-      "envios": [
-      
-      ],
-      "entregas": [
-    
-      ]
+      "envios": [],
+      "entregas": []
     }
   },
   {
     "provedor": "carmelo",
     "pedidos": {
       "envios": [
-     
+        "19/4/2025 04:39 p. m. - Enviado 2 Aro Numerador"
       ],
       "entregas": [
-    
+        "19/4/2025 04:47 p. m. - Recibido 1 Aro Numerador"
       ]
     }
   },
   {
     "provedor": "maxi",
     "pedidos": {
-      "envios": [
-      
-      ],
-      "entregas": [
-  
-      ]
+      "envios": [],
+      "entregas": []
     }
   },
   {
     "provedor": "pintura",
     "pedidos": {
-      "envios": [
-   
-      ],
-      "entregas": [
-       
-      ]
+      "envios": [],
+      "entregas": []
     }
   },
   {
     "provedor": "niquelado",
     "pedidos": {
-      "envios": [
-    
-      ],
-      "entregas": [
-   
-      ]
+      "envios": [],
+      "entregas": []
     }
   },
   {
     "provedor": "afilador",
     "pedidos": {
-      "envios": [
-      
-      ],
-      "entregas": [
-       
-      ]
+      "envios": [],
+      "entregas": []
     }
   }
 ]

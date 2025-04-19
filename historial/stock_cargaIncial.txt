@@ -1,0 +1,4 @@
+[2025-04-19T19:42:41.478Z] 🛠️ 19/4/2025, 16:42:41 - Se agregaron 15 unidades a la pieza "Espiral". plastico.
+[2025-04-19T19:41:31.418Z] 🛠️ 19/4/2025, 16:41:31 - Se agregaron 3 unidades a la pieza "Aro Numerador". aluminio.
+Historial completo de cambios:
+

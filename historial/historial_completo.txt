@@ -1,0 +1,4 @@
+[2025-04-19T19:34:44.691Z] 🛠️ 19/4/2025, 16:34:44 - Se agregaron 4 unidades a la pieza "Base Afilador 250". aluminio.
+[2025-04-19T19:34:31.405Z] 🛠️ 19/4/2025, 16:34:31 - Se agregaron 1 unidades a la pieza "Aro Numerador". aluminio.
+Historial completo de cambios:
+

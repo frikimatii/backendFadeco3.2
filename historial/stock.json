@@ -2,31 +2,28 @@
   {
     "tipo": "Aluminio",
     "acciones": [
-    
+      "🛠️ 19/4/2025, 16:41:31 - Se agregaron 3 unidades a la pieza \"Aro Numerador\". aluminio.",
+      "🛠️ 19/4/2025, 16:34:44 - Se agregaron 4 unidades a la pieza \"Base Afilador 250\". aluminio.",
+      "🛠️ 19/4/2025, 16:34:31 - Se agregaron 1 unidades a la pieza \"Aro Numerador\". aluminio.",
+      "🛠️ 19/4/2025, 16:29:33 - Se agregaron 1 unidades a la pieza \"Aro Numerador\".  aluminio ."
     ]
   },
   {
     "tipo": "Chapa",
-    "acciones": [
-      
-    ]
+    "acciones": []
   },
   {
     "tipo": "Shop",
-    "acciones": [
-      
-    ]
+    "acciones": []
   },
   {
     "tipo": "Plastico",
     "acciones": [
-     
+      "🛠️ 19/4/2025, 16:42:41 - Se agregaron 15 unidades a la pieza \"Espiral\". plastico."
     ]
   },
   {
     "tipo": "Fundicion",
-    "acciones": [
-      
-    ]
+    "acciones": []
   }
 ]

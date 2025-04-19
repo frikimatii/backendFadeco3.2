@@ -1,55 +1,43 @@
 [
   {
     "nombre": "plegadora",
-    "acciones": [
-    ]
+    "acciones": []
   },
   {
     "nombre": "plasma",
     "acciones": [
-      
+      "🕐19/4/2025 05:42:33<br>. Mecanizado: plasma|Pieza: Lateral i250 contecla|Cantidad: 1"
     ]
   },
   {
     "nombre": "corte",
-    "acciones": [
-   
-    ]
+    "acciones": []
   },
   {
     "nombre": "augeriado",
     "acciones": [
-    
+      "🕐19/4/2025 04:35:59<br>. Mecanizado: augeriado|Pieza: Brazo 250|Cantidad: 2",
+      "🕐19/4/2025 08:02:22 - Mecanizado: augeriado | Pieza: Brazo 250 | Cantidad: 1"
     ]
   },
   {
     "nombre": "torno",
-    "acciones": [
-     
-    ]
+    "acciones": []
   },
   {
     "nombre": "fresa",
-    "acciones": [
-    
-    ]
+    "acciones": []
   },
   {
     "nombre": "soldador",
-    "acciones": [
-    
-    ]
+    "acciones": []
   },
   {
     "nombre": "pulido",
-    "acciones": [
-  
-    ]
+    "acciones": []
   },
   {
     "nombre": "balancin",
-    "acciones": [
-     
-    ]
+    "acciones": []
   }
 ]
