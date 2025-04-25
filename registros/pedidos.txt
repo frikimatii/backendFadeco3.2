@@ -1,0 +1,96 @@
+
+-------------------------
+Nuevo Pedido Creado:
+Cliente: FECHA
+Fecha de Entrega: 17/5/2025
+
+Productos:
+- Inox 330: 21
+- Inox 250: 3
+- Pintada 330: 3
+Fecha Creacion: Thu Apr 24 2025 04:56:16 GMT-0300 (hora estándar de Argentina)
+-------------------------
+
+-------------------------
+Nuevo Pedido Creado:
+Cliente: MATAS
+Fecha de Entrega: 21/5/2025
+
+Productos:
+- Inox 330: 3
+- Inox 300: 8
+- Inox ECO: 8
+- Pintada 330: 2
+Fecha Creacion: Thu Apr 24 2025 04:54:01 GMT-0300 (hora estándar de Argentina)
+-------------------------
+
+-------------------------
+Nuevo Pedido Creado:
+Cliente: HOLA
+Fecha de Entrega: 26/4/2025
+
+Productos:
+- Inox 330: 1
+- Inox 250: 21
+- Inox ECO: 2
+Fecha Creacion: Thu Apr 24 2025 04:42:04 GMT-0300 (hora estándar de Argentina)
+-------------------------
+
+-------------------------
+Nuevo Pedido Creado:
+Cliente: el CEO
+Fecha de Entrega: 10/5/2025
+
+Productos:
+- Inox 330: 2
+- Inox 300: 1
+- Inox ECO: 1
+- Pintada 330: 3
+Fecha Creacion: Thu Apr 24 2025 04:39:45 GMT-0300 (hora estándar de Argentina)
+-------------------------
+
+-------------------------
+Nuevo Pedido Creado:
+Cliente: matias
+Fecha de Entrega: 25/12/2025
+
+Productos:
+- Inox 330: 12
+- Inox 300: 12
+- Inox 250: 2
+- Inox ECO: 2
+Fecha Creacion: Thu Apr 24 2025 04:35:29 GMT-0300 (hora estándar de Argentina)
+-------------------------
+
+-------------------------
+Nuevo Pedido Creado:
+Cliente: matias
+Fecha de Entrega: 14/5/2025
+
+Productos:
+- Inox 330: 12
+- Inox 300: 12
+- Inox 250: 12
+Fecha Creacion: Thu Apr 24 2025 04:06:47 GMT-0300 (hora estándar de Argentina)
+-------------------------
+
+-------------------------
+Nuevo Pedido Creado:
+Cliente: fernadno
+Fecha de Entrega: 5/5/2025
+Productos:
+- Inox 330: 2
+- Inox 300: 2
+- Inox ECO: 2
+- Pintada 330: 4
+-------------------------
+
+-------------------------
+Nuevo Pedido Creado:
+Cliente: matia
+Fecha de Entrega: 10/5/2025
+Productos:
+- Inox 330: 2
+- Inox 300: 2
+- Inox 250: 2
+-------------------------

@@ -4,6 +4,7 @@ const cors = require("cors");
 require("dotenv").config();
 const Pieza = require("./models/Pieza");
 const MaquinasFinales = require("./models/MaquinaFinal");
+const Pedido = require("./models/Pedido");
 
 const app = express();
 
@@ -757,27 +758,33 @@ app.put("/api/piezas/soldador/:nombre", async (req, res) => {
       let piezasFaltantes = [];
 
       for (let piezaNombre in piezasNecesarias) {
-        const { cantidad: reqCantidad, categoria } = piezasNecesarias[piezaNombre];
+        const { cantidad: reqCantidad, categoria } =
+          piezasNecesarias[piezaNombre];
 
         const subpieza = await Pieza.findOne({ nombre: piezaNombre });
         const disponible = subpieza?.cantidad?.[categoria]?.cantidad || 0;
 
         if (disponible < reqCantidad * cantidadNumero) {
           piezasFaltantes.push(
-            `${piezaNombre} (Faltan ${reqCantidad * cantidadNumero - disponible})`
+            `${piezaNombre} (Faltan ${
+              reqCantidad * cantidadNumero - disponible
+            })`
           );
         }
       }
 
       if (piezasFaltantes.length > 0) {
         return res.status(400).json({
-          mensaje: `No se puede armar el CabezalInox. Faltan: ${piezasFaltantes.join(", ")}`,
+          mensaje: `No se puede armar el CabezalInox. Faltan: ${piezasFaltantes.join(
+            ", "
+          )}`,
         });
       }
 
       // Si hay stock suficiente, descontamos piezas
       for (let piezaNombre in piezasNecesarias) {
-        const { cantidad: reqCantidad, categoria } = piezasNecesarias[piezaNombre];
+        const { cantidad: reqCantidad, categoria } =
+          piezasNecesarias[piezaNombre];
 
         await Pieza.findOneAndUpdate(
           { nombre: piezaNombre },
@@ -804,113 +811,128 @@ app.put("/api/piezas/soldador/:nombre", async (req, res) => {
         mensaje: `CabezalInox armado correctamente (${cantidadNumero})`,
         piezaActualizada,
       });
-    } else if (nombre == "Cabezal250"){
+    } else if (nombre == "Cabezal250") {
       const piezaNecesarias = {
-        "Chapa U inox 250": {cantidad: 1, categoria: "plegadora"},
-        "Chapa CubreCabezal inox 250": {cantidad: 1, categoria: "balancin"},
-        "Bandeja Cabezal Inox 250": {cantidad: 1, categoria: "terminado"}
-      }
+        "Chapa U inox 250": { cantidad: 1, categoria: "plegadora" },
+        "Chapa CubreCabezal inox 250": { cantidad: 1, categoria: "balancin" },
+        "Bandeja Cabezal Inox 250": { cantidad: 1, categoria: "terminado" },
+      };
 
-      let piezasFaltantes = []
+      let piezasFaltantes = [];
 
-      for( let piezaNombre in piezaNecesarias){
-        const { cantidad: reqCantidad , categoria} = piezaNecesarias[piezaNombre]
+      for (let piezaNombre in piezaNecesarias) {
+        const { cantidad: reqCantidad, categoria } =
+          piezaNecesarias[piezaNombre];
 
-        const subpieza = await Pieza.findOne({ nombre: piezaNombre})
-        const disponible = subpieza?.cantidad?.[categoria]?.cantidad || 0
+        const subpieza = await Pieza.findOne({ nombre: piezaNombre });
+        const disponible = subpieza?.cantidad?.[categoria]?.cantidad || 0;
 
-        if (disponible < reqCantidad * cantidadNumero){
-          piezasFaltantes.push(`${piezaNombre} (Faltan ${reqCantidad * cantidadNumero - disponible})`
-          )
+        if (disponible < reqCantidad * cantidadNumero) {
+          piezasFaltantes.push(
+            `${piezaNombre} (Faltan ${
+              reqCantidad * cantidadNumero - disponible
+            })`
+          );
         }
       }
 
-      if (piezasFaltantes.length > 0){
+      if (piezasFaltantes.length > 0) {
         return res.status(400).json({
-          mensaje: `No Se Puede Armar el Cabezal250, Faltan ${piezasFaltantes.join(", ")}`
-        })
+          mensaje: `No Se Puede Armar el Cabezal250, Faltan ${piezasFaltantes.join(
+            ", "
+          )}`,
+        });
       }
 
-      for(let piezaNombre in piezaNecesarias){
-        const {cantidad: reqCantidad, categoria } = piezaNecesarias[piezaNombre] 
+      for (let piezaNombre in piezaNecesarias) {
+        const { cantidad: reqCantidad, categoria } =
+          piezaNecesarias[piezaNombre];
 
         await Pieza.findOneAndUpdate(
-          {nombre: piezaNombre},
+          { nombre: piezaNombre },
           {
-            $inc:{
-              [`cantidad.${categoria}.cantidad`]: - reqCantidad * cantidadNumero
-            }
+            $inc: {
+              [`cantidad.${categoria}.cantidad`]: -reqCantidad * cantidadNumero,
+            },
           }
-        )
+        );
       }
 
       const piezaActualizada = await Pieza.findOneAndUpdate(
-        {nombre: "Cabezal250"},
+        { nombre: "Cabezal250" },
         {
-          $inc:{
-            "cantidad.soldador.cantidad": cantidadNumero
-          }
+          $inc: {
+            "cantidad.soldador.cantidad": cantidadNumero,
+          },
         },
-        { new: true}
-      )
+        { new: true }
+      );
 
       return res.json({
         mensaje: `Cabezal250 Armado Correctamente (${cantidadNumero})`,
-        piezaActualizada
-      })
-    } else if(nombre === "CabezalPintada"){
+        piezaActualizada,
+      });
+    } else if (nombre === "CabezalPintada") {
       const piezaNeceserias = {
-        "Chapa U Pintada" : {cantidad: 1, categoria: "plegadora"},
-        "Chapa CubreCabezal Pintada": {cantidad: 1, categoria: "balancin"},
-        "Bandeja Cabezal Pintada": {cantidad: 1, categoria: "terminado"}
-      }
+        "Chapa U Pintada": { cantidad: 1, categoria: "plegadora" },
+        "Chapa CubreCabezal Pintada": { cantidad: 1, categoria: "balancin" },
+        "Bandeja Cabezal Pintada": { cantidad: 1, categoria: "terminado" },
+      };
 
-      let piezasFaltantes = []
+      let piezasFaltantes = [];
 
-      for (let piezaNombre in piezaNeceserias){
-        const {cantidad: reqCantidad, categoria} = piezaNeceserias[piezaNombre]
+      for (let piezaNombre in piezaNeceserias) {
+        const { cantidad: reqCantidad, categoria } =
+          piezaNeceserias[piezaNombre];
 
-        const subpieza = await Pieza.findOne({nombre: piezaNombre})
-        const disponible = subpieza?.cantidad?.[categoria]?.cantidad || 0
+        const subpieza = await Pieza.findOne({ nombre: piezaNombre });
+        const disponible = subpieza?.cantidad?.[categoria]?.cantidad || 0;
 
-        if (disponible < reqCantidad * cantidadNumero){
-          piezasFaltantes.push(`${piezaNombre} (Faltan ${reqCantidad * cantidadNumero - disponible})`)
+        if (disponible < reqCantidad * cantidadNumero) {
+          piezasFaltantes.push(
+            `${piezaNombre} (Faltan ${
+              reqCantidad * cantidadNumero - disponible
+            })`
+          );
         }
       }
 
-      if (piezasFaltantes.length > 0){
+      if (piezasFaltantes.length > 0) {
         return res.status(400).json({
-          mensaje: `No se Puede Armar el Cabeza Pintada, Faltan ${piezasFaltantes.join(", ")}`
-        })
+          mensaje: `No se Puede Armar el Cabeza Pintada, Faltan ${piezasFaltantes.join(
+            ", "
+          )}`,
+        });
       }
 
-      for (let piezaNombre in piezaNeceserias){
-        const { cantidad: reqCantidad, categoria } = piezaNeceserias[piezaNombre]
+      for (let piezaNombre in piezaNeceserias) {
+        const { cantidad: reqCantidad, categoria } =
+          piezaNeceserias[piezaNombre];
 
         await Pieza.findOneAndUpdate(
-          {nombre: piezaNombre},
+          { nombre: piezaNombre },
           {
-            $inc:{
-              [`cantidad.${categoria}.cantidad`]: - reqCantidad * cantidadNumero
-            }
+            $inc: {
+              [`cantidad.${categoria}.cantidad`]: -reqCantidad * cantidadNumero,
+            },
           }
-        )
+        );
       }
 
       const piezaActualizada = await Pieza.findOneAndUpdate(
-        {nombre: "CabezalPintada"},
+        { nombre: "CabezalPintada" },
         {
           $inc: {
-            "cantidad.soldador.cantidad": cantidadNumero
-          }
+            "cantidad.soldador.cantidad": cantidadNumero,
+          },
         },
-        { new: true}
-      )
+        { new: true }
+      );
 
       return res.json({
         mensaje: `Cabezal Pintada Armado Correctamente (${cantidadNumero})`,
-        piezaActualizada
-      })
+        piezaActualizada,
+      });
     }
 
     // Resto de categorías
@@ -994,7 +1016,6 @@ app.put("/api/piezas/soldador/:nombre", async (req, res) => {
   }
 });
 
-
 app.put("/api/piezas/pulido/:nombre", async (req, res) => {
   try {
     const { cantidad } = req.body;
@@ -1074,12 +1095,13 @@ app.put("/api/piezas/balancin/:nombre", async (req, res) => {
         "Eje Largo",
       ],
       bruto: [
-        "Chapa U inox", 
-        "Chapa U Pintada", 
-        "Chapa U inox 250",  
+        "Chapa U inox",
+        "Chapa U Pintada",
+        "Chapa U inox 250",
         "Chapa CubreCabezal inox",
         "Chapa CubreCabezal Pintada",
-        "Chapa CubreCabezal inox 250",],
+        "Chapa CubreCabezal inox 250",
+      ],
       balancin: ["PortaEje"],
     };
 
@@ -1813,7 +1835,7 @@ app.put("/api/enviosPintura/:nombre", async (req, res) => {
       balancin: ["Teletubi Eco"],
       bruto: ["basePintada330", "basePintada300"],
       augeriado: ["Caja Soldada Eco"],
-      soldador:["CabezalPintada"]
+      soldador: ["CabezalPintada"],
     };
 
     const pieza = await Pieza.findOne({ nombre });
@@ -2186,7 +2208,7 @@ app.put("/api/entregaAfiladores/:nombre", async (req, res) => {
         { nombre: "Palanca Afilador", cantidad: 1 },
         { nombre: "Resorte Palanca", cantidad: 1 },
         { nombre: "Resorte Empuje", cantidad: 2 },
-        { nombre: "Carcaza Afilador", cantidad: 1}
+        { nombre: "Carcaza Afilador", cantidad: 1 },
       ];
 
       const nombresPiezas = piezasRequeridas.map((pieza) => pieza.nombre);
@@ -3268,7 +3290,7 @@ app.put("/api/preArmado/:nombre", async (req, res) => {
           "Eje Rectificado",
           "Guia U",
           "Varilla 330",
-          "Bandeja 330"
+          "Bandeja 330",
         ];
 
         const categoriaPrePintada330 = {
@@ -3670,10 +3692,9 @@ app.put("/api/ArmadoFinal/:nombre", async (req, res) => {
             { $inc: { "cantidad.terminadas.cantidad": cantidadNumero } }
           );
           await Pieza.updateOne(
-            {nombre: "Inox_330"},
-            { $inc: { "cantidad.terminado.cantidad": cantidadNumero}}
-          )
-
+            { nombre: "Inox_330" },
+            { $inc: { "cantidad.terminado.cantidad": cantidadNumero } }
+          );
 
           const mensaje = `✅ Pre Armado ensamblado con éxito. Se descontaron las piezas necesarias para ${cantidadNumero} motores.`;
           console.log(mensaje);
@@ -3821,10 +3842,9 @@ app.put("/api/ArmadoFinal/:nombre", async (req, res) => {
           );
 
           await Pieza.updateOne(
-            {nombre: "Inox_300"},
-            { $inc: { "cantidad.terminado.cantidad": cantidadNumero}}
-          )
-
+            { nombre: "Inox_300" },
+            { $inc: { "cantidad.terminado.cantidad": cantidadNumero } }
+          );
 
           const mensaje = `✅ Pre Armado ensamblado con éxito. Se descontaron las piezas necesarias para ${cantidadNumero} motores.`;
           console.log(mensaje);
@@ -3972,9 +3992,9 @@ app.put("/api/ArmadoFinal/:nombre", async (req, res) => {
           );
 
           await Pieza.updateOne(
-            {nombre: "Pintada_330"},
-            { $inc: { "cantidad.terminado.cantidad": cantidadNumero}}
-          )
+            { nombre: "Pintada_330" },
+            { $inc: { "cantidad.terminado.cantidad": cantidadNumero } }
+          );
 
           const mensaje = `✅ Pre Armado Pintada ensamblado con éxito. Se descontaron las piezas necesarias para ${cantidadNumero} motores.`;
           console.log(mensaje);
@@ -4122,9 +4142,9 @@ app.put("/api/ArmadoFinal/:nombre", async (req, res) => {
           );
 
           await Pieza.updateOne(
-            {nombre: "Pintada_300"},
-            { $inc: { "cantidad.terminado.cantidad": cantidadNumero}}
-          )
+            { nombre: "Pintada_300" },
+            { $inc: { "cantidad.terminado.cantidad": cantidadNumero } }
+          );
 
           const mensaje = `✅ Pre Armado Pintado 300 ensamblado con éxito. Se descontaron las piezas necesarias para ${cantidadNumero} motores.`;
           console.log(mensaje);
@@ -4269,9 +4289,9 @@ app.put("/api/ArmadoFinal/:nombre", async (req, res) => {
           );
 
           await Pieza.updateOne(
-            {nombre: "Inox_250"},
-            { $inc: { "cantidad.terminado.cantidad": cantidadNumero}}
-          )
+            { nombre: "Inox_250" },
+            { $inc: { "cantidad.terminado.cantidad": cantidadNumero } }
+          );
 
           const mensaje = `✅ Pre Armado ensamblado con éxito. Se descontaron las piezas necesarias para ${cantidadNumero} motores.`;
           console.log(mensaje);
@@ -4414,9 +4434,9 @@ app.put("/api/ArmadoFinal/:nombre", async (req, res) => {
           );
 
           await Pieza.updateOne(
-            {nombre: "Inox_ECO"},
-            { $inc: { "cantidad.terminado.cantidad": cantidadNumero}}
-          )
+            { nombre: "Inox_ECO" },
+            { $inc: { "cantidad.terminado.cantidad": cantidadNumero } }
+          );
 
           const mensaje = `✅ Pre Armado ECO ensamblado con éxito. Se descontaron las piezas necesarias para ${cantidadNumero} motores.`;
           console.log(mensaje);
@@ -4667,8 +4687,6 @@ app.put("/api/Ventas/:nombre", async (req, res) => {
   }
 });
 
-
-
 app.post("/api/verificarArmadoMotores/:nombre", async (req, res) => {
   try {
     const { cantidad } = req.body;
@@ -4858,32 +4876,41 @@ app.post("/api/verificarArmadoMotores/:nombre", async (req, res) => {
       },
     };
 
-    const config = configuraciones[nombre]
-    if (!config){
-      return res.status(400).json({ mensaje: `⚠️ Motor "${nombre}" no reconocido.` });
+    const config = configuraciones[nombre];
+    if (!config) {
+      return res
+        .status(400)
+        .json({ mensaje: `⚠️ Motor "${nombre}" no reconocido.` });
     }
 
     const piezasEnDB = await Pieza.find(
-      {nombre: {$in: config.pieza } },
-      {nombre: 1, cantidad: 1, _id: 0}
-    )
+      { nombre: { $in: config.pieza } },
+      { nombre: 1, cantidad: 1, _id: 0 }
+    );
 
-    let piezasFaltantes = []
+    let piezasFaltantes = [];
 
-    piezasEnDB.forEach((pieza)=>{
-      const categoria = config.categoriaPorPieza[pieza.nombre]
-      const cantidadDisponible = pieza.cantidad?.[categoria]?.cantidad || 0
-      const cantidadNecesaria = (config.cantidadPorPieza[pieza.nombre] || 1 )* cantidadNumero
+    piezasEnDB.forEach((pieza) => {
+      const categoria = config.categoriaPorPieza[pieza.nombre];
+      const cantidadDisponible = pieza.cantidad?.[categoria]?.cantidad || 0;
+      const cantidadNecesaria =
+        (config.cantidadPorPieza[pieza.nombre] || 1) * cantidadNumero;
 
-      if (cantidadNecesaria > cantidadDisponible){
-        piezasFaltantes.push(`${pieza.nombre} (necesitas ${cantidadNecesaria}, hay ${cantidadDisponible})`)
+      if (cantidadNecesaria > cantidadDisponible) {
+        piezasFaltantes.push(
+          `${pieza.nombre} (necesitas ${cantidadNecesaria}, hay ${cantidadDisponible})`
+        );
       }
-    })
+    });
 
     if (piezasFaltantes.length > 0) {
-      const mensaje = `❌ No se puede armar ${cantidadNumero} ${nombre}. Faltan: ${piezasFaltantes.join(", ")} \n`;
+      const mensaje = `❌ No se puede armar ${cantidadNumero} ${nombre}. Faltan: ${piezasFaltantes.join(
+        ", "
+      )} \n`;
       console.log(mensaje);
-      return res.status(200).json({ mensaje, puedeArmar: false, piezasFaltantes });
+      return res
+        .status(200)
+        .json({ mensaje, puedeArmar: false, piezasFaltantes });
     } else {
       const mensaje = `✅ Se puede armar ${cantidadNumero} ${nombre} sin problemas.`;
       console.log(mensaje);
@@ -5295,32 +5322,41 @@ app.post("/api/verificarPreArmado/:nombre", async (req, res) => {
       },
     };
 
-    const config = configuraciones[nombre]
-    if (!config){
-      return res.status(400).json({ mensaje: `⚠️ Base PreArmada  "${nombre}" no reconocido.` });
+    const config = configuraciones[nombre];
+    if (!config) {
+      return res
+        .status(400)
+        .json({ mensaje: `⚠️ Base PreArmada  "${nombre}" no reconocido.` });
     }
 
     const piezasEnDB = await Pieza.find(
-      {nombre: {$in: config.pieza } },
-      {nombre: 1, cantidad: 1, _id: 0}
-    )
+      { nombre: { $in: config.pieza } },
+      { nombre: 1, cantidad: 1, _id: 0 }
+    );
 
-    let piezasFaltantes = []
+    let piezasFaltantes = [];
 
-    piezasEnDB.forEach((pieza)=>{
-      const categoria = config.categoriaPorPieza[pieza.nombre]
-      const cantidadDisponible = pieza.cantidad?.[categoria]?.cantidad || 0
-      const cantidadNecesaria = (config.cantidadPorPieza[pieza.nombre] || 1 )* cantidadNumero
+    piezasEnDB.forEach((pieza) => {
+      const categoria = config.categoriaPorPieza[pieza.nombre];
+      const cantidadDisponible = pieza.cantidad?.[categoria]?.cantidad || 0;
+      const cantidadNecesaria =
+        (config.cantidadPorPieza[pieza.nombre] || 1) * cantidadNumero;
 
-      if (cantidadNecesaria > cantidadDisponible){
-        piezasFaltantes.push(`${pieza.nombre} (necesitas ${cantidadNecesaria}, hay ${cantidadDisponible})`)
+      if (cantidadNecesaria > cantidadDisponible) {
+        piezasFaltantes.push(
+          `${pieza.nombre} (necesitas ${cantidadNecesaria}, hay ${cantidadDisponible})`
+        );
       }
-    })
+    });
 
     if (piezasFaltantes.length > 0) {
-      const mensaje = `❌ No se puede armar ${cantidadNumero} ${nombre}. Faltan: ${piezasFaltantes.join(", ")} \n`;
+      const mensaje = `❌ No se puede armar ${cantidadNumero} ${nombre}. Faltan: ${piezasFaltantes.join(
+        ", "
+      )} \n`;
       console.log(mensaje);
-      return res.status(200).json({ mensaje, puedeArmar: false, piezasFaltantes });
+      return res
+        .status(200)
+        .json({ mensaje, puedeArmar: false, piezasFaltantes });
     } else {
       const mensaje = `✅ Se puede armar ${cantidadNumero} ${nombre} sin problemas.`;
       console.log(mensaje);
@@ -5396,7 +5432,7 @@ app.post("/api/verificarArmado/:nombre", async (req, res) => {
           "Pinche Frontal": "bruto",
           "Pinche lateral": "bruto",
           "Cuadrado Regulador": "soldador",
-          "CabezalInox": "pulido",
+          CabezalInox: "pulido",
         },
         cantidadPorPieza: {
           "Brazo 330": 1,
@@ -5479,7 +5515,7 @@ app.post("/api/verificarArmado/:nombre", async (req, res) => {
           "Pinche Frontal": "bruto",
           "Pinche lateral": "bruto",
           "Cuadrado Regulador": "soldador",
-          "CabezalInox": "pulido",
+          CabezalInox: "pulido",
         },
         cantidadPorPieza: {
           "Brazo 300": 1,
@@ -5562,7 +5598,7 @@ app.post("/api/verificarArmado/:nombre", async (req, res) => {
           "Pinche Frontal": "bruto",
           "Pinche lateral": "bruto",
           "Cuadrado Regulador": "soldador",
-          "CabezalPintada": "terminado",
+          CabezalPintada: "terminado",
         },
         cantidadPorPieza: {
           "Brazo 330": 1,
@@ -5589,7 +5625,7 @@ app.post("/api/verificarArmado/:nombre", async (req, res) => {
           "Pinche Frontal": 1,
           "Pinche lateral": 1,
           "Cuadrado Regulador": 1,
-          "CabezalPintada": 1,
+          CabezalPintada: 1,
         },
       },
       Pintada_300: {
@@ -5645,7 +5681,7 @@ app.post("/api/verificarArmado/:nombre", async (req, res) => {
           "Pinche Frontal": "bruto",
           "Pinche lateral": "bruto",
           "Cuadrado Regulador": "soldador",
-          "CabezalPintada": "terminado",
+          CabezalPintada: "terminado",
         },
         cantidadPorPieza: {
           "Brazo 300": 1,
@@ -5672,7 +5708,7 @@ app.post("/api/verificarArmado/:nombre", async (req, res) => {
           "Pinche Frontal": 1,
           "Pinche lateral": 1,
           "Cuadrado Regulador": 1,
-          "CabezalPintada": 1,
+          CabezalPintada: 1,
         },
       },
       Inox_250: {
@@ -5726,7 +5762,7 @@ app.post("/api/verificarArmado/:nombre", async (req, res) => {
           "Pinche Frontal 250": "bruto",
           "Pinche lateral 250": "bruto",
           "Cuadrado Regulador": "soldador",
-          "Cabezal250": "pulido"
+          Cabezal250: "pulido",
         },
         cantidadPorPieza: {
           "Brazo 250": 1,
@@ -5752,7 +5788,7 @@ app.post("/api/verificarArmado/:nombre", async (req, res) => {
           "Pinche Frontal 250": 1,
           "Pinche lateral 250": 1,
           "Cuadrado Regulador": 1,
-          "Cabezal250": 1
+          Cabezal250: 1,
         },
       },
       Inox_ECO: {
@@ -5806,7 +5842,7 @@ app.post("/api/verificarArmado/:nombre", async (req, res) => {
           "Pinche lateral": "bruto",
           "Pitito Teletubi Eco": "bruto",
           "Cuadrado Regulador": "soldador",
-          "CabezalInox": "pulido",
+          CabezalInox: "pulido",
         },
         cantidadPorPieza: {
           "Brazo 330": 1,
@@ -5837,32 +5873,41 @@ app.post("/api/verificarArmado/:nombre", async (req, res) => {
       },
     };
 
-    const config = configuraciones[nombre]
-    if (!config){
-      return res.status(400).json({ mensaje: `⚠️ Maquinas "${nombre}" no reconocido.` });
+    const config = configuraciones[nombre];
+    if (!config) {
+      return res
+        .status(400)
+        .json({ mensaje: `⚠️ Maquinas "${nombre}" no reconocido.` });
     }
 
     const piezasEnDB = await Pieza.find(
-      {nombre: {$in: config.pieza } },
-      {nombre: 1, cantidad: 1, _id: 0}
-    )
+      { nombre: { $in: config.pieza } },
+      { nombre: 1, cantidad: 1, _id: 0 }
+    );
 
-    let piezasFaltantes = []
+    let piezasFaltantes = [];
 
-    piezasEnDB.forEach((pieza)=>{
-      const categoria = config.categoriaPorPieza[pieza.nombre]
-      const cantidadDisponible = pieza.cantidad?.[categoria]?.cantidad || 0
-      const cantidadNecesaria = (config.cantidadPorPieza[pieza.nombre] || 1 )* cantidadNumero
+    piezasEnDB.forEach((pieza) => {
+      const categoria = config.categoriaPorPieza[pieza.nombre];
+      const cantidadDisponible = pieza.cantidad?.[categoria]?.cantidad || 0;
+      const cantidadNecesaria =
+        (config.cantidadPorPieza[pieza.nombre] || 1) * cantidadNumero;
 
-      if (cantidadNecesaria > cantidadDisponible){
-        piezasFaltantes.push(`${pieza.nombre} (necesitas ${cantidadNecesaria}, hay ${cantidadDisponible})`)
+      if (cantidadNecesaria > cantidadDisponible) {
+        piezasFaltantes.push(
+          `${pieza.nombre} (necesitas ${cantidadNecesaria}, hay ${cantidadDisponible})`
+        );
       }
-    })
+    });
 
     if (piezasFaltantes.length > 0) {
-      const mensaje = `❌ No se puede armar ${cantidadNumero} ${nombre}. Faltan: ${piezasFaltantes.join(", ")} \n`;
+      const mensaje = `❌ No se puede armar ${cantidadNumero} ${nombre}. Faltan: ${piezasFaltantes.join(
+        ", "
+      )} \n`;
       console.log(mensaje);
-      return res.status(200).json({ mensaje, puedeArmar: false, piezasFaltantes });
+      return res
+        .status(200)
+        .json({ mensaje, puedeArmar: false, piezasFaltantes });
     } else {
       const mensaje = `✅ Se puede armar ${cantidadNumero} ${nombre} sin problemas.`;
       console.log(mensaje);
@@ -5874,15 +5919,10 @@ app.post("/api/verificarArmado/:nombre", async (req, res) => {
   }
 });
 
+const piezaspanel = require("./routes/panel/piezasPanel");
+app.use("/api/piezaPanel", piezaspanel);
 
-
-
-
-const piezaspanel = require("./routes/panel/piezasPanel")
-app.use("/api/piezaPanel", piezaspanel)
-
-
-/// actualiar PiezaBrutas 
+/// actualiar PiezaBrutas
 app.put("/api/piezasBrutoActualizar/nombre/:nombre", async (req, res) => {
   try {
     const { nombre } = req.params; // Obtener el nombre desde la URL
@@ -5920,7 +5960,7 @@ app.put("/api/piezasBrutoActualizar/nombre/:nombre", async (req, res) => {
   }
 });
 
-/// Actulizar Augeriado 
+/// Actulizar Augeriado
 app.put("/api/piezasAugeriadoActualizar/nombre/:nombre", async (req, res) => {
   try {
     const { nombre } = req.params; // Obtener el nombre desde la URL
@@ -6224,8 +6264,6 @@ app.put("/api/piezasSoldarActualizar/nombre/:nombre", async (req, res) => {
   }
 });
 
-
-
 app.put("/api/piezasPulidoActualizar/nombre/:nombre", async (req, res) => {
   try {
     const { nombre } = req.params; // Obtener el nombre desde la URL
@@ -6263,8 +6301,7 @@ app.put("/api/piezasPulidoActualizar/nombre/:nombre", async (req, res) => {
   }
 });
 
-
-/// Actuliazar Piezas Terminadas 
+/// Actuliazar Piezas Terminadas
 app.put("/api/piezasTerminadoActualizar/nombre/:nombre", async (req, res) => {
   try {
     const { nombre } = req.params; // Obtener el nombre desde la URL
@@ -6302,27 +6339,87 @@ app.put("/api/piezasTerminadoActualizar/nombre/:nombre", async (req, res) => {
   }
 });
 
+const cierreMesRoutes = require("./routes/armado/cierreMes");
+app.use("/api/cierreMes", cierreMesRoutes);
+
+const totalFinal = require("./routes/armado/totalMaquinas");
+app.use("/api/totall", totalFinal);
+
+const gradicoAnual = require("./routes/armado/graficoAnual");
+app.use("/api/graficoAnual", gradicoAnual);
+
+const cierreAnual = require("./routes/armado/resetAnual");
+app.use("/api/resetAnual", cierreAnual);
+
+const GranPedido = require("./routes/pedidos/pedido");
+app.use("/api/granPedido", GranPedido);
+
+const PedidosMarcelo = require("./routes/pe/crearPedido");
+app.use("/api/pedidosMarcelo", PedidosMarcelo);
+
+const VerPedidos = require("./routes/pe/verPedido");
+app.use("/api/verPedidossactuales", VerPedidos);
+
+const VerPedidosTerminados = require("./routes/pe/verPedidosTerminados");
+app.use("/api/verPedidosTerminados", VerPedidosTerminados);
 
 
+app.delete("/api/pedidos/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
 
-const cierreMesRoutes = require('./routes/armado/cierreMes');
-app.use('/api/cierreMes', cierreMesRoutes);
+    // Buscar y eliminar el pedido por ID
+    const pedidoEliminado = await Pedido.findByIdAndDelete(id);
 
-const totalFinal = require("./routes/armado/totalMaquinas")
-app.use("/api/totall", totalFinal)
+    if (!pedidoEliminado) {
+      return res.status(404).json({ message: "Pedido no encontrado" });
+    }
 
+    res
+      .status(200)
+      .json({
+        message: "Pedido eliminado exitosamente",
+        pedido: pedidoEliminado,
+      });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: "Error al eliminar el pedido", error: error.message });
+  }
+});
 
-const gradicoAnual = require("./routes/armado/graficoAnual")
-app.use("/api/graficoAnual", gradicoAnual)
+app.patch("/api/pedidos/:id/completado", async (req, res) => {
+  try {
+    const { id } = req.params;
 
-const cierreAnual = require("./routes/armado/resetAnual")
-app.use("/api/resetAnual", cierreAnual)
+    // Buscar el pedido por ID y actualizar su estado a "completado"
+    const pedidoActualizado = await Pedido.findByIdAndUpdate(
+      id,
+      { estado: "completado" }, // Nuevo estado
+      { new: true } // Devolver el documento actualizado
+    );
 
+    if (!pedidoActualizado) {
+      return res.status(404).json({ message: "Pedido no encontrado" });
+    }
 
-
-const GranPedido = require("./routes/pedidos/pedido")
-app.use("/api/granPedido", GranPedido)
-
+    res
+      .status(200)
+      .json({
+        message: "Estado del pedido actualizado exitosamente",
+        pedido: pedidoActualizado,
+      });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({
+        message: "Error al actualizar el estado del pedido",
+        error: error.message,
+      });
+  }
+});
 
 // Iniciar el servidor
 const PORT = process.env.PORT || 5000;
@@ -6345,6 +6442,3 @@ app.listen(PORT, () => {
 ////
 ////
 ////gregarAfiladores()
-
-
-
